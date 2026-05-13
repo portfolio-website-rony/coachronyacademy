@@ -321,57 +321,88 @@ function CourseEditor() {
 
       {/* Pricing */}
       <Card title="Pricing & offer">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="Currency">
-            <Select
-              value={course.currency}
-              onChange={(v) => setCourse({ ...course, currency: v })}
-              options={[
-                ["BDT", "BDT"],
-                ["USD", "USD"],
-              ]}
-            />
-          </Field>
-          <Field label="Regular price">
-            <NumberInput value={course.price} onChange={(v) => setCourse({ ...course, price: v })} />
-          </Field>
-          <Field label="Discount price">
-            <NumberInput
-              value={course.discount_price ?? 0}
-              onChange={(v) => setCourse({ ...course, discount_price: v || null })}
-            />
-          </Field>
-          <Field label="Offer ends at">
-            <TextInput
-              value={course.offer_ends_at ? course.offer_ends_at.slice(0, 16) : ""}
-              onChange={(v) => setCourse({ ...course, offer_ends_at: v ? new Date(v).toISOString() : null })}
-              type="datetime-local"
-            />
-          </Field>
+        <div className="inline-flex rounded-xl border border-white/10 bg-background/40 p-1 text-sm">
+          <button
+            type="button"
+            onClick={() => setCourse({ ...course, price: 0, discount_price: null })}
+            className={`rounded-lg px-4 py-1.5 font-semibold transition ${
+              Number(course.price) === 0 && !course.discount_price
+                ? "bg-emerald-500/20 text-emerald-300"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Free
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (Number(course.price) === 0) setCourse({ ...course, price: 1000 });
+            }}
+            className={`rounded-lg px-4 py-1.5 font-semibold transition ${
+              Number(course.price) > 0
+                ? "bg-primary/20 text-primary-glow"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Paid
+          </button>
         </div>
 
-        <div className="mt-4">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Payment methods enabled
-          </span>
-          <div className="mt-2 flex flex-wrap gap-3">
-            {(["bkash", "nagad", "manual", "stripe", "sslcommerz"] as const).map((m) => (
-              <label key={m} className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-sm">
-                <input
-                  type="checkbox"
-                  checked={!!course.payment_methods_enabled?.[m]}
-                  onChange={(e) =>
-                    setCourse({
-                      ...course,
-                      payment_methods_enabled: { ...course.payment_methods_enabled, [m]: e.target.checked },
-                    })
-                  }
+        {Number(course.price) > 0 && (
+          <>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Field label="Currency">
+                <Select
+                  value={course.currency}
+                  onChange={(v) => setCourse({ ...course, currency: v })}
+                  options={[
+                    ["BDT", "BDT"],
+                    ["USD", "USD"],
+                  ]}
                 />
-                <span className="capitalize">{m}</span>
-              </label>
-            ))}
-          </div>
-        </div>
+              </Field>
+              <Field label="Regular price">
+                <NumberInput value={course.price} onChange={(v) => setCourse({ ...course, price: v })} />
+              </Field>
+              <Field label="Discount price">
+                <NumberInput
+                  value={course.discount_price ?? 0}
+                  onChange={(v) => setCourse({ ...course, discount_price: v || null })}
+                />
+              </Field>
+              <Field label="Offer ends at">
+                <TextInput
+                  value={course.offer_ends_at ? course.offer_ends_at.slice(0, 16) : ""}
+                  onChange={(v) => setCourse({ ...course, offer_ends_at: v ? new Date(v).toISOString() : null })}
+                  type="datetime-local"
+                />
+              </Field>
+            </div>
+
+            <div className="mt-4">
+              <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Payment methods enabled
+              </span>
+              <div className="mt-2 flex flex-wrap gap-3">
+                {(["bkash", "nagad", "manual", "stripe", "sslcommerz"] as const).map((m) => (
+                  <label key={m} className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={!!course.payment_methods_enabled?.[m]}
+                      onChange={(e) =>
+                        setCourse({
+                          ...course,
+                          payment_methods_enabled: { ...course.payment_methods_enabled, [m]: e.target.checked },
+                        })
+                      }
+                    />
+                    <span className="capitalize">{m}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </Card>
 
       {/* Instructor */}
