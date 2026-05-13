@@ -235,9 +235,6 @@ function CourseEditor() {
         ))}
       </div>
 
-      <style>{`
-        .input { @apply w-full rounded-xl border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary; }
-      `}</style>
     </div>
   );
 }
