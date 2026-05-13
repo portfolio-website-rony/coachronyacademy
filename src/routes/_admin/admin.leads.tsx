@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { MessageCircle, Mail, Loader2, Download, Eye } from "lucide-react";
 import { useRealtime } from "@/lib/admin/use-realtime";
-import { StatusBadge } from "@/components/admin/StatusBadge";
 import { LeadDrawer } from "@/components/admin/LeadDrawer";
 
 export const Route = createFileRoute("/_admin/admin/leads")({
