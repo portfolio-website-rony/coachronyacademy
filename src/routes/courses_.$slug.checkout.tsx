@@ -6,7 +6,7 @@ import { formatPrice } from "@/lib/format";
 import { toast } from "sonner";
 import { ArrowLeft, Check, Upload, Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/courses/$slug/checkout")({
+export const Route = createFileRoute("/courses_/$slug/checkout")({
   head: () => ({ meta: [{ title: "Checkout — CoachRony" }] }),
   component: CheckoutPage,
 });
