@@ -3,7 +3,7 @@ import { Section, GlassCard } from "@/components/site/Section";
 import { PROGRAMS } from "@/lib/site-data";
 import { ArrowRight, Check, GraduationCap } from "lucide-react";
 
-export const Route = createFileRoute("/courses")({
+export const Route = createFileRoute("/courses/")({
   head: () => ({
     meta: [
       { title: "Courses — Coachrony Academy" },
