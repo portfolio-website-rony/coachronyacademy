@@ -42,9 +42,15 @@ function Courses() {
               </ul>
               <div className="mt-6 flex items-center justify-between">
                 <span className="font-display text-lg font-bold text-gold-gradient">{p.price}</span>
-                <Link to={p.href as "/book"} className="inline-flex items-center gap-1 text-sm font-semibold text-primary-glow hover:underline">
-                  {p.cta} <ArrowRight className="h-4 w-4" />
-                </Link>
+                {p.href.startsWith("/course/") ? (
+                  <Link to="/course/$slug" params={{ slug: p.href.replace("/course/", "") }} className="inline-flex items-center gap-1 text-sm font-semibold text-primary-glow hover:underline">
+                    {p.cta} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                ) : (
+                  <Link to="/book" className="inline-flex items-center gap-1 text-sm font-semibold text-primary-glow hover:underline">
+                    {p.cta} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
               </div>
             </GlassCard>
           ))}

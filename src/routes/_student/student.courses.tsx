@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
-import { toast } from "sonner";
 import { BookOpen } from "lucide-react";
 
 export const Route = createFileRoute("/_student/student/courses")({
@@ -24,7 +23,6 @@ function CatalogPage() {
   const { session } = useAuthUser();
   const [courses, setCourses] = useState<Course[] | null>(null);
   const [enrolledIds, setEnrolledIds] = useState<Set<string>>(new Set());
-  const [busy, setBusy] = useState<string | null>(null);
 
   async function load() {
     const [{ data: c }, { data: e }] = await Promise.all([
@@ -43,18 +41,6 @@ function CatalogPage() {
   useEffect(() => {
     void load();
   }, [session]);
-
-  async function enroll(courseId: string) {
-    if (!session) return;
-    setBusy(courseId);
-    const { error } = await supabase
-      .from("enrollments")
-      .insert({ course_id: courseId, user_id: session.user.id });
-    setBusy(null);
-    if (error) return toast.error(error.message);
-    toast.success("Enrolled!");
-    void load();
-  }
 
   return (
     <div className="space-y-6">
@@ -101,13 +87,13 @@ function CatalogPage() {
                       Continue →
                     </Link>
                   ) : (
-                    <button
-                      onClick={() => enroll(c.id)}
-                      disabled={busy === c.id}
-                      className="w-full rounded-xl border border-primary/40 px-3 py-2 text-sm font-semibold text-primary-glow hover:bg-primary/10 disabled:opacity-50"
+                    <Link
+                      to="/course/$slug"
+                      params={{ slug: c.slug }}
+                      className="block rounded-xl border border-primary/40 px-3 py-2 text-center text-sm font-semibold text-primary-glow hover:bg-primary/10"
                     >
-                      {busy === c.id ? "Enrolling…" : "Enroll free"}
-                    </button>
+                      View details
+                    </Link>
                   )}
                 </div>
               </div>
