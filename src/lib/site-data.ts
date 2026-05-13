@@ -19,7 +19,7 @@ export const PROGRAMS = [
   {
     tag: "Free", title: "AI Free Class",
     desc: "শুরু করুন AI দিয়ে। 90 মিনিটের live workshop।",
-    price: "Free", cta: "Join Free", href: "/student/courses/ai-free-class",
+    price: "Free", cta: "Join Free", href: "/courses/ai-free-class",
     icon: Rocket,
   },
   {

@@ -517,6 +517,120 @@ export type Database = {
           },
         ]
       }
+      coupon_redemptions: {
+        Row: {
+          coupon_id: string
+          id: string
+          payment_id: string | null
+          redeemed_at: string
+          user_id: string
+        }
+        Insert: {
+          coupon_id: string
+          id?: string
+          payment_id?: string | null
+          redeemed_at?: string
+          user_id: string
+        }
+        Update: {
+          coupon_id?: string
+          id?: string
+          payment_id?: string | null
+          redeemed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          active: boolean
+          code: string
+          course_id: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          kind: string
+          max_uses: number | null
+          used_count: number
+          value: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          course_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          max_uses?: number | null
+          used_count?: number
+          value: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          course_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          max_uses?: number | null
+          used_count?: number
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_faqs: {
+        Row: {
+          answer: string
+          course_id: string
+          created_at: string
+          display_order: number
+          id: string
+          question: string
+        }
+        Insert: {
+          answer: string
+          course_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          question: string
+        }
+        Update: {
+          answer?: string
+          course_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_faqs_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_lessons: {
         Row: {
           created_at: string
@@ -593,48 +707,175 @@ export type Database = {
           },
         ]
       }
+      course_testimonials: {
+        Row: {
+          author: string
+          avatar_url: string | null
+          course_id: string
+          created_at: string
+          display_order: number
+          id: string
+          quote: string
+          rating: number
+          role: string | null
+        }
+        Insert: {
+          author: string
+          avatar_url?: string | null
+          course_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          quote: string
+          rating?: number
+          role?: string | null
+        }
+        Update: {
+          author?: string
+          avatar_url?: string | null
+          course_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          quote?: string
+          rating?: number
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_testimonials_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_views: {
+        Row: {
+          course_id: string
+          id: string
+          referrer: string | null
+          session_id: string | null
+          user_id: string | null
+          viewed_at: string
+        }
+        Insert: {
+          course_id: string
+          id?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          course_id?: string
+          id?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_views_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           category: string | null
           cover_url: string | null
           created_at: string
+          currency: string
           description: string | null
+          discount_price: number | null
           display_order: number
+          duration_minutes: number
           id: string
+          instructor_avatar_url: string | null
+          instructor_bio: string | null
           instructor_id: string | null
+          instructor_name: string | null
+          language: string
+          learn_outcomes: string[]
           level: string
+          long_description: string | null
+          offer_ends_at: string | null
+          payment_methods_enabled: Json
+          price: number
+          promo_video_url: string | null
           published: boolean
+          requirements: string[]
           slug: string
+          tagline: string | null
           title: string
           updated_at: string
+          who_for: string[]
         }
         Insert: {
           category?: string | null
           cover_url?: string | null
           created_at?: string
+          currency?: string
           description?: string | null
+          discount_price?: number | null
           display_order?: number
+          duration_minutes?: number
           id?: string
+          instructor_avatar_url?: string | null
+          instructor_bio?: string | null
           instructor_id?: string | null
+          instructor_name?: string | null
+          language?: string
+          learn_outcomes?: string[]
           level?: string
+          long_description?: string | null
+          offer_ends_at?: string | null
+          payment_methods_enabled?: Json
+          price?: number
+          promo_video_url?: string | null
           published?: boolean
+          requirements?: string[]
           slug: string
+          tagline?: string | null
           title: string
           updated_at?: string
+          who_for?: string[]
         }
         Update: {
           category?: string | null
           cover_url?: string | null
           created_at?: string
+          currency?: string
           description?: string | null
+          discount_price?: number | null
           display_order?: number
+          duration_minutes?: number
           id?: string
+          instructor_avatar_url?: string | null
+          instructor_bio?: string | null
           instructor_id?: string | null
+          instructor_name?: string | null
+          language?: string
+          learn_outcomes?: string[]
           level?: string
+          long_description?: string | null
+          offer_ends_at?: string | null
+          payment_methods_enabled?: Json
+          price?: number
+          promo_video_url?: string | null
           published?: boolean
+          requirements?: string[]
           slug?: string
+          tagline?: string | null
           title?: string
           updated_at?: string
+          who_for?: string[]
         }
         Relationships: []
       }
@@ -835,8 +1076,13 @@ export type Database = {
           amount: number
           booking_id: string | null
           client_id: string | null
+          coupon_id: string | null
+          course_id: string | null
           created_at: string
           currency: string
+          gateway: string
+          gateway_payload: Json | null
+          gateway_ref: string | null
           id: string
           method: string
           notes: string | null
@@ -845,13 +1091,19 @@ export type Database = {
           status: string
           transaction_id: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           amount?: number
           booking_id?: string | null
           client_id?: string | null
+          coupon_id?: string | null
+          course_id?: string | null
           created_at?: string
           currency?: string
+          gateway?: string
+          gateway_payload?: Json | null
+          gateway_ref?: string | null
           id?: string
           method?: string
           notes?: string | null
@@ -860,13 +1112,19 @@ export type Database = {
           status?: string
           transaction_id?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           amount?: number
           booking_id?: string | null
           client_id?: string | null
+          coupon_id?: string | null
+          course_id?: string | null
           created_at?: string
           currency?: string
+          gateway?: string
+          gateway_payload?: Json | null
+          gateway_ref?: string | null
           id?: string
           method?: string
           notes?: string | null
@@ -875,6 +1133,7 @@ export type Database = {
           status?: string
           transaction_id?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -889,6 +1148,20 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
             referencedColumns: ["id"]
           },
         ]
@@ -993,6 +1266,16 @@ export type Database = {
       notify_admins: {
         Args: { _body: string; _link: string; _title: string; _type: string }
         Returns: undefined
+      }
+      validate_coupon: {
+        Args: { _code: string; _course_id: string }
+        Returns: {
+          id: string
+          kind: string
+          reason: string
+          valid: boolean
+          value: number
+        }[]
       }
     }
     Enums: {

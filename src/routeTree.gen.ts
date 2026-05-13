@@ -30,12 +30,14 @@ import { Route as StudentRouteImport } from './routes/_student'
 import { Route as ClientRouteImport } from './routes/_client'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoursesSlugRouteImport } from './routes/courses.$slug'
 import { Route as AdminSignupRouteImport } from './routes/admin.signup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as StudentStudentRouteImport } from './routes/_student/student'
 import { Route as ClientClientRouteImport } from './routes/_client/client'
 import { Route as AdminAdminRouteImport } from './routes/_admin/admin'
 import { Route as AdminAdminIndexRouteImport } from './routes/_admin/admin.index'
+import { Route as CoursesSlugCheckoutRouteImport } from './routes/courses.$slug.checkout'
 import { Route as StudentStudentResourcesRouteImport } from './routes/_student/student.resources'
 import { Route as StudentStudentProgressRouteImport } from './routes/_student/student.progress'
 import { Route as StudentStudentProfileRouteImport } from './routes/_student/student.profile'
@@ -162,6 +164,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoursesSlugRoute = CoursesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CoursesRoute,
+} as any)
 const AdminSignupRoute = AdminSignupRouteImport.update({
   id: '/admin/signup',
   path: '/admin/signup',
@@ -191,6 +198,11 @@ const AdminAdminIndexRoute = AdminAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminAdminRoute,
+} as any)
+const CoursesSlugCheckoutRoute = CoursesSlugCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => CoursesSlugRoute,
 } as any)
 const StudentStudentResourcesRoute = StudentStudentResourcesRouteImport.update({
   id: '/resources',
@@ -317,7 +329,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
+  '/courses': typeof CoursesRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
@@ -335,6 +347,7 @@ export interface FileRoutesByFullPath {
   '/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
+  '/courses/$slug': typeof CoursesSlugRouteWithChildren
   '/admin/bookings': typeof AdminAdminBookingsRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
@@ -355,6 +368,7 @@ export interface FileRoutesByFullPath {
   '/student/profile': typeof StudentStudentProfileRoute
   '/student/progress': typeof StudentStudentProgressRoute
   '/student/resources': typeof StudentStudentResourcesRoute
+  '/courses/$slug/checkout': typeof CoursesSlugCheckoutRoute
   '/admin/': typeof AdminAdminIndexRoute
   '/admin/courses/$courseId': typeof AdminAdminCoursesCourseIdRoute
   '/student/courses/$slug': typeof StudentStudentCoursesSlugRouteWithChildren
@@ -366,7 +380,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
+  '/courses': typeof CoursesRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
@@ -383,6 +397,7 @@ export interface FileRoutesByTo {
   '/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
+  '/courses/$slug': typeof CoursesSlugRouteWithChildren
   '/admin/bookings': typeof AdminAdminBookingsRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
@@ -403,6 +418,7 @@ export interface FileRoutesByTo {
   '/student/profile': typeof StudentStudentProfileRoute
   '/student/progress': typeof StudentStudentProgressRoute
   '/student/resources': typeof StudentStudentResourcesRoute
+  '/courses/$slug/checkout': typeof CoursesSlugCheckoutRoute
   '/admin': typeof AdminAdminIndexRoute
   '/admin/courses/$courseId': typeof AdminAdminCoursesCourseIdRoute
   '/student/courses/$slug': typeof StudentStudentCoursesSlugRouteWithChildren
@@ -418,7 +434,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
+  '/courses': typeof CoursesRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
@@ -436,6 +452,7 @@ export interface FileRoutesById {
   '/_student/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
+  '/courses/$slug': typeof CoursesSlugRouteWithChildren
   '/_admin/admin/bookings': typeof AdminAdminBookingsRoute
   '/_admin/admin/clients': typeof AdminAdminClientsRoute
   '/_admin/admin/cms': typeof AdminAdminCmsRoute
@@ -456,6 +473,7 @@ export interface FileRoutesById {
   '/_student/student/profile': typeof StudentStudentProfileRoute
   '/_student/student/progress': typeof StudentStudentProgressRoute
   '/_student/student/resources': typeof StudentStudentResourcesRoute
+  '/courses/$slug/checkout': typeof CoursesSlugCheckoutRoute
   '/_admin/admin/': typeof AdminAdminIndexRoute
   '/_admin/admin/courses/$courseId': typeof AdminAdminCoursesCourseIdRoute
   '/_student/student/courses/$slug': typeof StudentStudentCoursesSlugRouteWithChildren
@@ -487,6 +505,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/admin/login'
     | '/admin/signup'
+    | '/courses/$slug'
     | '/admin/bookings'
     | '/admin/clients'
     | '/admin/cms'
@@ -507,6 +526,7 @@ export interface FileRouteTypes {
     | '/student/profile'
     | '/student/progress'
     | '/student/resources'
+    | '/courses/$slug/checkout'
     | '/admin/'
     | '/admin/courses/$courseId'
     | '/student/courses/$slug'
@@ -535,6 +555,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/admin/login'
     | '/admin/signup'
+    | '/courses/$slug'
     | '/admin/bookings'
     | '/admin/clients'
     | '/admin/cms'
@@ -555,6 +576,7 @@ export interface FileRouteTypes {
     | '/student/profile'
     | '/student/progress'
     | '/student/resources'
+    | '/courses/$slug/checkout'
     | '/admin'
     | '/admin/courses/$courseId'
     | '/student/courses/$slug'
@@ -587,6 +609,7 @@ export interface FileRouteTypes {
     | '/_student/student'
     | '/admin/login'
     | '/admin/signup'
+    | '/courses/$slug'
     | '/_admin/admin/bookings'
     | '/_admin/admin/clients'
     | '/_admin/admin/cms'
@@ -607,6 +630,7 @@ export interface FileRouteTypes {
     | '/_student/student/profile'
     | '/_student/student/progress'
     | '/_student/student/resources'
+    | '/courses/$slug/checkout'
     | '/_admin/admin/'
     | '/_admin/admin/courses/$courseId'
     | '/_student/student/courses/$slug'
@@ -622,7 +646,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRoute
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
-  CoursesRoute: typeof CoursesRoute
+  CoursesRoute: typeof CoursesRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   EventsRoute: typeof EventsRoute
   FreeClassRoute: typeof FreeClassRoute
@@ -788,6 +812,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/courses/$slug': {
+      id: '/courses/$slug'
+      path: '/$slug'
+      fullPath: '/courses/$slug'
+      preLoaderRoute: typeof CoursesSlugRouteImport
+      parentRoute: typeof CoursesRoute
+    }
     '/admin/signup': {
       id: '/admin/signup'
       path: '/admin/signup'
@@ -829,6 +860,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminAdminIndexRouteImport
       parentRoute: typeof AdminAdminRoute
+    }
+    '/courses/$slug/checkout': {
+      id: '/courses/$slug/checkout'
+      path: '/checkout'
+      fullPath: '/courses/$slug/checkout'
+      preLoaderRoute: typeof CoursesSlugCheckoutRouteImport
+      parentRoute: typeof CoursesSlugRoute
     }
     '/_student/student/resources': {
       id: '/_student/student/resources'
@@ -1137,6 +1175,29 @@ const StudentRouteChildren: StudentRouteChildren = {
 const StudentRouteWithChildren =
   StudentRoute._addFileChildren(StudentRouteChildren)
 
+interface CoursesSlugRouteChildren {
+  CoursesSlugCheckoutRoute: typeof CoursesSlugCheckoutRoute
+}
+
+const CoursesSlugRouteChildren: CoursesSlugRouteChildren = {
+  CoursesSlugCheckoutRoute: CoursesSlugCheckoutRoute,
+}
+
+const CoursesSlugRouteWithChildren = CoursesSlugRoute._addFileChildren(
+  CoursesSlugRouteChildren,
+)
+
+interface CoursesRouteChildren {
+  CoursesSlugRoute: typeof CoursesSlugRouteWithChildren
+}
+
+const CoursesRouteChildren: CoursesRouteChildren = {
+  CoursesSlugRoute: CoursesSlugRouteWithChildren,
+}
+
+const CoursesRouteWithChildren =
+  CoursesRoute._addFileChildren(CoursesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
@@ -1146,7 +1207,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRoute,
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
-  CoursesRoute: CoursesRoute,
+  CoursesRoute: CoursesRouteWithChildren,
   DashboardRoute: DashboardRoute,
   EventsRoute: EventsRoute,
   FreeClassRoute: FreeClassRoute,
@@ -1165,13 +1226,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
