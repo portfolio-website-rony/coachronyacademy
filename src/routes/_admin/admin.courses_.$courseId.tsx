@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2, Save, ExternalLink } from "lucide-react";
 
-export const Route = createFileRoute("/_admin/admin/courses/$courseId")({
+export const Route = createFileRoute("/_admin/admin/courses_/$courseId")({
   head: () => ({ meta: [{ title: "Edit Course — Admin" }] }),
   component: CourseEditor,
 });
