@@ -49,17 +49,17 @@ function Programs() {
                 <div className="text-xs text-muted-foreground">Price</div>
                 <div className="text-2xl font-bold text-gradient">{p.price}</div>
               </div>
-              {p.href.startsWith("/courses/") ? (
+              {p.href.startsWith("/course/") ? (
                 <Link
-                  to="/courses/$slug"
-                  params={{ slug: p.href.replace("/courses/", "") }}
+                  to="/course/$slug"
+                  params={{ slug: p.href.replace("/course/", "") }}
                   className="rounded-xl bg-gradient-primary px-5 py-2.5 text-sm font-semibold text-background shadow-glow"
                 >
                   {p.cta}
                 </Link>
               ) : (
                 <Link
-                  to={p.href}
+                  to="/book"
                   className="rounded-xl bg-gradient-primary px-5 py-2.5 text-sm font-semibold text-background shadow-glow"
                 >
                   {p.cta}
