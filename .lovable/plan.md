@@ -1,39 +1,89 @@
-## Problems identified
 
-1. **Admin-added courses don't appear on `/courses`** — that page renders a hardcoded `PROGRAMS` array from `src/lib/site-data.ts` instead of querying the `courses` table.
-2. **No Free/Paid toggle** — pricing is just a number field; no explicit "Free course" option.
-3. **No cover image upload** — only a raw URL text input. The `cms-media` public storage bucket already exists, so we can upload there.
+# CoachRony Student Panel — Phased Implementation Plan
 
-## Plan
+PRD ta khub boro. Ek loop e sob korle quality nosto hobe + bug ashbe. Tai ami **6 phase** e bhag korlam. Prottek phase ekta alada loop e implement hobe. Tumi "next phase" bolle ami porer ta dhorbo.
 
-### 1. Make `/courses` (and `/programs`) show real DB courses
-- Rewrite `src/routes/courses.index.tsx` to fetch published rows from `courses` (title, slug, tagline, cover_url, price, discount_price, currency, level, category, duration_minutes).
-- Render a card grid linking each card to `/courses/$slug`. Show "Free" badge when `price === 0`, otherwise show price (with strike-through on discount).
-- Empty state if no published courses yet.
-- Keep the hero/section styling consistent with the existing site.
+Ekhon Phase 1 (Video Player Upgrade) — tomar choose kora priority — ta detail e nicche, baki phase summary.
 
-### 2. Add Free / Paid toggle in admin course editor
-In `src/routes/_admin/admin.courses_.$courseId.tsx`, inside the **Pricing & offer** card:
-- Add a "Pricing type" segmented control: **Free** vs **Paid**.
-- When "Free" selected → set `price = 0`, `discount_price = null`, hide price/discount/payment-method inputs.
-- When "Paid" selected → show price, discount, currency, offer-end, payment methods (current behavior).
+---
 
-### 3. Add cover image upload
-- Replace the "Cover image URL" text field with a combined uploader:
-  - Preview thumbnail (if `cover_url` set).
-  - "Upload image" button → `supabase.storage.from('cms-media').upload('course-covers/{courseId}-{timestamp}.{ext}', file)` → set `cover_url` to public URL.
-  - "Remove" button to clear.
-  - Keep an optional "Or paste URL" fallback for advanced users.
-- Same uploader pattern available for **instructor avatar** as a small bonus (using same bucket).
+## 🎯 Phase 1 — Video Player Upgrade (THIS LOOP)
 
-### 4. Small polish on admin courses list
-- After creating a new course, immediately mark it as a draft (current behavior) and navigate to editor (already happens). No DB schema change needed.
+**Files:** `src/components/learn/YouTubePlayer.tsx`, `src/routes/_student/student.courses.$slug.$lessonId.tsx`, new `lesson_notes` + `lesson_bookmarks` tables.
 
-## Technical notes
-- No DB migration required. `cms-media` bucket is already public; uploads work with current RLS (admin-only writes via existing storage policies if present — will verify and add policy if missing).
-- All edits are in three files:
-  - `src/routes/courses.index.tsx` (rewrite)
-  - `src/routes/_admin/admin.courses_.$courseId.tsx` (Pricing card + Cover/Avatar uploaders)
-  - Possibly add a small `<ImageUploader>` helper component in `src/components/admin/ImageUploader.tsx`.
+### Features
+1. **Speed control** (0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x) — YouTube API `setPlaybackRate`
+2. **Auto-play next lesson** — toggle, on `onStateChange = ENDED` → navigate to next lesson
+3. **Mark as completed** button — manual override (currently auto at 90%)
+4. **Lesson sidebar in player page** — collapsible list of all course lessons with progress check, current highlighted, click to switch
+5. **Notes while watching** — textarea below player, auto-saves per lesson per user, shows current timestamp button to insert `[02:35]`
+6. **Bookmark timestamps** — "Bookmark current time" button, list of bookmarks with title + jump-to-time
 
-Shall I proceed?
+### DB migration
+```
+lesson_notes (id, user_id, lesson_id, content, updated_at)  -- one per user/lesson
+lesson_bookmarks (id, user_id, lesson_id, seconds, label, created_at)
+```
+RLS: user can CRUD own rows only.
+
+### Player UI layout
+```text
+┌──────────────────────────┬──────────────┐
+│   YouTube Player         │  Lesson list │
+│                          │  ✓ Lesson 1  │
+├──────────────────────────┤  ▶ Lesson 2  │
+│ [1x▾] [Auto-next] [Done] │    Lesson 3  │
+├──────────────────────────┴──────────────┤
+│ Notes  |  Bookmarks                     │
+│ [textarea ............ insert @ 02:35]  │
+└─────────────────────────────────────────┘
+```
+
+---
+
+## 📋 Phase 2 — Profile + Verification + Notifications page
+- Profile picture upload (cms-media bucket), bio, social links (json on profiles)
+- Email verification badge (already verified via Supabase auth) + Phone OTP (defer or use simple flow)
+- Activity log page (table already exists)
+- `/student/notifications` page — list + mark read (table exists)
+- Sidebar bell badge (currently admin only) for student
+
+## 📋 Phase 3 — Learning Progress dashboard upgrade
+- Overall % across all enrollments
+- Weekly activity chart (lesson_progress.last_watched_at)
+- "Saved Lessons" page — new `lesson_saves` table
+- Continue learning card on `/student` overview
+
+## 📋 Phase 4 — Certificates
+- New `certificates` table (auto-issued on enrollment.completed_at)
+- PDF generator (server function with @react-pdf/renderer or html→pdf)
+- `/student/certificates` page — view/download/share link `/cert/<id>`
+- Public verification page
+
+## 📋 Phase 5 — Digital Products (Ebooks, Bundles, Workshops)
+Biggest phase. Notun schema:
+- `ebooks` (title, slug, cover, pdf_url, price)
+- `bundles` (title, items[])
+- `workshops` (title, schedule, replay_url)
+- `ebook_purchases`, `bundle_purchases`, `workshop_registrations`
+- Admin upload pages + Student `/student/ebooks`, `/student/bundles`, `/student/workshops`
+- "My Orders" page from payments table
+
+## 📋 Phase 6 — Polish & Future
+- Notification triggers (new lesson added → notify enrolled)
+- Mobile responsive audit
+- Admin manual enrollment UI (already partially exists)
+
+---
+
+## ⚠️ Out of scope (mentioned but deferred)
+- AI Learning Assistant chat
+- Gamification (badges, points)
+- Smart recommendations
+- Mobile app
+- Quiz / Assignments
+- Live class video integration (Zoom/Meet embed) — only links for now
+
+---
+
+**Approve hole ami Phase 1 (Video Player) start korbo. Phase 1 done hole tumi "next phase" bolle Phase 2 dhorbo.**
