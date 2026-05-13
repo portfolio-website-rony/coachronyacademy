@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Section, GlassCard } from "@/components/site/Section";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, formatDuration } from "@/lib/format";
-import { ArrowRight, Clock, GraduationCap, Sparkles, BarChart3 } from "lucide-react";
+import { ArrowRight, Clock, GraduationCap, Sparkles, BarChart3, Radio, PlayCircle } from "lucide-react";
 
 export const Route = createFileRoute("/courses/")({
   head: () => ({
@@ -30,6 +30,8 @@ type Course = {
   price: number;
   discount_price: number | null;
   currency: string;
+  course_type: "recorded" | "live" | null;
+  live_schedule: string | null;
 };
 
 function Courses() {
@@ -38,7 +40,7 @@ function Courses() {
   useEffect(() => {
     supabase
       .from("courses")
-      .select("id,title,slug,tagline,description,cover_url,level,category,duration_minutes,price,discount_price,currency")
+      .select("id,title,slug,tagline,description,cover_url,level,category,duration_minutes,price,discount_price,currency,course_type,live_schedule")
       .eq("published", true)
       .order("display_order")
       .order("created_at", { ascending: false })
@@ -82,12 +84,23 @@ function Courses() {
                         <GraduationCap className="h-12 w-12 text-primary-glow/60" />
                       </div>
                     )}
-                    <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
-                      {isFree ? (
-                        <span className="text-emerald-400">Free</span>
+                    <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
+                        {isFree ? (
+                          <span className="text-emerald-400">Free</span>
+                        ) : (
+                          <span className="text-primary-glow inline-flex items-center gap-1">
+                            <Sparkles className="h-3 w-3" /> Premium
+                          </span>
+                        )}
+                      </span>
+                      {c.course_type === "live" ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
+                          <Radio className="h-3 w-3" /> Live
+                        </span>
                       ) : (
-                        <span className="text-primary-glow inline-flex items-center gap-1">
-                          <Sparkles className="h-3 w-3" /> Premium
+                        <span className="inline-flex items-center gap-1 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground/80 backdrop-blur">
+                          <PlayCircle className="h-3 w-3" /> Recorded
                         </span>
                       )}
                     </div>
@@ -105,6 +118,11 @@ function Courses() {
                   </h3>
                   {c.tagline && (
                     <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{c.tagline}</p>
+                  )}
+                  {c.course_type === "live" && c.live_schedule && (
+                    <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-xs text-rose-300">
+                      <Radio className="h-3.5 w-3.5" /> {c.live_schedule}
+                    </div>
                   )}
                   <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
                     {c.duration_minutes > 0 && (

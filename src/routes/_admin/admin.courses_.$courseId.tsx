@@ -44,6 +44,9 @@ type Course = {
   payment_methods_enabled: PaymentMethods;
   display_order: number;
   published: boolean;
+  course_type: "recorded" | "live";
+  live_schedule: string | null;
+  live_join_url: string | null;
 };
 
 type Module = { id: string; title: string; display_order: number };
@@ -130,6 +133,9 @@ function CourseEditor() {
         payment_methods_enabled: course.payment_methods_enabled,
         display_order: course.display_order,
         published: course.published,
+        course_type: course.course_type,
+        live_schedule: course.live_schedule,
+        live_join_url: course.live_join_url,
       })
       .eq("id", course.id);
     setSaving(false);
@@ -317,6 +323,50 @@ function CourseEditor() {
             onChange={(v) => setCourse({ ...course, long_description: v })}
           />
         </Field>
+      </Card>
+
+      {/* Delivery type */}
+      <Card title="Delivery type">
+        <div className="inline-flex rounded-xl border border-white/10 bg-background/40 p-1 text-sm">
+          <button
+            type="button"
+            onClick={() => setCourse({ ...course, course_type: "recorded" })}
+            className={`rounded-lg px-4 py-1.5 font-semibold transition ${
+              course.course_type === "recorded"
+                ? "bg-primary/20 text-primary-glow"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🎬 Recorded
+          </button>
+          <button
+            type="button"
+            onClick={() => setCourse({ ...course, course_type: "live" })}
+            className={`rounded-lg px-4 py-1.5 font-semibold transition ${
+              course.course_type === "live"
+                ? "bg-rose-500/20 text-rose-300"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🔴 Live
+          </button>
+        </div>
+        {course.course_type === "live" && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Field label="Live schedule (e.g. Sat & Sun, 9pm BDT)">
+              <TextInput
+                value={course.live_schedule ?? ""}
+                onChange={(v) => setCourse({ ...course, live_schedule: v })}
+              />
+            </Field>
+            <Field label="Live join URL (Zoom / Meet)">
+              <TextInput
+                value={course.live_join_url ?? ""}
+                onChange={(v) => setCourse({ ...course, live_join_url: v })}
+              />
+            </Field>
+          </div>
+        )}
       </Card>
 
       {/* Pricing */}
