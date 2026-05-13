@@ -25,7 +25,7 @@ export const PROGRAMS = [
   {
     tag: "Masterclass", title: "AI Creator Masterclass",
     desc: "Content, video, monetization — A to Z framework।",
-    price: "৳ 1,499", cta: "Enroll Now", href: "/programs",
+    price: "৳ 1,499", cta: "Enroll Now", href: "/student/courses/ai-creator-masterclass",
     icon: GraduationCap,
   },
   {
