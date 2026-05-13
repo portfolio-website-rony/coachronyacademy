@@ -23,8 +23,10 @@ function StudentLayout() {
 
   useEffect(() => {
     if (loading) return;
-    if (!session) navigate({ to: "/login" });
-    else if (!isStudent && !isAdmin) navigate({ to: "/dashboard" });
+    if (!session) {
+      const returnTo = window.location.pathname + window.location.search;
+      navigate({ to: "/login", search: { returnTo } as any });
+    } else if (!isStudent && !isAdmin) navigate({ to: "/dashboard" });
   }, [loading, session, isStudent, isAdmin, navigate]);
 
   if (loading || !session) {

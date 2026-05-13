@@ -9,6 +9,13 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+function getReturnTo(): string | null {
+  if (typeof window === "undefined") return null;
+  const sp = new URLSearchParams(window.location.search);
+  const r = sp.get("returnTo");
+  return r && r.startsWith("/") ? r : null;
+}
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +24,11 @@ function LoginPage() {
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard" });
+      if (data.session) {
+        const r = getReturnTo();
+        if (r) window.location.href = r;
+        else navigate({ to: "/dashboard" });
+      }
     });
   }, [navigate]);
 
@@ -31,7 +42,9 @@ function LoginPage() {
       return;
     }
     toast.success("Welcome back");
-    navigate({ to: "/dashboard" });
+    const r = getReturnTo();
+    if (r) window.location.href = r;
+    else navigate({ to: "/dashboard" });
   }
 
   return (
