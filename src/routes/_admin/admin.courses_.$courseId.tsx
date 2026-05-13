@@ -288,9 +288,6 @@ function CourseEditor() {
               onChange={(v) => setCourse({ ...course, display_order: v })}
             />
           </Field>
-          <Field label="Cover image URL">
-            <TextInput value={course.cover_url ?? ""} onChange={(v) => setCourse({ ...course, cover_url: v })} />
-          </Field>
           <Field label="Promo video URL (YouTube)">
             <TextInput
               value={course.promo_video_url ?? ""}
@@ -298,6 +295,14 @@ function CourseEditor() {
             />
           </Field>
         </div>
+        <Field label="Cover image">
+          <ImageUploader
+            value={course.cover_url}
+            onChange={(url) => setCourse({ ...course, cover_url: url })}
+            folder={`course-covers/${course.id}`}
+            aspect="video"
+          />
+        </Field>
         <Field label="Short description">
           <Textarea
             rows={2}
