@@ -43,7 +43,7 @@ function Home() {
       <Section
         eyebrow="About"
         title={<>আমি কে — <span className="text-gradient">CoachRony</span></>}
-        subtitle="AI দিয়ে creators ও entrepreneurs-দের জন্য শেখা ও earning সহজ করে দিচ্ছি।"
+        subtitle="আমি CoachRony — AI Content Creation, Website Design, Vibe Coding এবং Digital Business Setup নিয়ে কাজ করি। AI এবং Modern Technology ব্যবহার করে মানুষকে Skill, Brand এবং Online Income তৈরি করতে সাহায্য করছি।"
       >
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {SKILLS.map((s) => (
