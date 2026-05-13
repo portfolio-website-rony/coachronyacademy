@@ -1,133 +1,77 @@
 ## Goal
+Transform the CoachRony admin panel into a fully functional, realtime, production-ready management system backed by Lovable Cloud. The dashboard, charts, and table-pages already query Supabase, but most pages are read-only listings without CRUD modals, realtime updates, filtering, exports, or notifications. This plan fills those gaps in focused phases.
 
-CoachRony-এ একটা complete multi-role platform বানানো — public users register/login করতে পারবে, signup-এ account type (Student / Client) choose করবে, এবং role অনুযায়ী আলাদা premium dashboard পাবে। Admin dashboard আগে থেকেই আছে — সেটা enhance হবে। সব কিছুতে glassmorphism, dark theme, responsive layout এবং realtime updates।
+## Current state (verified)
+- Dashboard `/admin` already pulls live stats + 30-day revenue + lead-source pie from Supabase.
+- All admin pages exist (`leads`, `bookings`, `meetings`, `clients`, `payments`, `cms`, `settings`) but are mostly read tables.
+- DB schema is in place: `leads`, `lead_notes`, `bookings`, `clients`, `payments`, `cms_*`, `notifications`, `activity_log`, `profiles`, `user_roles`, plus storage buckets `cms-media` (public) and `payment-screenshots` (private). RLS is set up correctly.
+- Auth, role guards, and admin redirect already work.
 
-কাজটা বড়, তাই **৪টা phase**-এ ভাগ করেছি যাতে প্রতিটা step approve করে এগোতে পারো। এই plan-এ Phase 1 এর full detail + Phase 2-4 এর outline দিলাম।
+## What's missing (the actual scope)
+1. **Realtime** subscriptions on `leads`, `bookings`, `payments`, `notifications`.
+2. **CRUD modals/drawers** for every entity (create/edit/delete + status change).
+3. **Search, filter, status tabs, pagination, CSV export** on leads/bookings/clients/payments.
+4. **Lead detail drawer**: notes timeline (`lead_notes`), tags, status pipeline, convert→client.
+5. **Booking detail**: reschedule, cancel, complete, attach meeting link, link to client.
+6. **Meetings page**: countdown, "Join" button (Google Meet/Zoom URL), session notes, recording URL field.
+7. **Clients CRM**: profile drawer with tabs (Bookings · Payments · Notes · Tags · Activity).
+8. **Payments**: create payment, mark paid, upload proof to `payment-screenshots`, signed-URL preview, revenue chart per method.
+9. **CMS editor**: forms for `cms_programs`, `cms_services`, `cms_blog_posts`, `cms_portfolio`, `cms_testimonials`, `cms_site_settings`. Image upload to `cms-media`. Markdown editor for blog content. Draft/publish toggle, slug, SEO fields (title/description) stored in `cms_site_settings` per page.
+9. **Notifications** bell in admin header: unread count, dropdown list, mark-read, realtime new-notification toast. DB triggers to auto-insert notifications when a `lead`/`booking`/`payment` row is created.
+10. **Analytics** tab on dashboard: bookings-per-day bar, conversion funnel (leads→booked→converted), revenue by method, user growth from `profiles.created_at`.
+11. **Activity log** writes on every admin mutation (use existing `activity_log` table).
+12. **UX polish**: skeleton loaders, empty states everywhere, sonner toasts on every mutation, animated stat counters, mobile sidebar already exists.
 
----
+## Database changes (one migration)
+- `bookings`: add `rescheduled_from uuid`, `cancelled_reason text`.
+- Triggers: `notify_admin_on_new_lead`, `notify_admin_on_new_booking`, `notify_admin_on_new_payment` — insert one row into `notifications` for every admin user.
+- Trigger `set_updated_at` on tables missing it (clients, cms_*, payments).
+- Enable Realtime publication on: `leads`, `bookings`, `payments`, `notifications`, `lead_notes`.
+- (Optional) View `admin_dashboard_stats` for a single fast stats query.
 
-## Phase 1 — Auth foundation + role system (এই plan approve করলে শুরু)
+## Frontend architecture
+- New folder `src/components/admin/` for shared pieces:
+  - `DataTable.tsx` (sortable, paginated, with search + status filter chips)
+  - `StatusBadge.tsx`, `EmptyState.tsx`, `Skeleton.tsx`, `ConfirmDialog.tsx`
+  - `LeadDrawer.tsx`, `BookingDrawer.tsx`, `ClientDrawer.tsx`, `PaymentDialog.tsx`
+  - `NotificationBell.tsx` (in `AdminShell` header)
+  - `RichEditor.tsx` (lightweight markdown via `react-markdown` + textarea, no heavy deps)
+  - `ImageUploader.tsx` (uploads to `cms-media` / `payment-screenshots`)
+- Shared hooks `src/lib/admin/`:
+  - `use-realtime-table.ts` — generic realtime list hook (`postgres_changes` + React Query cache invalidation)
+  - `use-stats.ts` — dashboard stats with realtime invalidation
+  - `use-notifications.ts`
+  - `use-csv-export.ts`
+- Adopt **TanStack Query** (already in project) for caching + invalidation across pages.
 
-### 1.1 Database migration
+## Phased delivery
+**Phase 1 — Foundations (this turn after approval)**
+- DB migration (triggers, realtime publication, columns).
+- React Query provider wired in `__root.tsx`.
+- Shared `DataTable`, `EmptyState`, `Skeleton`, `StatusBadge`, `ConfirmDialog`.
+- Realtime hook + dashboard auto-refresh.
+- Notification bell in `AdminShell` header.
 
-**Extend `app_role` enum** — `student` ও `client` যোগ:
-```sql
-ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'student';
-ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'client';
-```
+**Phase 2 — Leads & Bookings**
+- Leads: search/filter/tabs, drawer with notes + tags + status pipeline + convert-to-client + CSV export.
+- Bookings: calendar + list view, reschedule/cancel/complete, attach meet link.
 
-**নতুন `profiles` table** (auth.users-এর সাথে linked, কিন্তু FK ছাড়া per Lovable rules):
-- `id uuid PK` = `auth.users.id`
-- `display_name text`, `avatar_url text`, `phone text`, `whatsapp text`, `bio text`
-- `account_type text` (student | client) — signup-এ choose করা value
-- `onboarded bool default false`
-- standard `created_at`, `updated_at`
+**Phase 3 — Meetings, Clients, Payments**
+- Meetings: today/upcoming/past tabs, countdown, join button, notes & recording.
+- Clients CRM drawer with tabbed history.
+- Payments: create/mark-paid, screenshot upload + signed URL preview, method analytics.
 
-**নতুন `notifications` table**:
-- `id, user_id, type, title, body, link, read bool, created_at`
-- Realtime publication-এ যোগ হবে
+**Phase 4 — CMS & Settings**
+- CMS forms for all five content tables + site-settings (hero, contact, social, SEO).
+- Settings: profile, password change, manage admins (assign role).
 
-**নতুন `activity_log` table**:
-- `id, user_id, action, metadata jsonb, created_at`
+**Phase 5 — Polish**
+- Skeletons, animated counters, additional analytics charts, activity log inserts.
 
-**Trigger**: `on_auth_user_created` → auto-create profile row + assign default role (signup form-এর `account_type` থেকে)। Admin bootstrap trigger অপরিবর্তিত।
+## Out of scope (call out explicitly)
+- Real Stripe / bKash / Nagad / SSLCommerz payment processing — only manual entry + proof upload. (Can be added later via Lovable's built-in Stripe payments or a webhook route.)
+- Native Google Meet / Zoom API integration — we just store and open the meeting link the admin pastes in.
+- Email/SMS sending for notifications — in-app only for now.
 
-**RLS policies**:
-- `profiles`: user নিজের row read/update করতে পারবে; admin সব করতে পারবে।
-- `notifications`: user শুধু নিজের notification দেখবে/mark-read করবে; admin/system insert করবে।
-- `activity_log`: user নিজেরটা read; admin সব দেখবে।
-
-**Realtime enable** — `notifications` ও `activity_log` table `supabase_realtime` publication-এ যোগ।
-
-### 1.2 Auth pages (public)
-
-নতুন route files:
-- `src/routes/login.tsx` — Email/password + Google sign-in (Lovable managed OAuth, `lovable.auth.signInWithOAuth("google", ...)`). Login সফল → `/dashboard` redirect।
-- `src/routes/signup.tsx` — name + email + password + **account type selector** (Student / Client card-style toggle) + Google option। Signup সফল → email confirm prompt → login।
-- `src/routes/forgot-password.tsx` + `src/routes/reset-password.tsx` — standard flow।
-- `src/routes/dashboard.tsx` — role-aware redirect: admin → `/admin`, student → `/student`, client → `/client`।
-
-Auto-confirm email — **off** (default), user email verify করে login করবে।
-
-### 1.3 Header update
-
-`src/components/site/Header.tsx`-এ:
-- Logged-out: existing "Book a Call" + নতুন "Login" link।
-- Logged-in: avatar dropdown → Dashboard, Profile, Logout।
-- `useAuthUser()` hook দিয়ে session detect হবে।
-
-### 1.4 Shared building blocks
-
-- `src/lib/auth/use-auth-user.ts` — session + profile + role(s) hook (existing `useAdmin` pattern follow করে)।
-- `src/lib/auth/role-guard.tsx` — `_student.tsx`, `_client.tsx` layout route-এ ব্যবহার হবে।
-- `src/components/dashboard/DashboardShell.tsx` — reusable glassmorphism shell (sidebar + topbar + notification bell + AI assistant launcher) যেটা Student/Client/Admin তিনটাই use করবে variant হিসেবে।
-
----
-
-## Phase 2 — Student Dashboard (`/student/*`)
-
-Routes (`src/routes/_student/`):
-- `student.tsx` — overview: enrolled courses count, progress %, upcoming events, latest notifications।
-- `student.courses.tsx` — enrolled courses list, continue learning card।
-- `student.progress.tsx` — module-wise progress bars, completion certificates।
-- `student.community.tsx` — discussion feed (simple posts table)।
-- `student.resources.tsx` — downloadable PDFs/links curated by admin।
-- `student.profile.tsx` — edit profile।
-
-DB additions: `course_enrollments`, `course_progress`, `community_posts`, `resources` tables (RLS: student নিজেরটা; admin সব)।
-
----
-
-## Phase 3 — Client Dashboard (`/client/*`)
-
-Routes (`src/routes/_client/`):
-- `client.tsx` — overview: active projects, upcoming meetings, payment due।
-- `client.projects.tsx` — project list with status (existing `cms_portfolio`-এর সাথে link), milestones।
-- `client.meetings.tsx` — upcoming/past bookings (existing `bookings` table থেকে, client_id দিয়ে filter), join meeting link।
-- `client.payments.tsx` — invoice/payment history (existing `payments` table)।
-- `client.messages.tsx` — admin-client thread (নতুন `messages` table)।
-
-DB additions: `projects` table (client_id সহ), `messages` table। Existing `bookings`/`payments` RLS update — client নিজের row select করতে পারবে।
-
----
-
-## Phase 4 — Admin enhancements + cross-cutting features
-
-- **Admin** এ নতুন pages: `admin.users.tsx` (all auth users + role assign), `admin.analytics.tsx` (charts), `admin.notifications.tsx` (broadcast)।
-- **Notification bell** — সব dashboard-এ realtime unread count + dropdown।
-- **Calendar widget** — Student/Client/Admin overview-এ upcoming events/meetings (FullCalendar-lite custom component)।
-- **AI assistant** — floating launcher → side drawer chat, Lovable AI Gateway (`google/gemini-2.5-flash`) দিয়ে context-aware reply (current page + role পাঠাবে)। Server function `src/lib/ai/assistant.functions.ts`।
-- **Activity tracking** — major actions-এ `activity_log` insert (server fn helper)।
-- **Animations** — framer-motion দিয়ে page transitions, card hover, sidebar slide।
-- **Mobile** — সব dashboard sidebar collapsible, bottom-tab fallback।
-
----
-
-## Technical notes
-
-- Auth: Supabase email/password + Lovable managed Google OAuth (`@/integrations/lovable`)। GitHub/অন্য provider না।
-- Role check: `has_role()` security definer function (already exists) — recursion-safe।
-- Server-side queries: `createServerFn` + `requireSupabaseAuth` middleware। Loaders-এ direct DB query না।
-- Realtime: `supabase.channel().on('postgres_changes', ...)` notifications + dashboard counters-এ।
-- Design tokens: existing `src/styles.css` এর glassmorphism, gradient-primary, shadow-glow reuse। নতুন color hardcode না।
-- `routeTree.gen.ts` auto-generated — touch করব না।
-
----
-
-## Out of scope (এই multi-phase plan-এ)
-
-- Course video player / LMS player (course list + progress শুধু)।
-- Payment gateway integration (Lovable Stripe/Paddle আলাদা decision)।
-- Email templates customization (default Supabase emails)।
-- Mobile native app।
-
----
-
-## আপনার কাছে questions
-
-1. **Account types** — Student + Client দুইটাই ঠিক, নাকি আরো (mentor, affiliate ইত্যাদি) লাগবে?
-2. **Phase order** — Phase 1 (auth foundation) এখন approve করি, তারপর একটা একটা করে Phase 2 → 3 → 4 এগোবো? নাকি সব একসাথে চান (অনেক বড় হবে, error risk বেশি)?
-3. **Google sign-in** — managed Google OAuth (Lovable Cloud default) ঠিক আছে, নাকি শুধু email/password?
-4. **AI assistant** — Lovable AI Gateway-এর `gemini-2.5-flash` (free, fast) চালাবো — ঠিক?
-
-আপনি confirm করলেই Phase 1 (DB migration + auth pages + header) implement শুরু করব।
+## Confirmation needed
+The full scope is large (4–5 build turns). After you approve, I'll start with **Phase 1** (DB triggers + realtime + shared components + notifications bell + dashboard auto-refresh) so you can see the foundation working end-to-end, then continue phase by phase.

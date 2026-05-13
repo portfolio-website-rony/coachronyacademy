@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtime } from "@/lib/admin/use-realtime";
 import { StatCard } from "@/components/admin/AdminShell";
 import {
   Users,
@@ -48,6 +49,8 @@ function Dashboard() {
   useEffect(() => {
     void load();
   }, []);
+
+  useRealtime(["leads", "bookings", "payments", "clients"], () => void load());
 
   async function load() {
     const today = startOfDay(new Date()).toISOString().split("T")[0];

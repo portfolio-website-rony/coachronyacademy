@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Plus, MessageCircle, Mail, Trash2 } from "lucide-react";
+import { useRealtime } from "@/lib/admin/use-realtime";
 
 export const Route = createFileRoute("/_admin/admin/clients")({
   head: () => ({ meta: [{ title: "Clients — Admin" }] }),
@@ -28,6 +29,7 @@ function ClientsPage() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => { void load(); }, []);
+  useRealtime(["clients"], () => void load());
 
   async function load() {
     setLoading(true);

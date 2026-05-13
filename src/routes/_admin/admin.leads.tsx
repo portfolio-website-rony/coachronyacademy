@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { MessageCircle, Mail, Loader2, Download } from "lucide-react";
+import { MessageCircle, Mail, Loader2, Download, Eye } from "lucide-react";
+import { useRealtime } from "@/lib/admin/use-realtime";
+import { LeadDrawer } from "@/components/admin/LeadDrawer";
 
 export const Route = createFileRoute("/_admin/admin/leads")({
   head: () => ({ meta: [{ title: "Leads — Admin" }] }),
@@ -21,15 +23,18 @@ type Lead = {
   created_at: string;
 };
 
-const STATUSES = ["new", "contacted", "qualified", "converted", "lost"];
+const STATUSES = ["new", "contacted", "booked", "converted", "closed"];
 
 function LeadsPage() {
   const [rows, setRows] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => { void load(); }, []);
+  useRealtime(["leads", "lead_notes"], () => void load());
+
 
   async function load() {
     setLoading(true);
@@ -149,6 +154,13 @@ function LeadsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
+                        <button
+                          onClick={() => setActiveId(l.id)}
+                          className="grid h-8 w-8 place-items-center rounded-lg bg-white/10 hover:bg-white/15"
+                          title="Open"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </button>
                         {l.phone && (
                           <a
                             target="_blank"
@@ -181,6 +193,9 @@ function LeadsPage() {
           </div>
         )}
       </div>
+
+      <LeadDrawer leadId={activeId} onClose={() => setActiveId(null)} onChanged={() => void load()} />
     </div>
   );
 }
+

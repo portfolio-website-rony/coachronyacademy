@@ -40,6 +40,7 @@ export type Database = {
       }
       bookings: {
         Row: {
+          cancelled_reason: string | null
           client_id: string | null
           completed_at: string | null
           created_at: string
@@ -54,11 +55,13 @@ export type Database = {
           preferred_date: string
           preferred_time: string
           recording_url: string | null
+          rescheduled_from: string | null
           session_notes: string | null
           status: string
           topic: string | null
         }
         Insert: {
+          cancelled_reason?: string | null
           client_id?: string | null
           completed_at?: string | null
           created_at?: string
@@ -73,11 +76,13 @@ export type Database = {
           preferred_date: string
           preferred_time: string
           recording_url?: string | null
+          rescheduled_from?: string | null
           session_notes?: string | null
           status?: string
           topic?: string | null
         }
         Update: {
+          cancelled_reason?: string | null
           client_id?: string | null
           completed_at?: string | null
           created_at?: string
@@ -92,6 +97,7 @@ export type Database = {
           preferred_date?: string
           preferred_time?: string
           recording_url?: string | null
+          rescheduled_from?: string | null
           session_notes?: string | null
           status?: string
           topic?: string | null
@@ -628,6 +634,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      notify_admins: {
+        Args: { _body: string; _link: string; _title: string; _type: string }
+        Returns: undefined
       }
     }
     Enums: {

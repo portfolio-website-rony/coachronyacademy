@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Video, Copy, Check } from "lucide-react";
+import { useRealtime } from "@/lib/admin/use-realtime";
 
 export const Route = createFileRoute("/_admin/admin/meetings")({
   head: () => ({ meta: [{ title: "Meetings — Admin" }] }),
@@ -28,6 +29,7 @@ function MeetingsPage() {
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({});
 
   useEffect(() => { void load(); }, []);
+  useRealtime(["bookings"], () => void load());
 
   async function load() {
     setLoading(true);

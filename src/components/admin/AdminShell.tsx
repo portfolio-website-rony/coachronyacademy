@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { NotificationBell } from "@/components/admin/NotificationBell";
 
 const NAV: Array<{
   to: string;
@@ -104,6 +105,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             CoachRony Admin Panel
           </div>
           <div className="flex items-center gap-3">
+            <NotificationBell />
             <Link to="/" className="text-xs text-muted-foreground hover:text-foreground">
               ← View site
             </Link>
