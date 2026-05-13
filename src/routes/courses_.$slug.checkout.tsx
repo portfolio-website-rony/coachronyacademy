@@ -9,7 +9,7 @@ import {
   Smartphone, CreditCard, ShieldCheck, Sparkles,
 } from "lucide-react";
 
-export const Route = createFileRoute("/courses/$slug/checkout")({
+export const Route = createFileRoute("/courses_/$slug/checkout")({
   head: () => ({ meta: [{ title: "Checkout — CoachRony" }] }),
   component: CheckoutPage,
 });
