@@ -26,11 +26,25 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as StudentRouteImport } from './routes/_student'
+import { Route as ClientRouteImport } from './routes/_client'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminSignupRouteImport } from './routes/admin.signup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as StudentStudentRouteImport } from './routes/_student/student'
+import { Route as ClientClientRouteImport } from './routes/_client/client'
 import { Route as AdminAdminRouteImport } from './routes/_admin/admin'
+import { Route as StudentStudentResourcesRouteImport } from './routes/_student/student.resources'
+import { Route as StudentStudentProgressRouteImport } from './routes/_student/student.progress'
+import { Route as StudentStudentProfileRouteImport } from './routes/_student/student.profile'
+import { Route as StudentStudentCoursesRouteImport } from './routes/_student/student.courses'
+import { Route as StudentStudentCommunityRouteImport } from './routes/_student/student.community'
+import { Route as ClientClientProjectsRouteImport } from './routes/_client/client.projects'
+import { Route as ClientClientProfileRouteImport } from './routes/_client/client.profile'
+import { Route as ClientClientPaymentsRouteImport } from './routes/_client/client.payments'
+import { Route as ClientClientMessagesRouteImport } from './routes/_client/client.messages'
+import { Route as ClientClientMeetingsRouteImport } from './routes/_client/client.meetings'
 import { Route as AdminAdminSettingsRouteImport } from './routes/_admin/admin.settings'
 import { Route as AdminAdminPaymentsRouteImport } from './routes/_admin/admin.payments'
 import { Route as AdminAdminMeetingsRouteImport } from './routes/_admin/admin.meetings'
@@ -124,6 +138,14 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentRoute = StudentRouteImport.update({
+  id: '/_student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientRoute = ClientRouteImport.update({
+  id: '/_client',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/_admin',
   getParentRoute: () => rootRouteImport,
@@ -143,10 +165,70 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentStudentRoute = StudentStudentRouteImport.update({
+  id: '/student',
+  path: '/student',
+  getParentRoute: () => StudentRoute,
+} as any)
+const ClientClientRoute = ClientClientRouteImport.update({
+  id: '/client',
+  path: '/client',
+  getParentRoute: () => ClientRoute,
+} as any)
 const AdminAdminRoute = AdminAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AdminRoute,
+} as any)
+const StudentStudentResourcesRoute = StudentStudentResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => StudentStudentRoute,
+} as any)
+const StudentStudentProgressRoute = StudentStudentProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => StudentStudentRoute,
+} as any)
+const StudentStudentProfileRoute = StudentStudentProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => StudentStudentRoute,
+} as any)
+const StudentStudentCoursesRoute = StudentStudentCoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => StudentStudentRoute,
+} as any)
+const StudentStudentCommunityRoute = StudentStudentCommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => StudentStudentRoute,
+} as any)
+const ClientClientProjectsRoute = ClientClientProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => ClientClientRoute,
+} as any)
+const ClientClientProfileRoute = ClientClientProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => ClientClientRoute,
+} as any)
+const ClientClientPaymentsRoute = ClientClientPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => ClientClientRoute,
+} as any)
+const ClientClientMessagesRoute = ClientClientMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => ClientClientRoute,
+} as any)
+const ClientClientMeetingsRoute = ClientClientMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => ClientClientRoute,
 } as any)
 const AdminAdminSettingsRoute = AdminAdminSettingsRouteImport.update({
   id: '/settings',
@@ -204,6 +286,8 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/admin': typeof AdminAdminRouteWithChildren
+  '/client': typeof ClientClientRouteWithChildren
+  '/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/admin/bookings': typeof AdminAdminBookingsRoute
@@ -213,6 +297,16 @@ export interface FileRoutesByFullPath {
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
+  '/client/meetings': typeof ClientClientMeetingsRoute
+  '/client/messages': typeof ClientClientMessagesRoute
+  '/client/payments': typeof ClientClientPaymentsRoute
+  '/client/profile': typeof ClientClientProfileRoute
+  '/client/projects': typeof ClientClientProjectsRoute
+  '/student/community': typeof StudentStudentCommunityRoute
+  '/student/courses': typeof StudentStudentCoursesRoute
+  '/student/profile': typeof StudentStudentProfileRoute
+  '/student/progress': typeof StudentStudentProgressRoute
+  '/student/resources': typeof StudentStudentResourcesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -234,6 +328,8 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/admin': typeof AdminAdminRouteWithChildren
+  '/client': typeof ClientClientRouteWithChildren
+  '/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/admin/bookings': typeof AdminAdminBookingsRoute
@@ -243,11 +339,23 @@ export interface FileRoutesByTo {
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
+  '/client/meetings': typeof ClientClientMeetingsRoute
+  '/client/messages': typeof ClientClientMessagesRoute
+  '/client/payments': typeof ClientClientPaymentsRoute
+  '/client/profile': typeof ClientClientProfileRoute
+  '/client/projects': typeof ClientClientProjectsRoute
+  '/student/community': typeof StudentStudentCommunityRoute
+  '/student/courses': typeof StudentStudentCoursesRoute
+  '/student/profile': typeof StudentStudentProfileRoute
+  '/student/progress': typeof StudentStudentProgressRoute
+  '/student/resources': typeof StudentStudentResourcesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_admin': typeof AdminRouteWithChildren
+  '/_client': typeof ClientRouteWithChildren
+  '/_student': typeof StudentRouteWithChildren
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
   '/book': typeof BookRoute
@@ -266,6 +374,8 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/_admin/admin': typeof AdminAdminRouteWithChildren
+  '/_client/client': typeof ClientClientRouteWithChildren
+  '/_student/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/_admin/admin/bookings': typeof AdminAdminBookingsRoute
@@ -275,6 +385,16 @@ export interface FileRoutesById {
   '/_admin/admin/meetings': typeof AdminAdminMeetingsRoute
   '/_admin/admin/payments': typeof AdminAdminPaymentsRoute
   '/_admin/admin/settings': typeof AdminAdminSettingsRoute
+  '/_client/client/meetings': typeof ClientClientMeetingsRoute
+  '/_client/client/messages': typeof ClientClientMessagesRoute
+  '/_client/client/payments': typeof ClientClientPaymentsRoute
+  '/_client/client/profile': typeof ClientClientProfileRoute
+  '/_client/client/projects': typeof ClientClientProjectsRoute
+  '/_student/student/community': typeof StudentStudentCommunityRoute
+  '/_student/student/courses': typeof StudentStudentCoursesRoute
+  '/_student/student/profile': typeof StudentStudentProfileRoute
+  '/_student/student/progress': typeof StudentStudentProgressRoute
+  '/_student/student/resources': typeof StudentStudentResourcesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -298,6 +418,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/thank-you'
     | '/admin'
+    | '/client'
+    | '/student'
     | '/admin/login'
     | '/admin/signup'
     | '/admin/bookings'
@@ -307,6 +429,16 @@ export interface FileRouteTypes {
     | '/admin/meetings'
     | '/admin/payments'
     | '/admin/settings'
+    | '/client/meetings'
+    | '/client/messages'
+    | '/client/payments'
+    | '/client/profile'
+    | '/client/projects'
+    | '/student/community'
+    | '/student/courses'
+    | '/student/profile'
+    | '/student/progress'
+    | '/student/resources'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -328,6 +460,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/thank-you'
     | '/admin'
+    | '/client'
+    | '/student'
     | '/admin/login'
     | '/admin/signup'
     | '/admin/bookings'
@@ -337,10 +471,22 @@ export interface FileRouteTypes {
     | '/admin/meetings'
     | '/admin/payments'
     | '/admin/settings'
+    | '/client/meetings'
+    | '/client/messages'
+    | '/client/payments'
+    | '/client/profile'
+    | '/client/projects'
+    | '/student/community'
+    | '/student/courses'
+    | '/student/profile'
+    | '/student/progress'
+    | '/student/resources'
   id:
     | '__root__'
     | '/'
     | '/_admin'
+    | '/_client'
+    | '/_student'
     | '/about'
     | '/blog'
     | '/book'
@@ -359,6 +505,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/thank-you'
     | '/_admin/admin'
+    | '/_client/client'
+    | '/_student/student'
     | '/admin/login'
     | '/admin/signup'
     | '/_admin/admin/bookings'
@@ -368,11 +516,23 @@ export interface FileRouteTypes {
     | '/_admin/admin/meetings'
     | '/_admin/admin/payments'
     | '/_admin/admin/settings'
+    | '/_client/client/meetings'
+    | '/_client/client/messages'
+    | '/_client/client/payments'
+    | '/_client/client/profile'
+    | '/_client/client/projects'
+    | '/_student/student/community'
+    | '/_student/student/courses'
+    | '/_student/student/profile'
+    | '/_student/student/progress'
+    | '/_student/student/resources'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  ClientRoute: typeof ClientRouteWithChildren
+  StudentRoute: typeof StudentRouteWithChildren
   AboutRoute: typeof AboutRoute
   BlogRoute: typeof BlogRoute
   BookRoute: typeof BookRoute
@@ -515,6 +675,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_student': {
+      id: '/_student'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_client': {
+      id: '/_client'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_admin': {
       id: '/_admin'
       path: ''
@@ -543,12 +717,96 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_student/student': {
+      id: '/_student/student'
+      path: '/student'
+      fullPath: '/student'
+      preLoaderRoute: typeof StudentStudentRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/_client/client': {
+      id: '/_client/client'
+      path: '/client'
+      fullPath: '/client'
+      preLoaderRoute: typeof ClientClientRouteImport
+      parentRoute: typeof ClientRoute
+    }
     '/_admin/admin': {
       id: '/_admin/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminAdminRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/_student/student/resources': {
+      id: '/_student/student/resources'
+      path: '/resources'
+      fullPath: '/student/resources'
+      preLoaderRoute: typeof StudentStudentResourcesRouteImport
+      parentRoute: typeof StudentStudentRoute
+    }
+    '/_student/student/progress': {
+      id: '/_student/student/progress'
+      path: '/progress'
+      fullPath: '/student/progress'
+      preLoaderRoute: typeof StudentStudentProgressRouteImport
+      parentRoute: typeof StudentStudentRoute
+    }
+    '/_student/student/profile': {
+      id: '/_student/student/profile'
+      path: '/profile'
+      fullPath: '/student/profile'
+      preLoaderRoute: typeof StudentStudentProfileRouteImport
+      parentRoute: typeof StudentStudentRoute
+    }
+    '/_student/student/courses': {
+      id: '/_student/student/courses'
+      path: '/courses'
+      fullPath: '/student/courses'
+      preLoaderRoute: typeof StudentStudentCoursesRouteImport
+      parentRoute: typeof StudentStudentRoute
+    }
+    '/_student/student/community': {
+      id: '/_student/student/community'
+      path: '/community'
+      fullPath: '/student/community'
+      preLoaderRoute: typeof StudentStudentCommunityRouteImport
+      parentRoute: typeof StudentStudentRoute
+    }
+    '/_client/client/projects': {
+      id: '/_client/client/projects'
+      path: '/projects'
+      fullPath: '/client/projects'
+      preLoaderRoute: typeof ClientClientProjectsRouteImport
+      parentRoute: typeof ClientClientRoute
+    }
+    '/_client/client/profile': {
+      id: '/_client/client/profile'
+      path: '/profile'
+      fullPath: '/client/profile'
+      preLoaderRoute: typeof ClientClientProfileRouteImport
+      parentRoute: typeof ClientClientRoute
+    }
+    '/_client/client/payments': {
+      id: '/_client/client/payments'
+      path: '/payments'
+      fullPath: '/client/payments'
+      preLoaderRoute: typeof ClientClientPaymentsRouteImport
+      parentRoute: typeof ClientClientRoute
+    }
+    '/_client/client/messages': {
+      id: '/_client/client/messages'
+      path: '/messages'
+      fullPath: '/client/messages'
+      preLoaderRoute: typeof ClientClientMessagesRouteImport
+      parentRoute: typeof ClientClientRoute
+    }
+    '/_client/client/meetings': {
+      id: '/_client/client/meetings'
+      path: '/meetings'
+      fullPath: '/client/meetings'
+      preLoaderRoute: typeof ClientClientMeetingsRouteImport
+      parentRoute: typeof ClientClientRoute
     }
     '/_admin/admin/settings': {
       id: '/_admin/admin/settings'
@@ -636,9 +894,73 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface ClientClientRouteChildren {
+  ClientClientMeetingsRoute: typeof ClientClientMeetingsRoute
+  ClientClientMessagesRoute: typeof ClientClientMessagesRoute
+  ClientClientPaymentsRoute: typeof ClientClientPaymentsRoute
+  ClientClientProfileRoute: typeof ClientClientProfileRoute
+  ClientClientProjectsRoute: typeof ClientClientProjectsRoute
+}
+
+const ClientClientRouteChildren: ClientClientRouteChildren = {
+  ClientClientMeetingsRoute: ClientClientMeetingsRoute,
+  ClientClientMessagesRoute: ClientClientMessagesRoute,
+  ClientClientPaymentsRoute: ClientClientPaymentsRoute,
+  ClientClientProfileRoute: ClientClientProfileRoute,
+  ClientClientProjectsRoute: ClientClientProjectsRoute,
+}
+
+const ClientClientRouteWithChildren = ClientClientRoute._addFileChildren(
+  ClientClientRouteChildren,
+)
+
+interface ClientRouteChildren {
+  ClientClientRoute: typeof ClientClientRouteWithChildren
+}
+
+const ClientRouteChildren: ClientRouteChildren = {
+  ClientClientRoute: ClientClientRouteWithChildren,
+}
+
+const ClientRouteWithChildren =
+  ClientRoute._addFileChildren(ClientRouteChildren)
+
+interface StudentStudentRouteChildren {
+  StudentStudentCommunityRoute: typeof StudentStudentCommunityRoute
+  StudentStudentCoursesRoute: typeof StudentStudentCoursesRoute
+  StudentStudentProfileRoute: typeof StudentStudentProfileRoute
+  StudentStudentProgressRoute: typeof StudentStudentProgressRoute
+  StudentStudentResourcesRoute: typeof StudentStudentResourcesRoute
+}
+
+const StudentStudentRouteChildren: StudentStudentRouteChildren = {
+  StudentStudentCommunityRoute: StudentStudentCommunityRoute,
+  StudentStudentCoursesRoute: StudentStudentCoursesRoute,
+  StudentStudentProfileRoute: StudentStudentProfileRoute,
+  StudentStudentProgressRoute: StudentStudentProgressRoute,
+  StudentStudentResourcesRoute: StudentStudentResourcesRoute,
+}
+
+const StudentStudentRouteWithChildren = StudentStudentRoute._addFileChildren(
+  StudentStudentRouteChildren,
+)
+
+interface StudentRouteChildren {
+  StudentStudentRoute: typeof StudentStudentRouteWithChildren
+}
+
+const StudentRouteChildren: StudentRouteChildren = {
+  StudentStudentRoute: StudentStudentRouteWithChildren,
+}
+
+const StudentRouteWithChildren =
+  StudentRoute._addFileChildren(StudentRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  ClientRoute: ClientRouteWithChildren,
+  StudentRoute: StudentRouteWithChildren,
   AboutRoute: AboutRoute,
   BlogRoute: BlogRoute,
   BookRoute: BookRoute,

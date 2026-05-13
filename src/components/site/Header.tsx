@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard } from "lucide-react";
 import logo from "@/assets/logo-coachrony.png";
+import { useAuthUser } from "@/lib/auth/use-auth-user";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -13,6 +14,7 @@ const NAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const { session } = useAuthUser();
   return (
     <header className="sticky top-0 z-40 w-full">
       <div className="glass-strong border-b border-white/10">
@@ -35,7 +37,23 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="hidden lg:block">
+          <div className="hidden items-center gap-2 lg:flex">
+            {session ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-white/5"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-white/5"
+              >
+                Login
+              </Link>
+            )}
             <Link
               to="/book"
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow transition hover:opacity-90"
@@ -68,6 +86,23 @@ export function Header() {
                   {n.label}
                 </Link>
               ))}
+              {session ? (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold"
+                >
+                  Login
+                </Link>
+              )}
               <Link
                 to="/book"
                 onClick={() => setOpen(false)}
