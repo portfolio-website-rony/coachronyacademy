@@ -40,7 +40,13 @@ function SignupPage() {
       return;
     }
     toast.success("Account created. Check your email to confirm, then sign in.");
-    navigate({ to: "/login" });
+    const sp = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const returnTo = sp?.get("returnTo");
+    if (returnTo && returnTo.startsWith("/")) {
+      window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+    } else {
+      navigate({ to: "/login" });
+    }
   }
 
   return (
