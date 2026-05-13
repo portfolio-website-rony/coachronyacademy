@@ -789,6 +789,7 @@ export type Database = {
       courses: {
         Row: {
           category: string | null
+          course_type: string
           cover_url: string | null
           created_at: string
           currency: string
@@ -804,6 +805,8 @@ export type Database = {
           language: string
           learn_outcomes: string[]
           level: string
+          live_join_url: string | null
+          live_schedule: string | null
           long_description: string | null
           offer_ends_at: string | null
           payment_methods_enabled: Json
@@ -819,6 +822,7 @@ export type Database = {
         }
         Insert: {
           category?: string | null
+          course_type?: string
           cover_url?: string | null
           created_at?: string
           currency?: string
@@ -834,6 +838,8 @@ export type Database = {
           language?: string
           learn_outcomes?: string[]
           level?: string
+          live_join_url?: string | null
+          live_schedule?: string | null
           long_description?: string | null
           offer_ends_at?: string | null
           payment_methods_enabled?: Json
@@ -849,6 +855,7 @@ export type Database = {
         }
         Update: {
           category?: string | null
+          course_type?: string
           cover_url?: string | null
           created_at?: string
           currency?: string
@@ -864,6 +871,8 @@ export type Database = {
           language?: string
           learn_outcomes?: string[]
           level?: string
+          live_join_url?: string | null
+          live_schedule?: string | null
           long_description?: string | null
           offer_ends_at?: string | null
           payment_methods_enabled?: Json
