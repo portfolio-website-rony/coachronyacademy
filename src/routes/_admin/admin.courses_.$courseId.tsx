@@ -44,6 +44,9 @@ type Course = {
   payment_methods_enabled: PaymentMethods;
   display_order: number;
   published: boolean;
+  course_type: "recorded" | "live";
+  live_schedule: string | null;
+  live_join_url: string | null;
 };
 
 type Module = { id: string; title: string; display_order: number };
