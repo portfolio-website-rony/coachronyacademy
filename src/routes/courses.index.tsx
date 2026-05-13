@@ -30,6 +30,8 @@ type Course = {
   price: number;
   discount_price: number | null;
   currency: string;
+  course_type: "recorded" | "live" | null;
+  live_schedule: string | null;
 };
 
 function Courses() {
