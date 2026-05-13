@@ -407,17 +407,19 @@ function CourseEditor() {
 
       {/* Instructor */}
       <Card title="Instructor">
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
           <Field label="Instructor name">
             <TextInput
               value={course.instructor_name ?? ""}
               onChange={(v) => setCourse({ ...course, instructor_name: v })}
             />
           </Field>
-          <Field label="Instructor avatar URL">
-            <TextInput
-              value={course.instructor_avatar_url ?? ""}
-              onChange={(v) => setCourse({ ...course, instructor_avatar_url: v })}
+          <Field label="Instructor avatar">
+            <ImageUploader
+              value={course.instructor_avatar_url}
+              onChange={(url) => setCourse({ ...course, instructor_avatar_url: url })}
+              folder={`instructor-avatars/${course.id}`}
+              aspect="square"
             />
           </Field>
         </div>
