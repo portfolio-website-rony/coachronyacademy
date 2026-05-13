@@ -2,7 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { MessageCircle, Mail, Loader2, Download } from "lucide-react";
+import { MessageCircle, Mail, Loader2, Download, Eye } from "lucide-react";
+import { useRealtime } from "@/lib/admin/use-realtime";
+import { StatusBadge } from "@/components/admin/StatusBadge";
+import { LeadDrawer } from "@/components/admin/LeadDrawer";
 
 export const Route = createFileRoute("/_admin/admin/leads")({
   head: () => ({ meta: [{ title: "Leads — Admin" }] }),
@@ -21,15 +24,18 @@ type Lead = {
   created_at: string;
 };
 
-const STATUSES = ["new", "contacted", "qualified", "converted", "lost"];
+const STATUSES = ["new", "contacted", "booked", "converted", "closed"];
 
 function LeadsPage() {
   const [rows, setRows] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => { void load(); }, []);
+  useRealtime(["leads", "lead_notes"], () => void load());
+
 
   async function load() {
     setLoading(true);
