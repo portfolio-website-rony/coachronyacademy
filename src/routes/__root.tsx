@@ -105,16 +105,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isAdmin = pathname.startsWith("/admin");
+  const hideChrome =
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/student") ||
+    pathname.startsWith("/client") ||
+    pathname === "/dashboard";
   return (
     <QueryClientProvider client={queryClient}>
       <div className="relative flex min-h-screen flex-col">
-        {!isAdmin && <Header />}
+        {!hideChrome && <Header />}
         <main className="flex-1">
           <Outlet />
         </main>
-        {!isAdmin && <Footer />}
-        {!isAdmin && <FloatingActions />}
+        {!hideChrome && <Footer />}
+        {!hideChrome && <FloatingActions />}
         <Toaster position="top-center" theme="dark" richColors />
       </div>
     </QueryClientProvider>
