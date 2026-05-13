@@ -38,10 +38,6 @@ const NAV: Array<{
   { to: "/admin/payments", label: "Payments", icon: CreditCard },
   { to: "/admin/cms", label: "CMS", icon: FileText },
   { to: "/admin/settings", label: "Settings", icon: Settings },
-  { to: "/admin/clients", label: "Clients", icon: UserCircle2 },
-  { to: "/admin/payments", label: "Payments", icon: CreditCard },
-  { to: "/admin/cms", label: "CMS", icon: FileText },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {
