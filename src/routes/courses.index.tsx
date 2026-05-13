@@ -40,7 +40,7 @@ function Courses() {
   useEffect(() => {
     supabase
       .from("courses")
-      .select("id,title,slug,tagline,description,cover_url,level,category,duration_minutes,price,discount_price,currency")
+      .select("id,title,slug,tagline,description,cover_url,level,category,duration_minutes,price,discount_price,currency,course_type,live_schedule")
       .eq("published", true)
       .order("display_order")
       .order("created_at", { ascending: false })
