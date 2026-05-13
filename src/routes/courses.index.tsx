@@ -119,6 +119,11 @@ function Courses() {
                   {c.tagline && (
                     <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{c.tagline}</p>
                   )}
+                  {c.course_type === "live" && c.live_schedule && (
+                    <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-xs text-rose-300">
+                      <Radio className="h-3.5 w-3.5" /> {c.live_schedule}
+                    </div>
+                  )}
                   <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
                     {c.duration_minutes > 0 && (
                       <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {formatDuration(c.duration_minutes)}</span>
