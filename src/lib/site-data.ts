@@ -25,13 +25,13 @@ export const PROGRAMS = [
   {
     tag: "Masterclass", title: "AI Creator Masterclass",
     desc: "Content, video, monetization — A to Z framework।",
-    price: "৳ 1,499", cta: "Enroll Now", href: "/student/courses/ai-creator-masterclass",
+    price: "৳ 1,499", cta: "Enroll Now", href: "/courses/ai-creator-masterclass",
     icon: GraduationCap,
   },
   {
     tag: "Premium", title: "Vibe Coding Bootcamp",
     desc: "8 weeks live + projects। AI দিয়ে SaaS বানাও।",
-    price: "৳ 9,999", cta: "Apply", href: "/student/courses/vibe-coding-bootcamp",
+    price: "৳ 9,999", cta: "Apply", href: "/courses/vibe-coding-bootcamp",
     icon: Code2,
   },
   {
