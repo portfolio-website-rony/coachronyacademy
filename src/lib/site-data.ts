@@ -31,7 +31,7 @@ export const PROGRAMS = [
   {
     tag: "Premium", title: "Vibe Coding Bootcamp",
     desc: "8 weeks live + projects। AI দিয়ে SaaS বানাও।",
-    price: "৳ 9,999", cta: "Apply", href: "/programs",
+    price: "৳ 9,999", cta: "Apply", href: "/student/courses/vibe-coding-bootcamp",
     icon: Code2,
   },
   {
