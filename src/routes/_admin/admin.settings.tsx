@@ -35,7 +35,7 @@ function SettingsPage() {
 
   async function save() {
     setSaving(true);
-    const { error } = await supabase.from("cms_site_settings").upsert({ key: "contact", value: contact });
+    const { error } = await supabase.from("cms_site_settings").upsert({ key: "contact", value: contact }, { onConflict: "key" });
     setSaving(false);
     if (error) toast.error(error.message); else toast.success("Saved");
   }
