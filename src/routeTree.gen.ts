@@ -30,6 +30,7 @@ import { Route as StudentRouteImport } from './routes/_student'
 import { Route as ClientRouteImport } from './routes/_client'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoursesSlugRouteImport } from './routes/courses.$slug'
 import { Route as AdminSignupRouteImport } from './routes/admin.signup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as StudentStudentRouteImport } from './routes/_student/student'
@@ -161,6 +162,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesSlugRoute = CoursesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CoursesRoute,
 } as any)
 const AdminSignupRoute = AdminSignupRouteImport.update({
   id: '/admin/signup',
@@ -317,7 +323,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
+  '/courses': typeof CoursesRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
+  '/courses/$slug': typeof CoursesSlugRoute
   '/admin/bookings': typeof AdminAdminBookingsRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
@@ -366,7 +373,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
+  '/courses': typeof CoursesRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
@@ -383,6 +390,7 @@ export interface FileRoutesByTo {
   '/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
+  '/courses/$slug': typeof CoursesSlugRoute
   '/admin/bookings': typeof AdminAdminBookingsRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
@@ -418,7 +426,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRoute
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
+  '/courses': typeof CoursesRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
@@ -436,6 +444,7 @@ export interface FileRoutesById {
   '/_student/student': typeof StudentStudentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
+  '/courses/$slug': typeof CoursesSlugRoute
   '/_admin/admin/bookings': typeof AdminAdminBookingsRoute
   '/_admin/admin/clients': typeof AdminAdminClientsRoute
   '/_admin/admin/cms': typeof AdminAdminCmsRoute
@@ -487,6 +496,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/admin/login'
     | '/admin/signup'
+    | '/courses/$slug'
     | '/admin/bookings'
     | '/admin/clients'
     | '/admin/cms'
@@ -535,6 +545,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/admin/login'
     | '/admin/signup'
+    | '/courses/$slug'
     | '/admin/bookings'
     | '/admin/clients'
     | '/admin/cms'
@@ -587,6 +598,7 @@ export interface FileRouteTypes {
     | '/_student/student'
     | '/admin/login'
     | '/admin/signup'
+    | '/courses/$slug'
     | '/_admin/admin/bookings'
     | '/_admin/admin/clients'
     | '/_admin/admin/cms'
@@ -622,7 +634,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRoute
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
-  CoursesRoute: typeof CoursesRoute
+  CoursesRoute: typeof CoursesRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   EventsRoute: typeof EventsRoute
   FreeClassRoute: typeof FreeClassRoute
@@ -787,6 +799,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/courses/$slug': {
+      id: '/courses/$slug'
+      path: '/$slug'
+      fullPath: '/courses/$slug'
+      preLoaderRoute: typeof CoursesSlugRouteImport
+      parentRoute: typeof CoursesRoute
     }
     '/admin/signup': {
       id: '/admin/signup'
@@ -1137,6 +1156,17 @@ const StudentRouteChildren: StudentRouteChildren = {
 const StudentRouteWithChildren =
   StudentRoute._addFileChildren(StudentRouteChildren)
 
+interface CoursesRouteChildren {
+  CoursesSlugRoute: typeof CoursesSlugRoute
+}
+
+const CoursesRouteChildren: CoursesRouteChildren = {
+  CoursesSlugRoute: CoursesSlugRoute,
+}
+
+const CoursesRouteWithChildren =
+  CoursesRoute._addFileChildren(CoursesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
@@ -1146,7 +1176,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRoute,
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
-  CoursesRoute: CoursesRoute,
+  CoursesRoute: CoursesRouteWithChildren,
   DashboardRoute: DashboardRoute,
   EventsRoute: EventsRoute,
   FreeClassRoute: FreeClassRoute,
