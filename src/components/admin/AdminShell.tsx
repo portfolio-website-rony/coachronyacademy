@@ -13,6 +13,9 @@ import {
   Menu,
   X,
   Sparkles,
+  GraduationCap,
+  BookOpen,
+  MessageSquare,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -29,6 +32,9 @@ const NAV: Array<{
   { to: "/admin/bookings", label: "Bookings", icon: CalendarDays },
   { to: "/admin/meetings", label: "Meetings", icon: Video },
   { to: "/admin/clients", label: "Clients", icon: UserCircle2 },
+  { to: "/admin/courses", label: "Courses", icon: BookOpen },
+  { to: "/admin/students", label: "Students", icon: GraduationCap },
+  { to: "/admin/community", label: "Community", icon: MessageSquare },
   { to: "/admin/payments", label: "Payments", icon: CreditCard },
   { to: "/admin/cms", label: "CMS", icon: FileText },
   { to: "/admin/settings", label: "Settings", icon: Settings },
