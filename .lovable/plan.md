@@ -1,40 +1,39 @@
 ## Goal
-"Students ও clients বলছেন" সেকশনটাকে static 2-column grid থেকে **continuous auto-scrolling marquee** এ রূপান্তর করা — দুই row, একটা ডানে, একটা বামে, আস্তে আস্তে চলতে থাকবে।
+Hero-এ "AI", "Digital Products", "Future" — এই gradient lekha-গুলো এখন পেছনের glow shadow-এর কারণে faint/হালকা দেখাচ্ছে। একই color family রাখব, কিন্তু একটু deeper/darker করে দেব যাতে স্পষ্টভাবে read হয়।
 
-## Changes
+## Changes (visual only)
 
-### 1. `src/lib/site-data.ts`
-- `TESTIMONIALS` array কে ৪ → **8–10 entries** এ বাড়ানো হবে (smooth loop-এর জন্য বেশি কার্ড লাগবে), realistic Bengali quotes দিয়ে। প্রতিটার `name`, `role`, `quote` থাকবে।
+### `src/styles.css`
 
-### 2. `src/styles.css`
-নতুন keyframes এবং utility classes যোগ:
+**1. `--gradient-primary` (line 106) — gradient stops deeper করা**
+এখন: light orange → bright glow → light gold (lightness ~0.7–0.85)
+নতুন: একই hue range (orange/amber), কিন্তু lightness কমানো হবে ~0.55–0.65 এর মধ্যে এবং chroma একটু বাড়ানো — যাতে color burnt-orange / deep amber এর দিকে যায়, white-ish না থাকে।
+
 ```css
-@keyframes marquee-left  { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
-@keyframes marquee-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-.animate-marquee-left  { animation: marquee-left  60s linear infinite; }
-.animate-marquee-right { animation: marquee-right 60s linear infinite; }
-.marquee-mask { mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); }
-```
-Hover এ `[animation-play-state:paused]` (optional)।
-
-### 3. `src/routes/index.tsx` — TESTIMONIALS section
-2-col grid রিপ্লেস হবে দুটো marquee row দিয়ে:
-- **Row 1 (top)** — `animate-marquee-right` (ডান দিকে চলবে), TESTIMONIALS-এর প্রথম অর্ধেক, **2x duplicated** seamless loop-এর জন্য।
-- **Row 2 (bottom)** — `animate-marquee-left` (বাম দিকে চলবে), দ্বিতীয় অর্ধেক, একইভাবে duplicated।
-- Outer wrapper-এ `overflow-hidden marquee-mask` (edge fade)।
-- প্রতিটা card existing `GlassCard` styling রাখবে, fixed width `w-[320px] sm:w-[380px]` + `shrink-0`, gap `gap-5`।
-- `flex w-max` inner track যাতে animation translateX করে infinite মনে হয়।
-
-## Layout sketch
-```text
-┌─ overflow-hidden + edge fade mask ─────────────┐
-│  [card][card][card][card]... → (scrolls right) │
-│  [card][card][card][card]... ← (scrolls left)  │
-└────────────────────────────────────────────────┘
+--gradient-primary: linear-gradient(
+  135deg,
+  oklch(0.62 0.22 35) 0%,    /* deep orange */
+  oklch(0.58 0.20 30) 55%,   /* burnt orange mid */
+  oklch(0.55 0.16 50) 100%   /* dark amber */
+);
 ```
 
-## Notes
-- Pure CSS animation, no JS / no extra dependency।
-- Speed slow (~60s per loop) — user বলেছে "আস্তে আস্তে"।
-- Mobile-এ একই কাজ করবে; cards same width, smooth।
-- কোনো অন্য সেকশন বা business logic touch হচ্ছে না।
+**2. `.glow-text` (lines 208–212) — shadow সামান্য নরম করা**
+এখন shadow খুব bright (purple/blue glow), তাই deeper text-এর সাথে আরও balanced হবে যদি opacity একটু কমাই (55% → 35%, 35% → 20%) এবং blur একটু কমে। এতে glow থাকবে কিন্তু text-কে eat করবে না।
+
+```css
+.glow-text {
+  text-shadow:
+    0 0 18px oklch(0.78 0.2 290 / 35%),
+    0 0 36px oklch(0.68 0.2 240 / 20%);
+}
+```
+
+## Scope
+- শুধু `src/styles.css`-এর ২টা token edit।
+- কোনো component, layout, business logic touch হবে না।
+- `text-gradient` যেখানেই use হয়েছে (hero ছাড়াও about heading ইত্যাদি) সবগুলোই একই deeper tone পাবে — consistent থাকবে।
+
+## Out of scope
+- Font, size, layout — অপরিবর্তিত।
+- Glow-text class রিনেম বা remove — না।
