@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Section, GlassCard } from "@/components/site/Section";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, formatDuration } from "@/lib/format";
-import { ArrowRight, Clock, GraduationCap, Sparkles, BarChart3 } from "lucide-react";
+import { ArrowRight, Clock, GraduationCap, Sparkles, BarChart3, Radio, PlayCircle } from "lucide-react";
 
 export const Route = createFileRoute("/courses/")({
   head: () => ({
