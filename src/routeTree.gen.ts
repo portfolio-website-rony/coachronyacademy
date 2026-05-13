@@ -46,13 +46,17 @@ import { Route as ClientClientProfileRouteImport } from './routes/_client/client
 import { Route as ClientClientPaymentsRouteImport } from './routes/_client/client.payments'
 import { Route as ClientClientMessagesRouteImport } from './routes/_client/client.messages'
 import { Route as ClientClientMeetingsRouteImport } from './routes/_client/client.meetings'
+import { Route as AdminAdminStudentsRouteImport } from './routes/_admin/admin.students'
 import { Route as AdminAdminSettingsRouteImport } from './routes/_admin/admin.settings'
 import { Route as AdminAdminPaymentsRouteImport } from './routes/_admin/admin.payments'
 import { Route as AdminAdminMeetingsRouteImport } from './routes/_admin/admin.meetings'
 import { Route as AdminAdminLeadsRouteImport } from './routes/_admin/admin.leads'
+import { Route as AdminAdminCoursesRouteImport } from './routes/_admin/admin.courses'
+import { Route as AdminAdminCommunityRouteImport } from './routes/_admin/admin.community'
 import { Route as AdminAdminCmsRouteImport } from './routes/_admin/admin.cms'
 import { Route as AdminAdminClientsRouteImport } from './routes/_admin/admin.clients'
 import { Route as AdminAdminBookingsRouteImport } from './routes/_admin/admin.bookings'
+import { Route as AdminAdminCoursesCourseIdRouteImport } from './routes/_admin/admin.courses.$courseId'
 
 const ThankYouRoute = ThankYouRouteImport.update({
   id: '/thank-you',
@@ -236,6 +240,11 @@ const ClientClientMeetingsRoute = ClientClientMeetingsRouteImport.update({
   path: '/meetings',
   getParentRoute: () => ClientClientRoute,
 } as any)
+const AdminAdminStudentsRoute = AdminAdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminSettingsRoute = AdminAdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -256,6 +265,16 @@ const AdminAdminLeadsRoute = AdminAdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const AdminAdminCoursesRoute = AdminAdminCoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
+const AdminAdminCommunityRoute = AdminAdminCommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminCmsRoute = AdminAdminCmsRouteImport.update({
   id: '/cms',
   path: '/cms',
@@ -271,6 +290,12 @@ const AdminAdminBookingsRoute = AdminAdminBookingsRouteImport.update({
   path: '/bookings',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const AdminAdminCoursesCourseIdRoute =
+  AdminAdminCoursesCourseIdRouteImport.update({
+    id: '/$courseId',
+    path: '/$courseId',
+    getParentRoute: () => AdminAdminCoursesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -299,10 +324,13 @@ export interface FileRoutesByFullPath {
   '/admin/bookings': typeof AdminAdminBookingsRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
+  '/admin/community': typeof AdminAdminCommunityRoute
+  '/admin/courses': typeof AdminAdminCoursesRouteWithChildren
   '/admin/leads': typeof AdminAdminLeadsRoute
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
+  '/admin/students': typeof AdminAdminStudentsRoute
   '/client/meetings': typeof ClientClientMeetingsRoute
   '/client/messages': typeof ClientClientMessagesRoute
   '/client/payments': typeof ClientClientPaymentsRoute
@@ -314,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/student/progress': typeof StudentStudentProgressRoute
   '/student/resources': typeof StudentStudentResourcesRoute
   '/admin/': typeof AdminAdminIndexRoute
+  '/admin/courses/$courseId': typeof AdminAdminCoursesCourseIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -341,10 +370,13 @@ export interface FileRoutesByTo {
   '/admin/bookings': typeof AdminAdminBookingsRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
+  '/admin/community': typeof AdminAdminCommunityRoute
+  '/admin/courses': typeof AdminAdminCoursesRouteWithChildren
   '/admin/leads': typeof AdminAdminLeadsRoute
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
+  '/admin/students': typeof AdminAdminStudentsRoute
   '/client/meetings': typeof ClientClientMeetingsRoute
   '/client/messages': typeof ClientClientMessagesRoute
   '/client/payments': typeof ClientClientPaymentsRoute
@@ -356,6 +388,7 @@ export interface FileRoutesByTo {
   '/student/progress': typeof StudentStudentProgressRoute
   '/student/resources': typeof StudentStudentResourcesRoute
   '/admin': typeof AdminAdminIndexRoute
+  '/admin/courses/$courseId': typeof AdminAdminCoursesCourseIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -388,10 +421,13 @@ export interface FileRoutesById {
   '/_admin/admin/bookings': typeof AdminAdminBookingsRoute
   '/_admin/admin/clients': typeof AdminAdminClientsRoute
   '/_admin/admin/cms': typeof AdminAdminCmsRoute
+  '/_admin/admin/community': typeof AdminAdminCommunityRoute
+  '/_admin/admin/courses': typeof AdminAdminCoursesRouteWithChildren
   '/_admin/admin/leads': typeof AdminAdminLeadsRoute
   '/_admin/admin/meetings': typeof AdminAdminMeetingsRoute
   '/_admin/admin/payments': typeof AdminAdminPaymentsRoute
   '/_admin/admin/settings': typeof AdminAdminSettingsRoute
+  '/_admin/admin/students': typeof AdminAdminStudentsRoute
   '/_client/client/meetings': typeof ClientClientMeetingsRoute
   '/_client/client/messages': typeof ClientClientMessagesRoute
   '/_client/client/payments': typeof ClientClientPaymentsRoute
@@ -403,6 +439,7 @@ export interface FileRoutesById {
   '/_student/student/progress': typeof StudentStudentProgressRoute
   '/_student/student/resources': typeof StudentStudentResourcesRoute
   '/_admin/admin/': typeof AdminAdminIndexRoute
+  '/_admin/admin/courses/$courseId': typeof AdminAdminCoursesCourseIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -433,10 +470,13 @@ export interface FileRouteTypes {
     | '/admin/bookings'
     | '/admin/clients'
     | '/admin/cms'
+    | '/admin/community'
+    | '/admin/courses'
     | '/admin/leads'
     | '/admin/meetings'
     | '/admin/payments'
     | '/admin/settings'
+    | '/admin/students'
     | '/client/meetings'
     | '/client/messages'
     | '/client/payments'
@@ -448,6 +488,7 @@ export interface FileRouteTypes {
     | '/student/progress'
     | '/student/resources'
     | '/admin/'
+    | '/admin/courses/$courseId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -475,10 +516,13 @@ export interface FileRouteTypes {
     | '/admin/bookings'
     | '/admin/clients'
     | '/admin/cms'
+    | '/admin/community'
+    | '/admin/courses'
     | '/admin/leads'
     | '/admin/meetings'
     | '/admin/payments'
     | '/admin/settings'
+    | '/admin/students'
     | '/client/meetings'
     | '/client/messages'
     | '/client/payments'
@@ -490,6 +534,7 @@ export interface FileRouteTypes {
     | '/student/progress'
     | '/student/resources'
     | '/admin'
+    | '/admin/courses/$courseId'
   id:
     | '__root__'
     | '/'
@@ -521,10 +566,13 @@ export interface FileRouteTypes {
     | '/_admin/admin/bookings'
     | '/_admin/admin/clients'
     | '/_admin/admin/cms'
+    | '/_admin/admin/community'
+    | '/_admin/admin/courses'
     | '/_admin/admin/leads'
     | '/_admin/admin/meetings'
     | '/_admin/admin/payments'
     | '/_admin/admin/settings'
+    | '/_admin/admin/students'
     | '/_client/client/meetings'
     | '/_client/client/messages'
     | '/_client/client/payments'
@@ -536,6 +584,7 @@ export interface FileRouteTypes {
     | '/_student/student/progress'
     | '/_student/student/resources'
     | '/_admin/admin/'
+    | '/_admin/admin/courses/$courseId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -825,6 +874,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientClientMeetingsRouteImport
       parentRoute: typeof ClientClientRoute
     }
+    '/_admin/admin/students': {
+      id: '/_admin/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AdminAdminStudentsRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/settings': {
       id: '/_admin/admin/settings'
       path: '/settings'
@@ -853,6 +909,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminLeadsRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_admin/admin/courses': {
+      id: '/_admin/admin/courses'
+      path: '/courses'
+      fullPath: '/admin/courses'
+      preLoaderRoute: typeof AdminAdminCoursesRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
+    '/_admin/admin/community': {
+      id: '/_admin/admin/community'
+      path: '/community'
+      fullPath: '/admin/community'
+      preLoaderRoute: typeof AdminAdminCommunityRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/cms': {
       id: '/_admin/admin/cms'
       path: '/cms'
@@ -874,17 +944,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminBookingsRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_admin/admin/courses/$courseId': {
+      id: '/_admin/admin/courses/$courseId'
+      path: '/$courseId'
+      fullPath: '/admin/courses/$courseId'
+      preLoaderRoute: typeof AdminAdminCoursesCourseIdRouteImport
+      parentRoute: typeof AdminAdminCoursesRoute
+    }
   }
 }
+
+interface AdminAdminCoursesRouteChildren {
+  AdminAdminCoursesCourseIdRoute: typeof AdminAdminCoursesCourseIdRoute
+}
+
+const AdminAdminCoursesRouteChildren: AdminAdminCoursesRouteChildren = {
+  AdminAdminCoursesCourseIdRoute: AdminAdminCoursesCourseIdRoute,
+}
+
+const AdminAdminCoursesRouteWithChildren =
+  AdminAdminCoursesRoute._addFileChildren(AdminAdminCoursesRouteChildren)
 
 interface AdminAdminRouteChildren {
   AdminAdminBookingsRoute: typeof AdminAdminBookingsRoute
   AdminAdminClientsRoute: typeof AdminAdminClientsRoute
   AdminAdminCmsRoute: typeof AdminAdminCmsRoute
+  AdminAdminCommunityRoute: typeof AdminAdminCommunityRoute
+  AdminAdminCoursesRoute: typeof AdminAdminCoursesRouteWithChildren
   AdminAdminLeadsRoute: typeof AdminAdminLeadsRoute
   AdminAdminMeetingsRoute: typeof AdminAdminMeetingsRoute
   AdminAdminPaymentsRoute: typeof AdminAdminPaymentsRoute
   AdminAdminSettingsRoute: typeof AdminAdminSettingsRoute
+  AdminAdminStudentsRoute: typeof AdminAdminStudentsRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
 }
 
@@ -892,10 +983,13 @@ const AdminAdminRouteChildren: AdminAdminRouteChildren = {
   AdminAdminBookingsRoute: AdminAdminBookingsRoute,
   AdminAdminClientsRoute: AdminAdminClientsRoute,
   AdminAdminCmsRoute: AdminAdminCmsRoute,
+  AdminAdminCommunityRoute: AdminAdminCommunityRoute,
+  AdminAdminCoursesRoute: AdminAdminCoursesRouteWithChildren,
   AdminAdminLeadsRoute: AdminAdminLeadsRoute,
   AdminAdminMeetingsRoute: AdminAdminMeetingsRoute,
   AdminAdminPaymentsRoute: AdminAdminPaymentsRoute,
   AdminAdminSettingsRoute: AdminAdminSettingsRoute,
+  AdminAdminStudentsRoute: AdminAdminStudentsRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
 }
 
