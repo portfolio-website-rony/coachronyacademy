@@ -84,12 +84,23 @@ function Courses() {
                         <GraduationCap className="h-12 w-12 text-primary-glow/60" />
                       </div>
                     )}
-                    <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
-                      {isFree ? (
-                        <span className="text-emerald-400">Free</span>
+                    <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
+                        {isFree ? (
+                          <span className="text-emerald-400">Free</span>
+                        ) : (
+                          <span className="text-primary-glow inline-flex items-center gap-1">
+                            <Sparkles className="h-3 w-3" /> Premium
+                          </span>
+                        )}
+                      </span>
+                      {c.course_type === "live" ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
+                          <Radio className="h-3 w-3" /> Live
+                        </span>
                       ) : (
-                        <span className="text-primary-glow inline-flex items-center gap-1">
-                          <Sparkles className="h-3 w-3" /> Premium
+                        <span className="inline-flex items-center gap-1 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground/80 backdrop-blur">
+                          <PlayCircle className="h-3 w-3" /> Recorded
                         </span>
                       )}
                     </div>
