@@ -325,6 +325,50 @@ function CourseEditor() {
         </Field>
       </Card>
 
+      {/* Delivery type */}
+      <Card title="Delivery type">
+        <div className="inline-flex rounded-xl border border-white/10 bg-background/40 p-1 text-sm">
+          <button
+            type="button"
+            onClick={() => setCourse({ ...course, course_type: "recorded" })}
+            className={`rounded-lg px-4 py-1.5 font-semibold transition ${
+              course.course_type === "recorded"
+                ? "bg-primary/20 text-primary-glow"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🎬 Recorded
+          </button>
+          <button
+            type="button"
+            onClick={() => setCourse({ ...course, course_type: "live" })}
+            className={`rounded-lg px-4 py-1.5 font-semibold transition ${
+              course.course_type === "live"
+                ? "bg-rose-500/20 text-rose-300"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🔴 Live
+          </button>
+        </div>
+        {course.course_type === "live" && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Field label="Live schedule (e.g. Sat & Sun, 9pm BDT)">
+              <TextInput
+                value={course.live_schedule ?? ""}
+                onChange={(v) => setCourse({ ...course, live_schedule: v })}
+              />
+            </Field>
+            <Field label="Live join URL (Zoom / Meet)">
+              <TextInput
+                value={course.live_join_url ?? ""}
+                onChange={(v) => setCourse({ ...course, live_join_url: v })}
+              />
+            </Field>
+          </div>
+        )}
+      </Card>
+
       {/* Pricing */}
       <Card title="Pricing & offer">
         <div className="inline-flex rounded-xl border border-white/10 bg-background/40 p-1 text-sm">
