@@ -1,15 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Quote } from "lucide-react";
+import { ArrowRight, Quote, MessageCircle, Phone } from "lucide-react";
 import { Section, GlassCard } from "@/components/site/Section";
 import { LeadForm } from "@/components/site/LeadForm";
 import { SERVICES, PROGRAMS, PORTFOLIO, TESTIMONIALS, STATS, SKILLS } from "@/lib/site-data";
 import { SpaceHero } from "@/components/site/hero/SpaceHero";
+import { useContactSettings } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/")({
   component: Home,
 });
 
 function Home() {
+  const contact = useContactSettings();
+  const waHref = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent("Hi CoachRony, I'm interested in your programs.")}`;
+  const telHref = `tel:+${contact.whatsapp}`;
   return (
     <>
       <SpaceHero />
@@ -182,6 +186,29 @@ function Home() {
         <div className="mx-auto max-w-xl">
           <GlassCard className="!p-8">
             <LeadForm source="home_hero" buttonLabel="Get Free Consultation" />
+
+            <div className="my-6 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="h-px flex-1 bg-white/10" />
+              or
+              <span className="h-px flex-1 bg-white/10" />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[oklch(0.62_0.18_150)] px-4 py-3 text-sm font-semibold text-white shadow-glow transition hover:-translate-y-0.5 hover:opacity-95"
+              >
+                <MessageCircle className="h-4 w-4" /> WhatsApp
+              </a>
+              <a
+                href={telHref}
+                className="glass inline-flex items-center justify-center gap-2 rounded-xl border border-primary/40 px-4 py-3 text-sm font-semibold text-primary-glow transition hover:-translate-y-0.5 hover:border-primary"
+              >
+                <Phone className="h-4 w-4" /> Call Now
+              </a>
+            </div>
           </GlassCard>
         </div>
       </Section>
