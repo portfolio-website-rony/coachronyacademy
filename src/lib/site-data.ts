@@ -19,19 +19,19 @@ export const PROGRAMS = [
   {
     tag: "Free", title: "AI Free Class",
     desc: "শুরু করুন AI দিয়ে। 90 মিনিটের live workshop।",
-    price: "Free", cta: "Join Free", href: "/course/ai-free-class",
+    price: "Free", cta: "Join Free", href: "/courses/ai-free-class",
     icon: Rocket,
   },
   {
     tag: "Masterclass", title: "AI Creator Masterclass",
     desc: "Content, video, monetization — A to Z framework।",
-    price: "৳ 1,499", cta: "Enroll Now", href: "/course/ai-creator-masterclass",
+    price: "৳ 1,499", cta: "Enroll Now", href: "/courses/ai-creator-masterclass",
     icon: GraduationCap,
   },
   {
     tag: "Premium", title: "Vibe Coding Bootcamp",
     desc: "8 weeks live + projects। AI দিয়ে SaaS বানাও।",
-    price: "৳ 9,999", cta: "Apply", href: "/course/vibe-coding-bootcamp",
+    price: "৳ 9,999", cta: "Apply", href: "/courses/vibe-coding-bootcamp",
     icon: Code2,
   },
   {
