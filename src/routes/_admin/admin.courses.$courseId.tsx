@@ -140,14 +140,14 @@ function CourseEditor() {
             <input
               value={course.title}
               onChange={(e) => setCourse({ ...course, title: e.target.value })}
-              className="input"
+              className="w-full rounded-xl border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary"
             />
           </Field>
           <Field label="Level">
             <select
               value={course.level}
               onChange={(e) => setCourse({ ...course, level: e.target.value })}
-              className="input"
+              className="w-full rounded-xl border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary"
             >
               <option value="beginner">Beginner</option>
               <option value="intermediate">Intermediate</option>
@@ -158,14 +158,14 @@ function CourseEditor() {
             <input
               value={course.category ?? ""}
               onChange={(e) => setCourse({ ...course, category: e.target.value })}
-              className="input"
+              className="w-full rounded-xl border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary"
             />
           </Field>
           <Field label="Cover image URL">
             <input
               value={course.cover_url ?? ""}
               onChange={(e) => setCourse({ ...course, cover_url: e.target.value })}
-              className="input"
+              className="w-full rounded-xl border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary"
             />
           </Field>
         </div>
@@ -174,7 +174,7 @@ function CourseEditor() {
             rows={3}
             value={course.description ?? ""}
             onChange={(e) => setCourse({ ...course, description: e.target.value })}
-            className="input"
+            className="w-full rounded-xl border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary"
           />
         </Field>
         <div className="flex items-center justify-between">
