@@ -133,6 +133,9 @@ function CourseEditor() {
         payment_methods_enabled: course.payment_methods_enabled,
         display_order: course.display_order,
         published: course.published,
+        course_type: course.course_type,
+        live_schedule: course.live_schedule,
+        live_join_url: course.live_join_url,
       })
       .eq("id", course.id);
     setSaving(false);
