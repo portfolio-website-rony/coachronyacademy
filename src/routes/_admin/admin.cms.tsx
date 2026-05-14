@@ -28,6 +28,21 @@ function CmsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
+  // Blog form state
+  const [blogEditId, setBlogEditId] = useState<string | null>(null);
+  const [blogEdit, setBlogEdit] = useState<Row | null>(null);
+  const [blogCover, setBlogCover] = useState<string | null>(null);
+
+  function resetBlogForm() {
+    setBlogEditId(null); setBlogEdit(null); setBlogCover(null);
+  }
+  function loadBlogForEdit(r: Row) {
+    setBlogEditId(String(r.id));
+    setBlogEdit(r);
+    setBlogCover((r.cover_url as string) ?? null);
+    setShowForm(true);
+  }
+
   // Portfolio form state
   const [pfEditId, setPfEditId] = useState<string | null>(null);
   const [pfEdit, setPfEdit] = useState<Row | null>(null);
