@@ -308,16 +308,20 @@ function CmsPage() {
               <input
                 name="published"
                 type="checkbox"
-                defaultChecked={tab.key === "portfolio" ? (pfEdit ? Boolean(pfEdit.published) : true) : true}
+                defaultChecked={
+                  tab.key === "portfolio" ? (pfEdit ? Boolean(pfEdit.published) : true)
+                  : tab.key === "blog" ? (blogEdit ? Boolean(blogEdit.published) : false)
+                  : true
+                }
               /> Published
             </label>
           )}
           <div className="flex gap-2">
             <button className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background">
-              {pfEditId && tab.key === "portfolio" ? "Update" : "Save"}
+              {(pfEditId && tab.key === "portfolio") || (blogEditId && tab.key === "blog") ? "Update" : "Save"}
             </button>
-            {pfEditId && tab.key === "portfolio" && (
-              <button type="button" onClick={() => { resetPortfolioForm(); setShowForm(false); }} className="rounded-xl border border-white/10 px-4 py-2 text-sm">
+            {((pfEditId && tab.key === "portfolio") || (blogEditId && tab.key === "blog")) && (
+              <button type="button" onClick={() => { resetPortfolioForm(); resetBlogForm(); setShowForm(false); }} className="rounded-xl border border-white/10 px-4 py-2 text-sm">
                 Cancel
               </button>
             )}
