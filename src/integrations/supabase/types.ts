@@ -1005,6 +1005,48 @@ export type Database = {
           },
         ]
       }
+      lesson_ai_queries: {
+        Row: {
+          created_at: string
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lesson_ai_summaries: {
+        Row: {
+          created_at: string
+          lesson_id: string
+          model: string
+          summary: Json
+        }
+        Insert: {
+          created_at?: string
+          lesson_id: string
+          model: string
+          summary: Json
+        }
+        Update: {
+          created_at?: string
+          lesson_id?: string
+          model?: string
+          summary?: Json
+        }
+        Relationships: []
+      }
       lesson_bookmarks: {
         Row: {
           created_at: string
