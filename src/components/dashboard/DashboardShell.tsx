@@ -1,8 +1,6 @@
 import { useState, type ReactNode, type ComponentType } from "react";
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Menu, X, LogOut, Sparkles, Home } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Menu, X, Sparkles } from "lucide-react";
 
 export type NavItem = {
   to: string;
