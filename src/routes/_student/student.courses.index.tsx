@@ -5,7 +5,7 @@ import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { toast } from "sonner";
 import { BookOpen } from "lucide-react";
 
-export const Route = createFileRoute("/_student/student/courses")({
+export const Route = createFileRoute("/_student/student/courses/")({
   head: () => ({ meta: [{ title: "Course Catalog — CoachRony" }] }),
   component: CatalogPage,
 });
