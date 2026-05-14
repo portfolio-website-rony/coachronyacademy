@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { extractYouTubeId, loadYouTubeApi } from "@/lib/learn/youtube";
 import { Gauge } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 type Props = {
   url: string;
@@ -26,6 +27,17 @@ export const YouTubePlayer = forwardRef<YouTubePlayerHandle, Props>(function You
   const intervalRef = useRef<number | null>(null);
   const videoId = extractYouTubeId(url);
   const [speed, setSpeed] = useState(1);
+  const [watermark, setWatermark] = useState<string>("");
+
+  useEffect(() => {
+    let mounted = true;
+    void supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      const u = data.user;
+      setWatermark(u?.email ?? u?.id?.slice(0, 8) ?? "");
+    });
+    return () => { mounted = false; };
+  }, []);
 
   useImperativeHandle(ref, () => ({
     seekTo: (s: number) => {
@@ -47,7 +59,15 @@ export const YouTubePlayer = forwardRef<YouTubePlayerHandle, Props>(function You
       if (destroyed || !containerRef.current) return;
       playerRef.current = new YT.Player(containerRef.current, {
         videoId,
-        playerVars: { rel: 0, modestbranding: 1, start: Math.floor(startAt) },
+        playerVars: {
+          rel: 0,
+          modestbranding: 1,
+          iv_load_policy: 3,
+          fs: 0,
+          disablekb: 1,
+          playsinline: 1,
+          start: Math.floor(startAt),
+        },
         events: {
           onReady: () => {
             const d = playerRef.current?.getDuration?.() ?? 0;
@@ -99,8 +119,37 @@ export const YouTubePlayer = forwardRef<YouTubePlayerHandle, Props>(function You
   }
   return (
     <div className="space-y-2">
-      <div className="aspect-video overflow-hidden rounded-2xl bg-black">
-        <div ref={containerRef} className="h-full w-full" />
+      <div
+        className="relative aspect-video overflow-hidden rounded-2xl bg-black select-none"
+        onContextMenu={(e) => e.preventDefault()}
+        style={{ WebkitUserSelect: "none", userSelect: "none" }}
+      >
+        <div ref={containerRef} className="h-full w-full pointer-events-auto" />
+
+        {/* Top-right block: hides/blocks share, CC, settings, "Watch on YouTube" title click */}
+        <div
+          className="absolute top-0 right-0 h-12 w-44 z-20"
+          style={{ pointerEvents: "auto", background: "transparent" }}
+          onClick={(e) => e.stopPropagation()}
+        />
+
+        {/* Bottom-right block: hides YouTube logo click → opens YouTube */}
+        <div
+          className="absolute bottom-0 right-0 h-10 w-24 z-20"
+          style={{ pointerEvents: "auto", background: "transparent" }}
+          onClick={(e) => e.stopPropagation()}
+        />
+
+        {/* Watermark deterrent */}
+        {watermark ? (
+          <div
+            className="pointer-events-none absolute inset-0 z-10 flex items-start justify-end p-3"
+          >
+            <span className="rounded bg-black/20 px-2 py-0.5 text-[10px] font-medium text-white/40 backdrop-blur-sm">
+              {watermark}
+            </span>
+          </div>
+        ) : null}
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <div className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-2 py-1 text-xs">
