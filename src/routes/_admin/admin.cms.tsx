@@ -29,9 +29,25 @@ function CmsPage() {
   const [showForm, setShowForm] = useState(false);
 
   // Portfolio form state
+  const [pfEditId, setPfEditId] = useState<string | null>(null);
+  const [pfEdit, setPfEdit] = useState<Row | null>(null);
   const [pfCover, setPfCover] = useState<string | null>(null);
   const [pfMediaType, setPfMediaType] = useState<"image" | "video">("image");
   const [pfMediaUrl, setPfMediaUrl] = useState<string | null>(null);
+
+  function resetPortfolioForm() {
+    setPfEditId(null); setPfEdit(null);
+    setPfCover(null); setPfMediaUrl(null); setPfMediaType("image");
+  }
+
+  function loadPortfolioForEdit(r: Row) {
+    setPfEditId(String(r.id));
+    setPfEdit(r);
+    setPfCover((r.cover_url as string) ?? null);
+    setPfMediaType(((r.media_type as "image" | "video") ?? "image"));
+    setPfMediaUrl((r.media_url as string) ?? null);
+    setShowForm(true);
+  }
 
   // Banner form state
   const [bnPage, setBnPage] = useState("portfolio");
