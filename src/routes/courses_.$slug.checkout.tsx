@@ -126,14 +126,18 @@ function CheckoutPage() {
     setSubmitting(true);
     try {
       if (isFree) {
-        const { data: pay, error: pe } = await supabase.from("payments").insert({
+        // Directly create enrollment (idempotent via unique index)
+        const { error: enrollErr } = await supabase
+          .from("enrollments")
+          .insert({ course_id: course!.id, user_id: session.user.id, status: "active" });
+        if (enrollErr && !/duplicate|unique/i.test(enrollErr.message)) throw enrollErr;
+        // Record a verified free payment for accounting (best-effort, ignore failures)
+        await supabase.from("payments").insert({
           course_id: course!.id, user_id: session.user.id,
           amount: 0, currency: course!.currency, method: "free", gateway: "manual",
-          status: "pending", coupon_id: coupon?.id ?? null,
-        }).select("id").single();
-        if (pe) throw pe;
-        const { error: ue } = await supabase.from("payments").update({ status: "verified", paid_at: new Date().toISOString() }).eq("id", pay.id);
-        if (ue) throw ue;
+          status: "verified", paid_at: new Date().toISOString(),
+          coupon_id: coupon?.id ?? null,
+        });
         toast.success("Enrolled! Redirecting…");
         navigate({ to: "/student/courses/$slug", params: { slug: course!.slug } });
         return;
