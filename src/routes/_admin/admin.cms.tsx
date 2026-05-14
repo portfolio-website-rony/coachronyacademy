@@ -274,10 +274,23 @@ function CmsPage() {
           </>)}
           {tab.key !== "banners" && (
             <label className="flex items-center gap-2 text-sm">
-              <input name="published" type="checkbox" defaultChecked /> Published
+              <input
+                name="published"
+                type="checkbox"
+                defaultChecked={tab.key === "portfolio" ? (pfEdit ? Boolean(pfEdit.published) : true) : true}
+              /> Published
             </label>
           )}
-          <div><button className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background">Save</button></div>
+          <div className="flex gap-2">
+            <button className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background">
+              {pfEditId && tab.key === "portfolio" ? "Update" : "Save"}
+            </button>
+            {pfEditId && tab.key === "portfolio" && (
+              <button type="button" onClick={() => { resetPortfolioForm(); setShowForm(false); }} className="rounded-xl border border-white/10 px-4 py-2 text-sm">
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       )}
 
