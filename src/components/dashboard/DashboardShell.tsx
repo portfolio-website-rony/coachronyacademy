@@ -1,8 +1,6 @@
 import { useState, type ReactNode, type ComponentType } from "react";
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Menu, X, LogOut, Sparkles, Home } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Menu, X, Sparkles } from "lucide-react";
 
 export type NavItem = {
   to: string;
@@ -22,13 +20,6 @@ export function DashboardShell({
 }) {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
-
-  async function logout() {
-    await supabase.auth.signOut();
-    toast.success("Logged out");
-    navigate({ to: "/login" });
-  }
 
   return (
     <div className="flex flex-1 bg-background">
@@ -68,22 +59,6 @@ export function DashboardShell({
             );
           })}
         </nav>
-        <div className="shrink-0 border-t border-white/10 p-3">
-          <Link
-            to="/"
-            className="mb-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-white/5 hover:text-foreground"
-          >
-            <Home className="h-4 w-4" />
-            Back to site
-          </Link>
-          <button
-            onClick={logout}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-white/5 hover:text-foreground"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </button>
-        </div>
       </aside>
 
       <div className="flex flex-1 flex-col">
