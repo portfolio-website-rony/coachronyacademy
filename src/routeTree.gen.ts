@@ -46,7 +46,6 @@ import { Route as StudentStudentProfileRouteImport } from './routes/_student/stu
 import { Route as StudentStudentOrdersRouteImport } from './routes/_student/student.orders'
 import { Route as StudentStudentNotificationsRouteImport } from './routes/_student/student.notifications'
 import { Route as StudentStudentEbooksRouteImport } from './routes/_student/student.ebooks'
-import { Route as StudentStudentCoursesRouteImport } from './routes/_student/student.courses'
 import { Route as StudentStudentCommunityRouteImport } from './routes/_student/student.community'
 import { Route as StudentStudentCertificatesRouteImport } from './routes/_student/student.certificates'
 import { Route as StudentStudentBundlesRouteImport } from './routes/_student/student.bundles'
@@ -65,6 +64,7 @@ import { Route as AdminAdminCommunityRouteImport } from './routes/_admin/admin.c
 import { Route as AdminAdminCmsRouteImport } from './routes/_admin/admin.cms'
 import { Route as AdminAdminClientsRouteImport } from './routes/_admin/admin.clients'
 import { Route as AdminAdminBookingsRouteImport } from './routes/_admin/admin.bookings'
+import { Route as StudentStudentCoursesIndexRouteImport } from './routes/_student/student.courses.index'
 import { Route as StudentStudentCoursesSlugRouteImport } from './routes/_student/student.courses.$slug'
 import { Route as AdminAdminCoursesCourseIdRouteImport } from './routes/_admin/admin.courses_.$courseId'
 import { Route as StudentStudentCoursesSlugLessonIdRouteImport } from './routes/_student/student.courses.$slug.$lessonId'
@@ -252,11 +252,6 @@ const StudentStudentEbooksRoute = StudentStudentEbooksRouteImport.update({
   path: '/ebooks',
   getParentRoute: () => StudentStudentRoute,
 } as any)
-const StudentStudentCoursesRoute = StudentStudentCoursesRouteImport.update({
-  id: '/courses',
-  path: '/courses',
-  getParentRoute: () => StudentStudentRoute,
-} as any)
 const StudentStudentCommunityRoute = StudentStudentCommunityRouteImport.update({
   id: '/community',
   path: '/community',
@@ -348,11 +343,17 @@ const AdminAdminBookingsRoute = AdminAdminBookingsRouteImport.update({
   path: '/bookings',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const StudentStudentCoursesIndexRoute =
+  StudentStudentCoursesIndexRouteImport.update({
+    id: '/courses/',
+    path: '/courses/',
+    getParentRoute: () => StudentStudentRoute,
+  } as any)
 const StudentStudentCoursesSlugRoute =
   StudentStudentCoursesSlugRouteImport.update({
-    id: '/$slug',
-    path: '/$slug',
-    getParentRoute: () => StudentStudentCoursesRoute,
+    id: '/courses/$slug',
+    path: '/courses/$slug',
+    getParentRoute: () => StudentStudentRoute,
   } as any)
 const AdminAdminCoursesCourseIdRoute =
   AdminAdminCoursesCourseIdRouteImport.update({
@@ -410,7 +411,6 @@ export interface FileRoutesByFullPath {
   '/student/bundles': typeof StudentStudentBundlesRoute
   '/student/certificates': typeof StudentStudentCertificatesRoute
   '/student/community': typeof StudentStudentCommunityRoute
-  '/student/courses': typeof StudentStudentCoursesRouteWithChildren
   '/student/ebooks': typeof StudentStudentEbooksRoute
   '/student/notifications': typeof StudentStudentNotificationsRoute
   '/student/orders': typeof StudentStudentOrdersRoute
@@ -423,6 +423,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminAdminIndexRoute
   '/admin/courses/$courseId': typeof AdminAdminCoursesCourseIdRoute
   '/student/courses/$slug': typeof StudentStudentCoursesSlugRouteWithChildren
+  '/student/courses/': typeof StudentStudentCoursesIndexRoute
   '/student/courses/$slug/$lessonId': typeof StudentStudentCoursesSlugLessonIdRoute
 }
 export interface FileRoutesByTo {
@@ -467,7 +468,6 @@ export interface FileRoutesByTo {
   '/student/bundles': typeof StudentStudentBundlesRoute
   '/student/certificates': typeof StudentStudentCertificatesRoute
   '/student/community': typeof StudentStudentCommunityRoute
-  '/student/courses': typeof StudentStudentCoursesRouteWithChildren
   '/student/ebooks': typeof StudentStudentEbooksRoute
   '/student/notifications': typeof StudentStudentNotificationsRoute
   '/student/orders': typeof StudentStudentOrdersRoute
@@ -480,6 +480,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminAdminIndexRoute
   '/admin/courses/$courseId': typeof AdminAdminCoursesCourseIdRoute
   '/student/courses/$slug': typeof StudentStudentCoursesSlugRouteWithChildren
+  '/student/courses': typeof StudentStudentCoursesIndexRoute
   '/student/courses/$slug/$lessonId': typeof StudentStudentCoursesSlugLessonIdRoute
 }
 export interface FileRoutesById {
@@ -529,7 +530,6 @@ export interface FileRoutesById {
   '/_student/student/bundles': typeof StudentStudentBundlesRoute
   '/_student/student/certificates': typeof StudentStudentCertificatesRoute
   '/_student/student/community': typeof StudentStudentCommunityRoute
-  '/_student/student/courses': typeof StudentStudentCoursesRouteWithChildren
   '/_student/student/ebooks': typeof StudentStudentEbooksRoute
   '/_student/student/notifications': typeof StudentStudentNotificationsRoute
   '/_student/student/orders': typeof StudentStudentOrdersRoute
@@ -542,6 +542,7 @@ export interface FileRoutesById {
   '/_admin/admin/': typeof AdminAdminIndexRoute
   '/_admin/admin/courses_/$courseId': typeof AdminAdminCoursesCourseIdRoute
   '/_student/student/courses/$slug': typeof StudentStudentCoursesSlugRouteWithChildren
+  '/_student/student/courses/': typeof StudentStudentCoursesIndexRoute
   '/_student/student/courses/$slug/$lessonId': typeof StudentStudentCoursesSlugLessonIdRoute
 }
 export interface FileRouteTypes {
@@ -589,7 +590,6 @@ export interface FileRouteTypes {
     | '/student/bundles'
     | '/student/certificates'
     | '/student/community'
-    | '/student/courses'
     | '/student/ebooks'
     | '/student/notifications'
     | '/student/orders'
@@ -602,6 +602,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/courses/$courseId'
     | '/student/courses/$slug'
+    | '/student/courses/'
     | '/student/courses/$slug/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -646,7 +647,6 @@ export interface FileRouteTypes {
     | '/student/bundles'
     | '/student/certificates'
     | '/student/community'
-    | '/student/courses'
     | '/student/ebooks'
     | '/student/notifications'
     | '/student/orders'
@@ -659,6 +659,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/courses/$courseId'
     | '/student/courses/$slug'
+    | '/student/courses'
     | '/student/courses/$slug/$lessonId'
   id:
     | '__root__'
@@ -707,7 +708,6 @@ export interface FileRouteTypes {
     | '/_student/student/bundles'
     | '/_student/student/certificates'
     | '/_student/student/community'
-    | '/_student/student/courses'
     | '/_student/student/ebooks'
     | '/_student/student/notifications'
     | '/_student/student/orders'
@@ -720,6 +720,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/'
     | '/_admin/admin/courses_/$courseId'
     | '/_student/student/courses/$slug'
+    | '/_student/student/courses/'
     | '/_student/student/courses/$slug/$lessonId'
   fileRoutesById: FileRoutesById
 }
@@ -1012,13 +1013,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentStudentEbooksRouteImport
       parentRoute: typeof StudentStudentRoute
     }
-    '/_student/student/courses': {
-      id: '/_student/student/courses'
-      path: '/courses'
-      fullPath: '/student/courses'
-      preLoaderRoute: typeof StudentStudentCoursesRouteImport
-      parentRoute: typeof StudentStudentRoute
-    }
     '/_student/student/community': {
       id: '/_student/student/community'
       path: '/community'
@@ -1145,12 +1139,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminBookingsRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_student/student/courses/': {
+      id: '/_student/student/courses/'
+      path: '/courses'
+      fullPath: '/student/courses/'
+      preLoaderRoute: typeof StudentStudentCoursesIndexRouteImport
+      parentRoute: typeof StudentStudentRoute
+    }
     '/_student/student/courses/$slug': {
       id: '/_student/student/courses/$slug'
-      path: '/$slug'
+      path: '/courses/$slug'
       fullPath: '/student/courses/$slug'
       preLoaderRoute: typeof StudentStudentCoursesSlugRouteImport
-      parentRoute: typeof StudentStudentCoursesRoute
+      parentRoute: typeof StudentStudentRoute
     }
     '/_admin/admin/courses_/$courseId': {
       id: '/_admin/admin/courses_/$courseId'
@@ -1259,24 +1260,10 @@ const StudentStudentCoursesSlugRouteWithChildren =
     StudentStudentCoursesSlugRouteChildren,
   )
 
-interface StudentStudentCoursesRouteChildren {
-  StudentStudentCoursesSlugRoute: typeof StudentStudentCoursesSlugRouteWithChildren
-}
-
-const StudentStudentCoursesRouteChildren: StudentStudentCoursesRouteChildren = {
-  StudentStudentCoursesSlugRoute: StudentStudentCoursesSlugRouteWithChildren,
-}
-
-const StudentStudentCoursesRouteWithChildren =
-  StudentStudentCoursesRoute._addFileChildren(
-    StudentStudentCoursesRouteChildren,
-  )
-
 interface StudentStudentRouteChildren {
   StudentStudentBundlesRoute: typeof StudentStudentBundlesRoute
   StudentStudentCertificatesRoute: typeof StudentStudentCertificatesRoute
   StudentStudentCommunityRoute: typeof StudentStudentCommunityRoute
-  StudentStudentCoursesRoute: typeof StudentStudentCoursesRouteWithChildren
   StudentStudentEbooksRoute: typeof StudentStudentEbooksRoute
   StudentStudentNotificationsRoute: typeof StudentStudentNotificationsRoute
   StudentStudentOrdersRoute: typeof StudentStudentOrdersRoute
@@ -1285,13 +1272,14 @@ interface StudentStudentRouteChildren {
   StudentStudentResourcesRoute: typeof StudentStudentResourcesRoute
   StudentStudentSavedRoute: typeof StudentStudentSavedRoute
   StudentStudentWorkshopsRoute: typeof StudentStudentWorkshopsRoute
+  StudentStudentCoursesSlugRoute: typeof StudentStudentCoursesSlugRouteWithChildren
+  StudentStudentCoursesIndexRoute: typeof StudentStudentCoursesIndexRoute
 }
 
 const StudentStudentRouteChildren: StudentStudentRouteChildren = {
   StudentStudentBundlesRoute: StudentStudentBundlesRoute,
   StudentStudentCertificatesRoute: StudentStudentCertificatesRoute,
   StudentStudentCommunityRoute: StudentStudentCommunityRoute,
-  StudentStudentCoursesRoute: StudentStudentCoursesRouteWithChildren,
   StudentStudentEbooksRoute: StudentStudentEbooksRoute,
   StudentStudentNotificationsRoute: StudentStudentNotificationsRoute,
   StudentStudentOrdersRoute: StudentStudentOrdersRoute,
@@ -1300,6 +1288,8 @@ const StudentStudentRouteChildren: StudentStudentRouteChildren = {
   StudentStudentResourcesRoute: StudentStudentResourcesRoute,
   StudentStudentSavedRoute: StudentStudentSavedRoute,
   StudentStudentWorkshopsRoute: StudentStudentWorkshopsRoute,
+  StudentStudentCoursesSlugRoute: StudentStudentCoursesSlugRouteWithChildren,
+  StudentStudentCoursesIndexRoute: StudentStudentCoursesIndexRoute,
 }
 
 const StudentStudentRouteWithChildren = StudentStudentRoute._addFileChildren(
@@ -1347,3 +1337,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
