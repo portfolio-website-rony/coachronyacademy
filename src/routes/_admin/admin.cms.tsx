@@ -28,6 +28,21 @@ function CmsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
+  // Blog form state
+  const [blogEditId, setBlogEditId] = useState<string | null>(null);
+  const [blogEdit, setBlogEdit] = useState<Row | null>(null);
+  const [blogCover, setBlogCover] = useState<string | null>(null);
+
+  function resetBlogForm() {
+    setBlogEditId(null); setBlogEdit(null); setBlogCover(null);
+  }
+  function loadBlogForEdit(r: Row) {
+    setBlogEditId(String(r.id));
+    setBlogEdit(r);
+    setBlogCover((r.cover_url as string) ?? null);
+    setShowForm(true);
+  }
+
   // Portfolio form state
   const [pfEditId, setPfEditId] = useState<string | null>(null);
   const [pfEdit, setPfEdit] = useState<Row | null>(null);
@@ -99,15 +114,21 @@ function CmsPage() {
     let payload: Record<string, unknown> = {};
     let result;
     if (tab.key === "blog") {
+      const title = String(form.get("title") || "");
+      const slugRaw = String(form.get("slug") || "").trim() || title;
       payload = {
-        title: String(form.get("title") || ""),
-        slug: String(form.get("slug") || "").toLowerCase().replace(/\s+/g, "-"),
-        excerpt: String(form.get("excerpt") || ""),
-        content: String(form.get("content") || ""),
-        cover_url: String(form.get("cover_url") || "") || null,
+        title,
+        slug: slugRaw.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-"),
+        excerpt: String(form.get("excerpt") || "") || null,
+        content: String(form.get("content") || "") || null,
+        cover_url: blogCover,
+        tags: String(form.get("tags") || "").split(",").map((s) => s.trim()).filter(Boolean),
         published: form.get("published") === "on",
+        published_at: form.get("published") === "on" ? new Date().toISOString() : null,
       };
-      result = await supabase.from(tab.table).insert(payload as never);
+      result = blogEditId
+        ? await supabase.from("cms_blog_posts").update(payload as never).eq("id", blogEditId)
+        : await supabase.from("cms_blog_posts").insert(payload as never);
     } else if (tab.key === "testimonials") {
       payload = {
         author: String(form.get("author") || ""),
@@ -164,6 +185,7 @@ function CmsPage() {
     toast.success("Saved");
     setShowForm(false);
     resetPortfolioForm();
+    resetBlogForm();
     void load();
   }
 
@@ -189,8 +211,8 @@ function CmsPage() {
       <div className="flex justify-end">
         <button
           onClick={() => {
-            if (showForm) { resetPortfolioForm(); setShowForm(false); }
-            else { resetPortfolioForm(); setShowForm(true); }
+            if (showForm) { resetPortfolioForm(); resetBlogForm(); setShowForm(false); }
+            else { resetPortfolioForm(); resetBlogForm(); setShowForm(true); }
           }}
           className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow"
         >
@@ -199,18 +221,27 @@ function CmsPage() {
       </div>
 
       {showForm && (
-        <form key={pfEditId ?? "new"} onSubmit={(e) => { e.preventDefault(); void submit(new FormData(e.currentTarget)); }} className="glass grid gap-3 rounded-2xl p-5">
+        <form key={`${tab.key}-${pfEditId ?? blogEditId ?? "new"}`} onSubmit={(e) => { e.preventDefault(); void submit(new FormData(e.currentTarget)); }} className="glass grid gap-3 rounded-2xl p-5">
           {tab.key === "portfolio" && pfEditId && (
             <div className="rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary-glow">
               Editing: <strong>{String(pfEdit?.title ?? "")}</strong>
             </div>
           )}
+          {tab.key === "blog" && blogEditId && (
+            <div className="rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary-glow">
+              Editing: <strong>{String(blogEdit?.title ?? "")}</strong>
+            </div>
+          )}
           {tab.key === "blog" && (<>
-            <input name="title" placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="slug" placeholder="slug-url *" required className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="excerpt" placeholder="Excerpt" className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="cover_url" placeholder="Cover image URL" className="glass rounded-xl px-3 py-2 text-sm" />
-            <textarea name="content" placeholder="Content (markdown)" rows={6} className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="title" defaultValue={(blogEdit?.title as string) ?? ""} placeholder="Post title *" required className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="slug" defaultValue={(blogEdit?.slug as string) ?? ""} placeholder="slug-url (auto from title if empty)" className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="excerpt" defaultValue={(blogEdit?.excerpt as string) ?? ""} placeholder="Short excerpt / summary" className="glass rounded-xl px-3 py-2 text-sm" />
+            <div>
+              <label className="mb-1 block text-xs text-muted-foreground">Banner / Cover image</label>
+              <ImageUploader value={blogCover} onChange={setBlogCover} folder="blog" />
+            </div>
+            <textarea name="content" defaultValue={(blogEdit?.content as string) ?? ""} placeholder="Post content (markdown supported — use # for headings, **bold**, [text](url) for links, ![](url) for images)" rows={14} className="glass rounded-xl px-3 py-2 font-mono text-sm" />
+            <input name="tags" defaultValue={Array.isArray(blogEdit?.tags) ? (blogEdit?.tags as string[]).join(", ") : ""} placeholder="Tags (comma separated)" className="glass rounded-xl px-3 py-2 text-sm" />
           </>)}
           {tab.key === "testimonials" && (<>
             <input name="author" placeholder="Author *" required className="glass rounded-xl px-3 py-2 text-sm" />
@@ -277,16 +308,20 @@ function CmsPage() {
               <input
                 name="published"
                 type="checkbox"
-                defaultChecked={tab.key === "portfolio" ? (pfEdit ? Boolean(pfEdit.published) : true) : true}
+                defaultChecked={
+                  tab.key === "portfolio" ? (pfEdit ? Boolean(pfEdit.published) : true)
+                  : tab.key === "blog" ? (blogEdit ? Boolean(blogEdit.published) : false)
+                  : true
+                }
               /> Published
             </label>
           )}
           <div className="flex gap-2">
             <button className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background">
-              {pfEditId && tab.key === "portfolio" ? "Update" : "Save"}
+              {(pfEditId && tab.key === "portfolio") || (blogEditId && tab.key === "blog") ? "Update" : "Save"}
             </button>
-            {pfEditId && tab.key === "portfolio" && (
-              <button type="button" onClick={() => { resetPortfolioForm(); setShowForm(false); }} className="rounded-xl border border-white/10 px-4 py-2 text-sm">
+            {((pfEditId && tab.key === "portfolio") || (blogEditId && tab.key === "blog")) && (
+              <button type="button" onClick={() => { resetPortfolioForm(); resetBlogForm(); setShowForm(false); }} className="rounded-xl border border-white/10 px-4 py-2 text-sm">
                 Cancel
               </button>
             )}
@@ -318,6 +353,9 @@ function CmsPage() {
                     <>
                       {tab.key === "portfolio" && (
                         <button onClick={() => loadPortfolioForEdit(r)} className="rounded-lg bg-white/10 px-2 py-1 text-xs">Edit</button>
+                      )}
+                      {tab.key === "blog" && (
+                        <button onClick={() => loadBlogForEdit(r)} className="rounded-lg bg-white/10 px-2 py-1 text-xs">Edit</button>
                       )}
                       <button onClick={() => togglePublished(r)} className={`rounded-lg px-2 py-1 text-xs ${r.published ? "bg-[oklch(0.72_0.18_152/20%)] text-[oklch(0.85_0.15_152)]" : "bg-white/10"}`}>
                         {r.published ? "published" : "draft"}

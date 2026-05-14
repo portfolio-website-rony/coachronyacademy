@@ -1,42 +1,50 @@
-## Goal
-Portfolio page (`/portfolio`) ke fully admin panel theke control korar moto banano — items add/edit/delete + page banner (image OR video) upload korar option.
+## Blog System — Admin Panel + Public Page
 
-## Changes
+Goal: Admin theke banner image soho blog post lika, edit, delete kora jabe. Public `/blog` page real data theke load hobe, ar `/blog/$slug` te full post pora jabe.
 
-### 1. Database (migration)
-- `cms_portfolio` table-e column add: `media_type` (text, default 'image'), `media_url` (text, nullable), `display_order` already ache.
-- Notun table `cms_page_banners` (key-value style) — `page` (text PK, e.g. 'portfolio'), `media_type` ('image' | 'video'), `media_url` (text), `title` (text, optional), `subtitle` (text, optional), `updated_at`.
-  - RLS: public SELECT, admin ALL.
-- Storage bucket `cms-media` already public ache — same bucket use korbo video + image upload-er jonno.
+### 1. Admin Panel — Blog Tab Upgrade (`src/routes/_admin/admin.cms.tsx`)
 
-### 2. Admin panel — Portfolio tab upgrade (`src/routes/_admin/admin.cms.tsx`)
-- Portfolio form-e:
-  - Existing fields (title, category, description, link, published)
-  - **Cover image**: `ImageUploader` component (already exists) use korbo URL paste-er bodole.
-  - **Display order** number input.
-  - Edit functionality (currently only insert) — row click → form prefilled → update.
-- New "Page Banners" tab add korbo (or Portfolio tab-er upore section):
-  - Page select (Portfolio for now, future: Services, About...).
-  - Media type toggle: Image / Video.
-  - Upload widget (image → ImageUploader; video → new VideoUploader to cms-media bucket, max 50MB).
-  - Title + subtitle text inputs.
-  - Save button → upsert to `cms_page_banners`.
+Existing Blog tab te edit functionality + banner uploader add korbo (Portfolio jevabe ache):
 
-### 3. New component `src/components/admin/MediaUploader.tsx`
-- Generalize ImageUploader to support both image & video. Accepts `accept` prop.
-- Video preview with `<video controls>`.
+- **Edit state**: `blogEditId`, `blogEdit`, `blogCover` track korbe.
+- **Cover banner**: existing text input bad diye `ImageUploader` use korbo (folder: `blog`).
+- **Form fields**:
+  - Title (required)
+  - Slug (auto-generate from title, editable)
+  - Excerpt (short summary)
+  - Cover image — ImageUploader
+  - Content — boro textarea (markdown supported, ~12 rows)
+  - Tags (comma separated)
+  - Published checkbox
+- **Edit button** prottek row e — click korle form prefilled hobe.
+- **Update vs Insert** logic — `pfEditId` patterner moto.
+- **Cancel button** edit mode e.
 
-### 4. Portfolio page rewrite (`src/routes/portfolio.tsx`)
-- Fetch from Supabase:
-  - `cms_page_banners` where `page='portfolio'` → render hero banner (image or `<video autoPlay muted loop playsInline>`).
-  - `cms_portfolio` where `published=true` order by `display_order` → render grid using real `cover_url`/`media_url` instead of gradient placeholder.
-- Tag filter built from real `category` values.
-- Empty state if no items.
+### 2. Public Blog List Page (`src/routes/blog.tsx`)
 
-### 5. Keep
-- Existing `Section` wrapper, glass styling, design tokens.
-- RLS + admin role checks unchanged.
+Hardcoded `POSTS` array bad. Supabase theke fetch:
+- `cms_blog_posts` where `published = true`, ordered by `published_at` / `created_at` desc
+- `cms_page_banners` where `page = 'blog'` → optional hero banner above grid
+- Each card: cover image, title, excerpt, tags, date, link to `/blog/$slug`
+- Search input — client-side filter on title/excerpt
+- Empty state if no posts
 
-## Out of scope
-- Other CMS tabs (blog, testimonials, etc.) untouched this round.
-- Multi-page banner management UI beyond Portfolio (schema supports it though).
+### 3. Single Post Page (NEW: `src/routes/blog.$slug.tsx`)
+
+- Fetch post by slug from `cms_blog_posts`
+- Render: cover banner, title, date, tags, then content (markdown rendered)
+- Use `react-markdown` for content rendering — install via `bun add react-markdown`
+- Back to blog link
+- SEO meta tags from post data (title, excerpt, og:image = cover_url)
+- 404 if not found / not published
+
+### 4. No DB changes needed
+`cms_blog_posts` table already has all required columns (title, slug, excerpt, content, cover_url, tags, published, published_at). Banner support already exists via `cms_page_banners` (admin can already set 'blog' banner from Page Banners tab).
+
+### Out of scope
+- Rich text WYSIWYG editor (markdown textarea diye start, later upgrade kora jabe)
+- Comments / likes
+- Categories beyond tags
+- Related posts / recommendations
+
+Shob admin theke control hobe — ekta dedicated "Write New Post" button thakbe Blog tab e, banner ekhane cover image hisebe attach hobe.
