@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Loader2, BookOpen, GraduationCap, Users, Library, LayoutDashboard, UserCircle2 } from "lucide-react";
+import { Loader2, BookOpen, GraduationCap, Users, Library, LayoutDashboard, UserCircle2, Bell, Award, FileText, Package, CalendarClock, Bookmark, Receipt } from "lucide-react";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { DashboardShell, type NavItem } from "@/components/dashboard/DashboardShell";
 
@@ -9,9 +9,16 @@ export const Route = createFileRoute("/_student")({
 });
 
 const NAV: NavItem[] = [
-  { to: "/student", label: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/student/courses", label: "Courses", icon: BookOpen },
+  { to: "/student", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/student/courses", label: "My Courses", icon: BookOpen },
+  { to: "/student/workshops", label: "Workshops", icon: CalendarClock },
+  { to: "/student/ebooks", label: "Ebooks", icon: FileText },
+  { to: "/student/bundles", label: "Bundles", icon: Package },
+  { to: "/student/certificates", label: "Certificates", icon: Award },
+  { to: "/student/orders", label: "My Orders", icon: Receipt },
   { to: "/student/progress", label: "Progress", icon: GraduationCap },
+  { to: "/student/saved", label: "Saved", icon: Bookmark },
+  { to: "/student/notifications", label: "Notifications", icon: Bell },
   { to: "/student/community", label: "Community", icon: Users },
   { to: "/student/resources", label: "Resources", icon: Library },
   { to: "/student/profile", label: "Profile", icon: UserCircle2 },
