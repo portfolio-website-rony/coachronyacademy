@@ -71,6 +71,9 @@ function CatalogPage() {
   }
 
   function CourseCard({ c, isEnrolled }: { c: Course; isEnrolled: boolean }) {
+    const free = isFree(c);
+    const eff = effectivePrice(c);
+    const hasDiscount = !free && c.discount_price !== null && c.discount_price !== undefined && Number(c.discount_price) < Number(c.price);
     return (
       <div className="glass overflow-hidden rounded-2xl">
         <div className="aspect-video relative bg-gradient-primary/30">
@@ -81,6 +84,13 @@ function CatalogPage() {
               <BookOpen className="h-10 w-10" />
             </div>
           )}
+          <span
+            className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[11px] font-semibold backdrop-blur ${
+              free ? "bg-emerald-500/90 text-background" : "bg-background/80 text-foreground"
+            }`}
+          >
+            {free ? "Free" : fmtPrice(eff, c.currency)}
+          </span>
         </div>
         <div className="space-y-3 p-4">
           <div>
@@ -90,6 +100,9 @@ function CatalogPage() {
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="rounded-full bg-white/5 px-2 py-0.5 capitalize">{c.level}</span>
             {c.category && <span>· {c.category}</span>}
+            {hasDiscount && (
+              <span className="ml-auto line-through opacity-60">{fmtPrice(c.price, c.currency)}</span>
+            )}
           </div>
           {isEnrolled ? (
             <Link
@@ -99,7 +112,7 @@ function CatalogPage() {
             >
               Continue →
             </Link>
-          ) : (
+          ) : free ? (
             <button
               onClick={() => enroll(c.id)}
               disabled={busy === c.id}
@@ -107,6 +120,14 @@ function CatalogPage() {
             >
               {busy === c.id ? "Enrolling…" : "Enroll free"}
             </button>
+          ) : (
+            <Link
+              to="/courses/$slug/checkout"
+              params={{ slug: c.slug }}
+              className="block rounded-xl bg-gradient-primary px-3 py-2 text-center text-sm font-semibold text-background"
+            >
+              Enroll now — {fmtPrice(eff, c.currency)}
+            </Link>
           )}
         </div>
       </div>
