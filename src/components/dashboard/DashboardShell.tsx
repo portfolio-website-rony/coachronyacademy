@@ -98,14 +98,7 @@ export function DashboardShell({
             Welcome{profile?.display_name ? `, ${profile.display_name}` : ""}
           </div>
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <Bell className="h-5 w-5 text-muted-foreground" />
-              {unread > 0 && (
-                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-background">
-                  {unread}
-                </span>
-              )}
-            </div>
+            <UserBell />
             <div className="grid h-8 w-8 place-items-center rounded-full bg-gradient-primary text-xs font-bold text-background">
               {(profile?.display_name ?? "U").slice(0, 1).toUpperCase()}
             </div>
