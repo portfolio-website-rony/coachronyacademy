@@ -199,6 +199,33 @@ export type Database = {
         }
         Relationships: []
       }
+      cms_page_banners: {
+        Row: {
+          media_type: string
+          media_url: string | null
+          page: string
+          subtitle: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          media_type?: string
+          media_url?: string | null
+          page: string
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          media_type?: string
+          media_url?: string | null
+          page?: string
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cms_portfolio: {
         Row: {
           category: string | null
@@ -208,6 +235,8 @@ export type Database = {
           display_order: number
           id: string
           link: string | null
+          media_type: string
+          media_url: string | null
           published: boolean
           title: string
           updated_at: string
@@ -220,6 +249,8 @@ export type Database = {
           display_order?: number
           id?: string
           link?: string | null
+          media_type?: string
+          media_url?: string | null
           published?: boolean
           title: string
           updated_at?: string
@@ -232,6 +263,8 @@ export type Database = {
           display_order?: number
           id?: string
           link?: string | null
+          media_type?: string
+          media_url?: string | null
           published?: boolean
           title?: string
           updated_at?: string
