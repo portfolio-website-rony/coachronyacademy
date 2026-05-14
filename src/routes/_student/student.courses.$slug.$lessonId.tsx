@@ -123,10 +123,15 @@ function LessonPage() {
     })();
   }, [session, lesson]);
 
+  const lastSaveRef = useRef(0);
   async function saveProgress(seconds: number, total: number) {
     if (!enrollmentId || !lesson) return;
-    const dur = total > 0 ? total : lesson.duration_seconds;
+    const dur = total > 0 ? total : (lesson.duration_seconds > 0 ? lesson.duration_seconds : 0);
     const isComplete = dur > 0 && seconds / dur >= 0.9;
+    // Throttle: only write if 15s elapsed since last save, or completion fires
+    const now = Date.now();
+    if (!isComplete && !completedRef.current && now - lastSaveRef.current < 15000) return;
+    lastSaveRef.current = now;
     await supabase.from("lesson_progress").upsert(
       {
         enrollment_id: enrollmentId,
