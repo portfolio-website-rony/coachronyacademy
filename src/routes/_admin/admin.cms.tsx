@@ -187,13 +187,24 @@ function CmsPage() {
       </div>
 
       <div className="flex justify-end">
-        <button onClick={() => setShowForm((v) => !v)} className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow">
+        <button
+          onClick={() => {
+            if (showForm) { resetPortfolioForm(); setShowForm(false); }
+            else { resetPortfolioForm(); setShowForm(true); }
+          }}
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow"
+        >
           <Plus className="h-4 w-4" /> {tab.key === "banners" ? "Set / Update Banner" : `New ${tab.label.slice(0, -1)}`}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={(e) => { e.preventDefault(); void submit(new FormData(e.currentTarget)); }} className="glass grid gap-3 rounded-2xl p-5">
+        <form key={pfEditId ?? "new"} onSubmit={(e) => { e.preventDefault(); void submit(new FormData(e.currentTarget)); }} className="glass grid gap-3 rounded-2xl p-5">
+          {tab.key === "portfolio" && pfEditId && (
+            <div className="rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary-glow">
+              Editing: <strong>{String(pfEdit?.title ?? "")}</strong>
+            </div>
+          )}
           {tab.key === "blog" && (<>
             <input name="title" placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
             <input name="slug" placeholder="slug-url *" required className="glass rounded-xl px-3 py-2 text-sm" />
