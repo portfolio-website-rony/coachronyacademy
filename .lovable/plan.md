@@ -1,27 +1,23 @@
-## Header Navigation Update
+## Plan: Add count-up animation to hero stats
 
-Update the main header nav items in `src/components/site/Header.tsx`.
+Add a number counting animation to the four stat cards (10K+ Students, 5K+ Projects, 98% Success Rate, 50+ Countries) in the hero section. Existing float animation, glass styling, icons, and labels stay exactly the same.
 
-**Current nav:** হোম, কোর্স, শপ, ওয়ার্কশপ, ব্লগ
-**New nav:** Home, About, Courses, Shop, Blog
+### Changes
 
-### Change
-Replace the `NAV` constant in `src/components/site/Header.tsx`:
+**1. Update `src/components/site/hero/FloatingStat.tsx`**
+- Accept an optional numeric `value` (or parse the string like `"10K+"`, `"5K+"`, `"98%"`, `"50+"`).
+- Add a `useCountUp` effect using `framer-motion`'s `useMotionValue` + `animate` (already a dependency) that:
+  - Starts at 0
+  - Animates to the target number over ~1.8s with `easeOut`
+  - Triggers once when the card scrolls into view (`useInView` from framer-motion)
+- Render the animated number with the original suffix preserved (`K+`, `%`, `+`).
+- Keep the existing `animate-float`, glass styling, delay, icon, label — nothing else changes.
 
-```ts
-const NAV = [
-  { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/courses", label: "Courses" },
-  { to: "/shop", label: "Shop" },
-  { to: "/blog", label: "Blog" },
-] as const;
-```
+**2. No changes to `SpaceHero.tsx`**
+- The same `value="10K+"` etc. props keep working; the parsing happens inside `FloatingStat`.
 
-- Removes "Events / ওয়ার্কশপ" from the header
-- Adds "About" → `/about` (route already exists)
-- Switches all labels to English
-
-### Out of scope
-- No changes to footer, mobile drawer logic, or routes
-- `/events` route remains accessible, just not shown in the top nav
+### Technical notes
+- Parse logic: extract leading number + multiplier (`K` → ×1000, `M` → ×1000000) and suffix (`+`, `%`).
+- During animation, format back: if original had `K`, show `Math.round(n/1000) + "K"` etc.
+- Use `useRef` + `useInView(ref, { once: true, margin: "-50px" })` so the count starts when visible.
+- Respect `prefers-reduced-motion`: skip animation and show final value immediately.
