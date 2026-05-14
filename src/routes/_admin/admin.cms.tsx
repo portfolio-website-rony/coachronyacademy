@@ -211,8 +211,8 @@ function CmsPage() {
       <div className="flex justify-end">
         <button
           onClick={() => {
-            if (showForm) { resetPortfolioForm(); setShowForm(false); }
-            else { resetPortfolioForm(); setShowForm(true); }
+            if (showForm) { resetPortfolioForm(); resetBlogForm(); setShowForm(false); }
+            else { resetPortfolioForm(); resetBlogForm(); setShowForm(true); }
           }}
           className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow"
         >
