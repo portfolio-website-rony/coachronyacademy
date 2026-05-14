@@ -4,6 +4,7 @@ import { Section, GlassCard } from "@/components/site/Section";
 import { LeadForm } from "@/components/site/LeadForm";
 import { SERVICES, PROGRAMS, PORTFOLIO, TESTIMONIALS, STATS, SKILLS } from "@/lib/site-data";
 import { SpaceHero } from "@/components/site/hero/SpaceHero";
+import { CountUp } from "@/components/site/CountUp";
 import { useContactSettings } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/")({
@@ -32,7 +33,7 @@ function Home() {
                 }`}
               >
                 <div className="font-display text-2xl font-bold tracking-tight text-gold-gradient sm:text-3xl lg:text-[1.75rem] xl:text-3xl">
-                  {s.value}
+                  <CountUp raw={s.value} />
                 </div>
                 <div className="mt-2 text-[11px] font-medium uppercase tracking-wider text-foreground/80 sm:text-xs">
                   {s.label}

@@ -1,15 +1,19 @@
-## Plan: Remove float motion from hero stat cards, keep style
+## Goal
+Stats bar-er number-gulo (157,680,000+, 43,800+, 10,000+, 500+, 50+) scroll-e elei count-up animate hobe — same effect jeta hero-r FloatingStat-e ache.
 
-The four stat cards (10K+ Students, 5K+ Projects, 98% Success Rate, 50+ Countries) currently bob up and down via the `animate-float` class. The user wants them to stay perfectly still while keeping the exact same glass style, neon border, icons, gradient numbers, and labels.
+## Changes
 
-### Change
+1. **New file `src/components/site/CountUp.tsx`**
+   - Extract reusable `CountUp` + `parseValue` from `FloatingStat.tsx` (no logic change).
+   - Export as named `CountUp`.
 
-**`src/components/site/hero/FloatingStat.tsx`**
-- Remove `animate-float` class from the card wrapper.
-- Remove the inline `style={{ animationDelay: ... }}` (no longer needed).
-- Keep everything else: `glass-strong neon-border rounded-2xl px-4 py-3`, the framer-motion mount fade-in (initial opacity/y), the count-up number animation, icon, label.
+2. **Update `src/components/site/hero/FloatingStat.tsx`**
+   - Remove local `parseValue` + `CountUp`, import from `@/components/site/CountUp` instead. Keeps existing behavior identical.
 
-### Not changed
-- Count-up number animation stays (per previous request).
-- Initial fade-in on mount stays (one-time, not looping).
-- No changes to `SpaceHero.tsx` or any other file.
+3. **Update `src/routes/index.tsx`**
+   - Import `CountUp`, replace `{s.value}` (line 35) with `<CountUp raw={s.value} />`. Styling/layout untouched.
+
+## Notes
+- `157,680,000+` will animate as a comma-formatted integer count-up over ~1.8s, triggered once when the bar enters viewport.
+- `useReducedMotion` respected.
+- Pure frontend/visual change; no data or business logic touched.
