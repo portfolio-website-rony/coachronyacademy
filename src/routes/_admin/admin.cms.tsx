@@ -163,8 +163,7 @@ function CmsPage() {
     if (result?.error) return toast.error(result.error.message);
     toast.success("Saved");
     setShowForm(false);
-    // reset portfolio media
-    setPfCover(null); setPfMediaUrl(null); setPfMediaType("image");
+    resetPortfolioForm();
     void load();
   }
 
