@@ -20,7 +20,7 @@ const NAV: NavItem[] = [
   { to: "/student/orders", label: "My Orders", icon: Receipt },
   { to: "/student/progress", label: "Progress", icon: GraduationCap },
   { to: "/student/saved", label: "Saved", icon: Bookmark },
-  { to: "/student/notifications", label: "Notifications", icon: Bell },
+  
   { to: "/student/community", label: "Community", icon: Users },
   { to: "/student/resources", label: "Resources", icon: Library },
 ];
