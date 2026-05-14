@@ -220,9 +220,9 @@ function StudentOverview() {
         </section>
       )}
 
-      {/* All courses + notifications */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="glass rounded-2xl p-5 lg:col-span-2">
+      {/* My courses */}
+      <div className="grid gap-6">
+        <div className="glass rounded-2xl p-5">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-lg font-bold">My courses</h2>
             <Link to="/student/courses" className="text-xs text-primary-glow hover:underline">
