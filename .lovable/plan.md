@@ -1,26 +1,44 @@
-## সমস্যাটা
-Student checkout-এ free course submit করলে শুধু `payments` টেবিলে `pending` payment তৈরি হচ্ছে। কিন্তু enrollment trigger শুধু payment `verified/paid/succeeded` হলে enrollment বানায়। তাই UI-তে “enrolled” মনে হলেও `enrollments` টেবিলে row তৈরি হচ্ছে না, Student Dashboard-এ Enrolled = 0 থাকে এবং course/lesson access দেখা যায় না।
+## লক্ষ্য
 
-## Fix plan
-1. **Checkout free enrollment ঠিক করা**
-   - Free course হলে payment flow bypass/auto-complete করে সরাসরি `enrollments` row তৈরি করা হবে।
-   - Duplicate enroll click করলে error না দিয়ে existing enrollment ধরে course learning page-এ পাঠাবে।
+লেসন ভিডিওতে যেন কেউ YouTube-এ গিয়ে video না দেখতে পারে, share button না পায়, এবং download/screen recording নিরুৎসাহিত হয়।
 
-2. **Existing broken free enrollments recover করা**
-   - যেসব free payments `pending` অবস্থায় আছে এবং amount `0`, সেগুলো থেকে missing enrollments backfill করা হবে।
-   - এতে আপনার `MD RONY` account-এ করা আগের free enrollments Student Dashboard-এ দেখাবে।
+## কী পরিবর্তন হবে
 
-3. **Student Dashboard course UX ঠিক করা**
-   - “My courses” card থেকে course detail page খোলা থাকবে।
-   - Course detail page-এ enrolled হলে clear “Continue learning” এবং curriculum lesson “Watch” links থাকবে।
-   - No course/lesson/missing enrollment হলে blank skeleton না রেখে readable message দেখাবে।
+শুধু `src/components/learn/YouTubePlayer.tsx` ফাইল আপডেট হবে। অন্য কোনো logic/route/data পরিবর্তন হবে না।
 
-4. **Lesson access stable করা**
-   - Lesson route enrollment loaded না হওয়া পর্যন্ত locked state দেখাবে না।
-   - Enrolled student সব lesson খুলতে পারবে, progress save/mark complete কাজ করবে।
+### 1. YouTube branding ও share button লুকানো
 
-## Technical changes
-- Update `src/routes/courses_.$slug.checkout.tsx` free checkout submit logic.
-- Update `src/routes/_student/student.tsx` to avoid bad links/empty course rows and improve enrolled-course CTAs.
-- Update `src/routes/_student/student.courses.$slug.tsx` and lesson route loading/empty states as needed.
-- Add a database migration to backfill free pending payments into enrollments and make future free payment/enrollment behavior reliable.
+YouTube IFrame API সরাসরি share button hide করার option দেয় না, তাই overlay দিয়ে block করতে হবে:
+
+- Player container-এর উপরে `relative` wrapper।
+- **Top bar overlay** (top-right কোণে ~120px × 50px): video title + share/CC/settings button যেই এলাকায় আসে, সেটার উপরে transparent div বসিয়ে click block করা — তবে play/pause-এর জন্য center ফাঁকা থাকবে।
+- **Bottom-right YouTube logo overlay**: ছোট transparent div, যাতে কেউ logo-তে click করে YouTube-এ যেতে না পারে।
+- `playerVars`-এ `modestbranding: 1`, `rel: 0`, `iv_load_policy: 3`, `fs: 0` (fullscreen disable, কারণ fullscreen-এ share বের হয়), `disablekb: 1` যোগ করা।
+
+### 2. Right-click + drag block
+
+- Player wrapper-এ `onContextMenu={e => e.preventDefault()}` — right-click "copy video URL" block।
+- CSS: `user-select: none`, `-webkit-user-drag: none`।
+
+### 3. Screen recording deterrent
+
+ব্রাউজারে screen recording **পুরোপুরি বন্ধ করা সম্ভব না** (এটা OS-level, browser এর hand এর বাইরে)। তবে কিছু deterrent দেওয়া যায়:
+
+- ভিডিওর উপরে subtle watermark overlay (logged-in user-এর email/নাম, কম opacity-তে) — recording হলে চেনা যাবে কে করেছে।
+- DevTools/Print-screen শুধু visual deterrent হিসেবে, কিন্তু এটা bypass করা সহজ।
+
+**সততার সাথে**: screen recording 100% বন্ধ করা যায় না কোনো web app-এ (Netflix/YouTube-ও পারে না সব ক্ষেত্রে)। শুধু কঠিন করা যায়।
+
+## কী অপরিবর্তিত থাকবে
+
+- Speed selector, progress tracking, lesson navigation, enrollment logic — সব same।
+- Video play/pause normal কাজ করবে।
+
+## একটা প্রশ্ন
+
+Watermark overlay-তে user-এর কোন info দেখাব?
+- (a) Email
+- (b) Full name
+- (c) কিছু না — শুধু share/logo block যথেষ্ট
+
+জানালে সেইভাবে implement করব।
