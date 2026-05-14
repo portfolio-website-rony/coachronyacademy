@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Play, Rocket, Users, Trophy, Globe2, GraduationCap } from "lucide-react";
-import missionBadge from "@/assets/mission-badge.png";
 import { Starfield } from "./Starfield";
 import { NebulaLayer } from "./NebulaLayer";
 import { MouseSpotlight } from "./MouseSpotlight";
@@ -23,16 +22,7 @@ export function SpaceHero() {
       />
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-12 px-4 pt-28 pb-24 text-center sm:px-6 lg:pt-32">
-        <motion.img
-          src={missionBadge}
-          alt="Mission: Teach AI to 1M People"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="w-full max-w-[400px] drop-shadow-[0_0_30px_oklch(0.7_0.2_30/0.4)]"
-        />
-
-
+        {/* TOP — orbit system */}
         <motion.div
           className="relative flex w-full items-center justify-center"
         >
@@ -69,7 +59,17 @@ export function SpaceHero() {
             </span>
           </motion.h1>
 
-
+          <motion.div
+            className="mt-5 inline-flex items-center gap-2 rounded-full glass-strong px-4 py-2 shadow-neon-purple"
+          >
+            <span className="text-[10px] uppercase tracking-[0.25em] text-primary-glow">
+              Mission
+            </span>
+            <span className="h-3 w-px bg-white/20" />
+            <span className="font-display text-sm font-semibold sm:text-base">
+              Teach AI to <span className="text-gradient glow-text">1M</span> People
+            </span>
+          </motion.div>
 
           <motion.p
             className="mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg"
