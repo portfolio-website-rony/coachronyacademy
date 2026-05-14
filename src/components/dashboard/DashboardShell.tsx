@@ -23,37 +23,9 @@ export function DashboardShell({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const [unread, setUnread] = useState(0);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-  const { profile, session } = useAuthUser();
-
-  useEffect(() => {
-    if (!session) return;
-    const userId = session.user.id;
-
-    async function loadCount() {
-      const { count } = await supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .eq("read", false);
-      setUnread(count ?? 0);
-    }
-    void loadCount();
-
-    const ch = supabase
-      .channel(`notif-${userId}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
-        () => void loadCount(),
-      )
-      .subscribe();
-    return () => {
-      void supabase.removeChannel(ch);
-    };
-  }, [session]);
+  const { profile } = useAuthUser();
 
   async function logout() {
     await supabase.auth.signOut();
