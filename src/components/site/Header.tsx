@@ -4,7 +4,6 @@ import {
   Menu,
   X,
   LayoutDashboard,
-  Search,
   Sun,
   Moon,
   User,
@@ -37,7 +36,6 @@ const NAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
   const [dark, setDark] = useState(true);
   const { session, profile } = useAuthUser();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -45,14 +43,6 @@ export function Header() {
   const isStudent = pathname.startsWith("/student");
   const email = session?.user?.email ?? "";
   const initial = (profile?.display_name ?? email ?? "U").slice(0, 1).toUpperCase();
-
-  function submitSearch(e: React.FormEvent) {
-    e.preventDefault();
-    const term = q.trim();
-    if (!term) return;
-    navigate({ to: "/courses", search: { q: term } as any });
-    setOpen(false);
-  }
 
   async function logout() {
     await supabase.auth.signOut();
@@ -67,17 +57,6 @@ export function Header() {
           <Link to="/" className="flex shrink-0 items-center" aria-label="Coachrony Academy">
             <img src={logo} alt="Coachrony Academy" className="h-12 w-auto sm:h-14" />
           </Link>
-
-          <form onSubmit={submitSearch} className="relative hidden flex-1 max-w-xs md:block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search…"
-              maxLength={120}
-              className="glass w-full rounded-full border border-white/10 bg-white/[0.03] py-2 pl-9 pr-3 text-sm outline-none focus:border-primary/40"
-            />
-          </form>
 
           <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex">
             <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2 py-1">
@@ -220,15 +199,6 @@ export function Header() {
 
         {open && (
           <div className="border-t border-white/10 px-4 py-3 lg:hidden">
-            <form onSubmit={submitSearch} className="relative mb-3">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search…"
-                className="glass w-full rounded-full border border-white/10 bg-white/[0.03] py-2 pl-9 pr-3 text-sm outline-none"
-              />
-            </form>
             <div className="grid gap-1">
               {NAV.map((n) => (
                 <Link
