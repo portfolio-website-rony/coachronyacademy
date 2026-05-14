@@ -33,7 +33,10 @@ export function DashboardShell({
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-  const { profile } = useAuthUser();
+  const { profile, session } = useAuthUser();
+  const isStudent = pathname.startsWith("/student");
+  const email = session?.user?.email ?? "";
+  const initial = (profile?.display_name ?? email ?? "U").slice(0, 1).toUpperCase();
 
   async function logout() {
     await supabase.auth.signOut();
