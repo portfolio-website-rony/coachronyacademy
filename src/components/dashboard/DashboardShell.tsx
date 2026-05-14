@@ -1,8 +1,9 @@
-import { useEffect, useState, type ReactNode, type ComponentType } from "react";
+import { useState, type ReactNode, type ComponentType } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Menu, X, LogOut, Bell, Sparkles, Home } from "lucide-react";
+import { Menu, X, LogOut, Sparkles, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
+import { UserBell } from "@/components/dashboard/UserBell";
 import { toast } from "sonner";
 
 export type NavItem = {
