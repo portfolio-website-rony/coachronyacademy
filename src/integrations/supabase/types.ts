@@ -1101,6 +1101,24 @@ export type Database = {
           },
         ]
       }
+      lesson_saves: {
+        Row: {
+          created_at: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -1239,6 +1257,7 @@ export type Database = {
           id: string
           onboarded: boolean
           phone: string | null
+          social_links: Json
           updated_at: string
           whatsapp: string | null
         }
@@ -1251,6 +1270,7 @@ export type Database = {
           id: string
           onboarded?: boolean
           phone?: string | null
+          social_links?: Json
           updated_at?: string
           whatsapp?: string | null
         }
@@ -1263,6 +1283,7 @@ export type Database = {
           id?: string
           onboarded?: boolean
           phone?: string | null
+          social_links?: Json
           updated_at?: string
           whatsapp?: string | null
         }
