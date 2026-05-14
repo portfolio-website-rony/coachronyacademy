@@ -1,34 +1,35 @@
-## লক্ষ্য
+## সমস্যা
 
-`/student/courses` (My Courses) page-এ student যেগুলো enroll করেছে শুধু সেগুলো উপরে দেখাবে। বাকি (যেগুলো এখনো enroll করেনি) আলাদা একটা "Browse more courses" section-এ নিচে দেখাবে — সেখান থেকে enroll করতে পারবে।
+`/student/courses` page-এ সব course-ই "Enroll free" হিসেবে দেখাচ্ছে — কারণ button click করলেই সরাসরি `enrollments` table-এ insert হয়ে যাচ্ছে, course-এর `price` দেখাও হচ্ছে না, check-ও হচ্ছে না।
 
-## পরিবর্তন
+আসলে `courses` table-এ `price` এবং `discount_price` field already আছে এবং admin panel (Edit Course page) থেকে এগুলো এডিট করা যায়। শুধু student-side UI সেটা respect করছে না।
 
-শুধু একটা ফাইল: `src/routes/_student/student.courses.index.tsx`
+## সমাধান
 
-### UI structure (নতুন)
+Course free কিনা সেটা ঠিক হবে এই rule দিয়ে:
 
-```
-Page heading: "My courses"
+- **Free** → `discount_price === 0` অথবা (`discount_price` null হলে `price === 0`)
+- **Paid** → effective price > 0
 
-[Section 1 — "My enrolled courses"]
-  - শুধু enrolled courses (Continue → button)
-  - যদি কোনো enrolled course না থাকে: "You haven't enrolled in any course yet — browse below."
+### পরিবর্তন (শুধু একটা ফাইল)
 
-[Section 2 — "Browse more courses"]
-  - বাকি published courses যেগুলো student এখনো enroll করেনি (Enroll free button)
-  - সব enrolled হলে এই section হাইড।
-```
+`src/routes/_student/student.courses.index.tsx`:
 
-### Logic
+1. `Course` type-এ `price` আর `discount_price`, `currency` যোগ; SELECT query-তেও যোগ।
+2. `CourseCard`-এ একটা small price badge — Free হলে "Free" green pill, paid হলে `৳1,500` (discount থাকলে original strike-through সহ)।
+3. Button logic:
+   - **Enrolled** → আগের মতো "Continue →" link.
+   - **Not enrolled + Free** → আগের মতো instant enroll button ("Enroll free").
+   - **Not enrolled + Paid** → "Enroll now — ৳X" button যেটা `/courses/$slug/checkout` route-এ পাঠাবে (এটা already exists)। সরাসরি insert হবে না।
+4. "Browse more courses" section-এর subtitle থেকে "Free enrollment" line সরিয়ে neutral text।
 
-- বর্তমান data fetching (courses + enrollments) same রাখব।
-- Render-এ courses কে `enrolled` আর `available` দুই array-এ split করে দুইটা grid-এ দেখাব।
-- Card design, enroll function, navigation link — সব same।
+### Admin panel
 
-## কী অপরিবর্তিত
+Admin Edit Course page-এ already `price` আর `discount_price` field আছে — ওখানে কিছু change লাগবে না। Admin price = 0 দিলে free, > 0 দিলে paid হবে — এটাই control।
 
-- Database, RLS, enrollment flow, video player, route structure — কিছুই touch হচ্ছে না।
-- Heading text এর বাইরে কোনো design change নাই।
+## কী touch হচ্ছে না
+
+- Database schema, RLS, `enrollments` flow, checkout page, payment verification, video player — কিছুই না।
+- Admin UI-এ কোনো নতুন field বা toggle add হচ্ছে না (price field দিয়েই free/paid control হচ্ছে)।
 
 ঠিক থাকলে implement করে দিচ্ছি।
