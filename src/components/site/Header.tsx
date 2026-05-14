@@ -28,11 +28,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NAV = [
-  { to: "/", label: "হোম" },
-  { to: "/courses", label: "কোর্স" },
-  { to: "/shop", label: "শপ" },
-  { to: "/events", label: "ওয়ার্কশপ" },
-  { to: "/blog", label: "ব্লগ" },
+  { to: "/", label: "Home" },
+  { to: "/about", label: "About" },
+  { to: "/courses", label: "Courses" },
+  { to: "/shop", label: "Shop" },
+  { to: "/blog", label: "Blog" },
 ] as const;
 
 export function Header() {
