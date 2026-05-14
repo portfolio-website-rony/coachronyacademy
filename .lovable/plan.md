@@ -1,11 +1,15 @@
-## Remove sidebar footer buttons
+## Problem
+The site `Header` is `sticky top-0 z-40`, but the dashboard sidebar is `lg:static`. When the user scrolls, the sidebar moves up with the page and slides *behind* the sticky header — causing the visual overlap shown in the screenshot.
 
-The student sidebar currently shows "Back to site" and "Logout" at the bottom (highlighted red in your screenshot). These are duplicates — the same actions already exist in the profile avatar dropdown in the header.
+## Fix (one file)
+**`src/components/dashboard/DashboardShell.tsx`** — change the `<aside>` classes only:
 
-### Change
-**`src/components/dashboard/DashboardShell.tsx`**
-- Remove the entire bottom footer block of the sidebar (the `<div className="shrink-0 border-t border-white/10 p-3">` containing the "Back to site" `<Link>` and the "Logout" `<button>`).
-- Remove the now-unused `logout` function, `useNavigate`, `supabase`, `toast`, `LogOut`, and `Home` imports.
-- Sidebar will end cleanly after the nav list.
+- Replace `lg:static lg:translate-x-0` with:
+  - `lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:translate-x-0 lg:self-start`
+- Add `lg:z-30` (mobile drawer keeps `z-40`, header stays `z-40` so it always sits above).
 
-No other files, routes, or logic change. Header dropdown keeps handling logout and back-to-site.
+Result: on desktop the sidebar stays pinned just below the header while the main content scrolls. No more overlap.
+
+## Out of scope
+- No changes to `Header.tsx`, routes, auth, or any logic.
+- Mobile drawer behavior unchanged.
