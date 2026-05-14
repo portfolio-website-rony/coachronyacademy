@@ -32,7 +32,7 @@ function Home() {
                     : ""
                 }`}
               >
-                <div className="font-display text-2xl font-bold tracking-tight text-gold-gradient sm:text-3xl lg:text-[1.75rem] xl:text-3xl">
+                <div className="font-display text-2xl font-bold tracking-tight text-gradient sm:text-3xl lg:text-[1.75rem] xl:text-3xl">
                   <CountUp raw={s.value} />
                 </div>
                 <div className="mt-2 text-[11px] font-medium uppercase tracking-wider text-foreground/80 sm:text-xs">
