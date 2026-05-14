@@ -1,8 +1,9 @@
-import { useEffect, useState, type ReactNode, type ComponentType } from "react";
+import { useState, type ReactNode, type ComponentType } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Menu, X, LogOut, Bell, Sparkles, Home } from "lucide-react";
+import { Menu, X, LogOut, Sparkles, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
+import { UserBell } from "@/components/dashboard/UserBell";
 import { toast } from "sonner";
 
 export type NavItem = {
@@ -22,37 +23,9 @@ export function DashboardShell({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const [unread, setUnread] = useState(0);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-  const { profile, session } = useAuthUser();
-
-  useEffect(() => {
-    if (!session) return;
-    const userId = session.user.id;
-
-    async function loadCount() {
-      const { count } = await supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .eq("read", false);
-      setUnread(count ?? 0);
-    }
-    void loadCount();
-
-    const ch = supabase
-      .channel(`notif-${userId}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
-        () => void loadCount(),
-      )
-      .subscribe();
-    return () => {
-      void supabase.removeChannel(ch);
-    };
-  }, [session]);
+  const { profile } = useAuthUser();
 
   async function logout() {
     await supabase.auth.signOut();
@@ -125,14 +98,7 @@ export function DashboardShell({
             Welcome{profile?.display_name ? `, ${profile.display_name}` : ""}
           </div>
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <Bell className="h-5 w-5 text-muted-foreground" />
-              {unread > 0 && (
-                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-background">
-                  {unread}
-                </span>
-              )}
-            </div>
+            <UserBell />
             <div className="grid h-8 w-8 place-items-center rounded-full bg-gradient-primary text-xs font-bold text-background">
               {(profile?.display_name ?? "U").slice(0, 1).toUpperCase()}
             </div>
