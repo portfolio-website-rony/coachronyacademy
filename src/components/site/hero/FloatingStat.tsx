@@ -65,8 +65,7 @@ export function FloatingStat({
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
-      className={`glass-strong neon-border animate-float rounded-2xl px-4 py-3 ${className}`}
-      style={{ animationDelay: `${delay}s` }}
+      className={`glass-strong neon-border rounded-2xl px-4 py-3 ${className}`}
     >
       <div className="flex items-center gap-2">
         {icon && <div className="text-primary-glow">{icon}</div>}
