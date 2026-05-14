@@ -8,6 +8,7 @@ import {
   Bookmark, BookmarkPlus, Trash2, Save, ListVideo,
 } from "lucide-react";
 import { toast } from "sonner";
+import { SaveLessonButton } from "@/components/student/SaveLessonButton";
 
 export const Route = createFileRoute("/_student/student/courses/$slug/$lessonId")({
   component: LessonPage,
@@ -243,6 +244,7 @@ function LessonPage() {
               >
                 <BookmarkPlus className="h-4 w-4" /> Bookmark
               </button>
+              <SaveLessonButton lessonId={lesson.id} />
               <button
                 onClick={markComplete}
                 disabled={done}
