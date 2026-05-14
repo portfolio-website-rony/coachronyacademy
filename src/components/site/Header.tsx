@@ -209,15 +209,6 @@ export function Header() {
 
         {open && (
           <div className="border-t border-white/10 px-4 py-3 lg:hidden">
-            <form onSubmit={submitSearch} className="relative mb-3">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search…"
-                className="glass w-full rounded-full border border-white/10 bg-white/[0.03] py-2 pl-9 pr-3 text-sm outline-none"
-              />
-            </form>
             <div className="grid gap-1">
               {NAV.map((n) => (
                 <Link
