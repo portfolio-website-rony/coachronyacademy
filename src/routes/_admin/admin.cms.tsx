@@ -52,10 +52,12 @@ function CmsPage() {
 
   async function remove(id: string, key?: string) {
     if (!confirm("Delete?")) return;
-    const q = supabase.from(tab.table).delete();
-    const { error } = tab.key === "banners"
-      ? await q.eq("page", key ?? "")
-      : await q.eq("id", id);
+    let error;
+    if (tab.key === "banners") {
+      ({ error } = await supabase.from("cms_page_banners").delete().eq("page", key ?? ""));
+    } else {
+      ({ error } = await supabase.from(tab.table).delete().eq("id" as never, id as never));
+    }
     if (error) return toast.error(error.message);
     void load();
   }
