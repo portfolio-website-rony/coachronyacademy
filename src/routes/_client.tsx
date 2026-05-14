@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { Loader2, Briefcase, CalendarDays, CreditCard, MessageSquare, LayoutDashboard, UserCircle2 } from "lucide-react";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { DashboardShell, type NavItem } from "@/components/dashboard/DashboardShell";
+import { Header } from "@/components/site/Header";
+import { Footer } from "@/components/site/Footer";
 
 export const Route = createFileRoute("/_client")({
   component: ClientLayout,
@@ -35,8 +37,12 @@ function ClientLayout() {
     );
   }
   return (
-    <DashboardShell brand="Client" nav={NAV}>
-      <Outlet />
-    </DashboardShell>
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <DashboardShell brand="Client" nav={NAV}>
+        <Outlet />
+      </DashboardShell>
+      <Footer />
+    </div>
   );
 }

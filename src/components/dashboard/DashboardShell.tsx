@@ -1,18 +1,8 @@
 import { useState, type ReactNode, type ComponentType } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Menu, X, LogOut, Sparkles, Home, User, BookOpen, BookMarked, Settings } from "lucide-react";
+import { Menu, X, LogOut, Sparkles, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuthUser } from "@/lib/auth/use-auth-user";
-import { UserBell } from "@/components/dashboard/UserBell";
 import { toast } from "sonner";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export type NavItem = {
   to: string;
@@ -33,10 +23,6 @@ export function DashboardShell({
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-  const { profile, session } = useAuthUser();
-  const isStudent = pathname.startsWith("/student");
-  const email = session?.user?.email ?? "";
-  const initial = (profile?.display_name ?? email ?? "U").slice(0, 1).toUpperCase();
 
   async function logout() {
     await supabase.auth.signOut();
@@ -45,7 +31,7 @@ export function DashboardShell({
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex flex-1 bg-background">
       <aside
         className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-white/10 bg-[oklch(0.16_0.02_270)]/95 backdrop-blur transition-transform lg:static lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
@@ -101,95 +87,12 @@ export function DashboardShell({
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/10 bg-background/80 px-4 backdrop-blur sm:px-6">
-          <button onClick={() => setOpen(true)} className="lg:hidden" aria-label="Open menu">
+        <div className="flex h-12 items-center border-b border-white/10 bg-background/80 px-4 backdrop-blur lg:hidden">
+          <button onClick={() => setOpen(true)} aria-label="Open menu">
             <Menu className="h-5 w-5" />
           </button>
-          <div className="hidden text-sm text-muted-foreground lg:block">
-            Welcome{profile?.display_name ? `, ${profile.display_name}` : ""}
-          </div>
-          <div className="flex items-center gap-3">
-            <UserBell />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="flex items-center gap-2 rounded-full p-0.5 outline-none ring-primary/40 transition hover:ring-2"
-                  aria-label="Account menu"
-                >
-                  <span className="grid h-8 w-8 place-items-center overflow-hidden rounded-full bg-gradient-primary text-xs font-bold text-background">
-                    {profile?.avatar_url ? (
-                      <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      initial
-                    )}
-                  </span>
-                  <span className="hidden text-sm font-medium sm:block">
-                    {profile?.display_name ?? "Account"}
-                  </span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel className="flex items-center gap-3 py-2">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-primary text-sm font-bold text-background">
-                    {profile?.avatar_url ? (
-                      <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      initial
-                    )}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold">
-                      {profile?.display_name ?? "Student"}
-                    </span>
-                    {email && (
-                      <span className="block truncate text-xs font-normal text-muted-foreground">
-                        {email}
-                      </span>
-                    )}
-                  </span>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {isStudent ? (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link to="/student/profile" className="flex items-center gap-2">
-                        <User className="h-4 w-4" /> My Profile
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/student/courses" className="flex items-center gap-2">
-                        <BookOpen className="h-4 w-4" /> My Courses
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/student/ebooks" className="flex items-center gap-2">
-                        <BookMarked className="h-4 w-4" /> My Ebooks
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/student/profile" className="flex items-center gap-2">
-                        <Settings className="h-4 w-4" /> Settings
-                      </Link>
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center gap-2">
-                      <User className="h-4 w-4" /> Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="flex items-center gap-2 text-red-400 focus:text-red-400"
-                >
-                  <LogOut className="h-4 w-4" /> Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
+          <span className="ml-3 text-sm font-semibold text-muted-foreground">{brand}</span>
+        </div>
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
