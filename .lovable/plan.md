@@ -1,35 +1,33 @@
-## সমস্যা
+## লক্ষ্য
 
-`/student/courses` page-এ সব course-ই "Enroll free" হিসেবে দেখাচ্ছে — কারণ button click করলেই সরাসরি `enrollments` table-এ insert হয়ে যাচ্ছে, course-এর `price` দেখাও হচ্ছে না, check-ও হচ্ছে না।
+Top-right corner-এ user avatar (or initial) এ click করলে একটা dropdown menu open হবে — উপরে user-এর avatar + name + email, নিচে quick links: My Profile, My Courses, My Ebooks, Settings, Logout। ঠিক attached image-এর মতো।
 
-আসলে `courses` table-এ `price` এবং `discount_price` field already আছে এবং admin panel (Edit Course page) থেকে এগুলো এডিট করা যায়। শুধু student-side UI সেটা respect করছে না।
+Avatar/name নিজে customize করার feature already আছে — `/student/profile` page-এ avatar upload + display name edit আছে। নতুন kichu লাগবে না সেদিকে।
 
-## সমাধান
+## পরিবর্তন
 
-Course free কিনা সেটা ঠিক হবে এই rule দিয়ে:
+শুধু একটা ফাইল: `src/components/dashboard/DashboardShell.tsx`
 
-- **Free** → `discount_price === 0` অথবা (`discount_price` null হলে `price === 0`)
-- **Paid** → effective price > 0
+- Header-এর avatar circle টাকে existing shadcn `DropdownMenu` দিয়ে wrap করব।
+- Trigger: avatar (large হলে name-ও পাশে দেখাবে desktop-এ)।
+- Dropdown content (project-এর dark glass theme অনুযায়ী, attached image-এর structure):
+  - **Header row**: avatar + display_name + email (greyed)
+  - Divider
+  - **My Profile** → `/student/profile`
+  - **My Courses** → `/student/courses`
+  - **My Ebooks** → `/student/ebooks`
+  - **Settings** → `/student/profile` (currently ওটাই settings page; future-এ আলাদা হলে route বদলানো trivial)
+  - Divider
+  - **Logout** → existing `signOut` + redirect (red-tinted)
 
-### পরিবর্তন (শুধু একটা ফাইল)
+### কেন এই menu items
 
-`src/routes/_student/student.courses.index.tsx`:
-
-1. `Course` type-এ `price` আর `discount_price`, `currency` যোগ; SELECT query-তেও যোগ।
-2. `CourseCard`-এ একটা small price badge — Free হলে "Free" green pill, paid হলে `৳1,500` (discount থাকলে original strike-through সহ)।
-3. Button logic:
-   - **Enrolled** → আগের মতো "Continue →" link.
-   - **Not enrolled + Free** → আগের মতো instant enroll button ("Enroll free").
-   - **Not enrolled + Paid** → "Enroll now — ৳X" button যেটা `/courses/$slug/checkout` route-এ পাঠাবে (এটা already exists)। সরাসরি insert হবে না।
-4. "Browse more courses" section-এর subtitle থেকে "Free enrollment" line সরিয়ে neutral text।
-
-### Admin panel
-
-Admin Edit Course page-এ already `price` আর `discount_price` field আছে — ওখানে কিছু change লাগবে না। Admin price = 0 দিলে free, > 0 দিলে paid হবে — এটাই control।
+Image-এ যা দেখানো হয়েছে সেগুলো student area-র জন্য। Admin/client shell-এ একই DashboardShell ব্যবহার হয়, তাই menu items গুলো `nav` prop থেকে পড়া যেতে পারে — কিন্তু image-এর items গুলো student-specific, অন্য role-এ wrong link হবে। তাই dropdown items dynamic করব: যদি current path `/student` দিয়ে শুরু হয় তবে student items দেখাব; নাহলে শুধু "Profile / Logout" minimal version।
 
 ## কী touch হচ্ছে না
 
-- Database schema, RLS, `enrollments` flow, checkout page, payment verification, video player — কিছুই না।
-- Admin UI-এ কোনো নতুন field বা toggle add হচ্ছে না (price field দিয়েই free/paid control হচ্ছে)।
+- DB, RLS, profile schema, avatar upload flow, route structure — কিছুই না।
+- Sidebar logout button অটুট থাকবে।
+- `/student/profile` page-এ already avatar upload + name edit আছে, ওখান থেকে user নিজের photo/name দিতে পারবে।
 
 ঠিক থাকলে implement করে দিচ্ছি।
