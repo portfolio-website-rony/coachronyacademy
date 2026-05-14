@@ -354,6 +354,9 @@ function CmsPage() {
                       {tab.key === "portfolio" && (
                         <button onClick={() => loadPortfolioForEdit(r)} className="rounded-lg bg-white/10 px-2 py-1 text-xs">Edit</button>
                       )}
+                      {tab.key === "blog" && (
+                        <button onClick={() => loadBlogForEdit(r)} className="rounded-lg bg-white/10 px-2 py-1 text-xs">Edit</button>
+                      )}
                       <button onClick={() => togglePublished(r)} className={`rounded-lg px-2 py-1 text-xs ${r.published ? "bg-[oklch(0.72_0.18_152/20%)] text-[oklch(0.85_0.15_152)]" : "bg-white/10"}`}>
                         {r.published ? "published" : "draft"}
                       </button>
