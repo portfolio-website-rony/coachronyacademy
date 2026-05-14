@@ -5,10 +5,11 @@ import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { YouTubePlayer, type YouTubePlayerHandle } from "@/components/learn/YouTubePlayer";
 import {
   ChevronLeft, ChevronRight, ArrowLeft, CheckCircle2, Circle, PlayCircle, Lock,
-  Bookmark, BookmarkPlus, Trash2, Save, ListVideo,
+  Bookmark, BookmarkPlus, Trash2, Save, ListVideo, Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SaveLessonButton } from "@/components/student/SaveLessonButton";
+import { AiTutorPanel } from "@/components/learn/AiTutorPanel";
 
 export const Route = createFileRoute("/_student/student/courses/$slug/$lessonId")({
   component: LessonPage,
