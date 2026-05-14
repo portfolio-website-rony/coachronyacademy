@@ -1,19 +1,12 @@
-## Goal
-Stats bar-er number-gulo (157,680,000+, 43,800+, 10,000+, 500+, 50+) scroll-e elei count-up animate hobe — same effect jeta hero-r FloatingStat-e ache.
+## Move Mission Pill to Top of Hero
 
-## Changes
+**What**: "MISSION | Teach AI to 1M People" pill ekhon headline-er niche ache. Setake hero section-er ekdom upore (orbit system-er upore) niye jabo — jekhane red box mark kora ache.
 
-1. **New file `src/components/site/CountUp.tsx`**
-   - Extract reusable `CountUp` + `parseValue` from `FloatingStat.tsx` (no logic change).
-   - Export as named `CountUp`.
+**Where**: `src/components/site/SpaceHero.tsx`
 
-2. **Update `src/components/site/hero/FloatingStat.tsx`**
-   - Remove local `parseValue` + `CountUp`, import from `@/components/site/CountUp` instead. Keeps existing behavior identical.
+**Changes**:
+1. Mission pill `motion.div` block (currently between badge "Future of AI Learning" and paragraph text) ke remove kore hero-er top-e (OrbitSystem-er upore, first child hishebe) place korbo.
+2. Centered thakbe, same glass-strong + shadow-neon-purple + gradient text style — shape, color, glow shob hubohu same thakbe.
+3. Top spacing slight adjust (pt-28 → pill-er jonno breathing room).
 
-3. **Update `src/routes/index.tsx`**
-   - Import `CountUp`, replace `{s.value}` (line 35) with `<CountUp raw={s.value} />`. Styling/layout untouched.
-
-## Notes
-- `157,680,000+` will animate as a comma-formatted integer count-up over ~1.8s, triggered once when the bar enters viewport.
-- `useReducedMotion` respected.
-- Pure frontend/visual change; no data or business logic touched.
+**Result**: Pill ekdom upore center-e thakbe, orbit + headline-er flow clean hobe.
