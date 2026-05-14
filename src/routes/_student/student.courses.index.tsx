@@ -18,7 +18,21 @@ type Course = {
   cover_url: string | null;
   level: string;
   category: string | null;
+  price: number;
+  discount_price: number | null;
+  currency: string;
 };
+
+function effectivePrice(c: Course) {
+  return c.discount_price !== null && c.discount_price !== undefined ? c.discount_price : c.price;
+}
+function isFree(c: Course) {
+  return Number(effectivePrice(c)) <= 0;
+}
+function fmtPrice(amount: number, currency: string) {
+  const sym = currency === "BDT" ? "৳" : currency === "USD" ? "$" : `${currency} `;
+  return `${sym}${Number(amount).toLocaleString()}`;
+}
 
 function CatalogPage() {
   const { session } = useAuthUser();
