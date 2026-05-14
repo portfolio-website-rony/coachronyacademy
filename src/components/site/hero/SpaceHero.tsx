@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Play, Rocket, Users, Trophy, Globe2, GraduationCap } from "lucide-react";
+import missionBadge from "@/assets/mission-badge.png";
 import { Starfield } from "./Starfield";
 import { NebulaLayer } from "./NebulaLayer";
 import { MouseSpotlight } from "./MouseSpotlight";
