@@ -31,7 +31,7 @@ export function DashboardShell({
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex flex-1 bg-background">
       <aside
         className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-white/10 bg-[oklch(0.16_0.02_270)]/95 backdrop-blur transition-transform lg:static lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
