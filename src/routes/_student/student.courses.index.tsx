@@ -49,9 +49,9 @@ function CatalogPage() {
     setBusy(courseId);
     const { error } = await supabase
       .from("enrollments")
-      .insert({ course_id: courseId, user_id: session.user.id });
+      .insert({ course_id: courseId, user_id: session.user.id, status: "active" });
     setBusy(null);
-    if (error) return toast.error(error.message);
+    if (error && !/duplicate|unique/i.test(error.message)) return toast.error(error.message);
     toast.success("Enrolled!");
     void load();
   }
