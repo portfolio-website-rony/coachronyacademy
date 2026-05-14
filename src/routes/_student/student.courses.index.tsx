@@ -174,7 +174,7 @@ function CatalogPage() {
         <section className="space-y-4">
           <div>
             <h2 className="font-display text-xl font-bold sm:text-2xl">Browse more courses</h2>
-            <p className="text-sm text-muted-foreground">Free enrollment — pick one and start learning.</p>
+            <p className="text-sm text-muted-foreground">Pick a course to enroll and start learning.</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {availableCourses.map((c) => (
