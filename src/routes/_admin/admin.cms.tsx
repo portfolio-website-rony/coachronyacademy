@@ -220,9 +220,9 @@ function CmsPage() {
             <input name="rating" type="number" min={1} max={5} defaultValue={5} className="glass rounded-xl px-3 py-2 text-sm" />
           </>)}
           {tab.key === "portfolio" && (<>
-            <input name="title" placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="category" placeholder="Category (e.g. Landing Page, AI Video)" className="glass rounded-xl px-3 py-2 text-sm" />
-            <textarea name="description" placeholder="Description" rows={3} className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="title" defaultValue={(pfEdit?.title as string) ?? ""} placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="category" defaultValue={(pfEdit?.category as string) ?? ""} placeholder="Category (e.g. Landing Page, AI Video)" className="glass rounded-xl px-3 py-2 text-sm" />
+            <textarea name="description" defaultValue={(pfEdit?.description as string) ?? ""} placeholder="Description" rows={3} className="glass rounded-xl px-3 py-2 text-sm" />
             <div>
               <label className="mb-1 block text-xs text-muted-foreground">Cover image (thumbnail)</label>
               <ImageUploader value={pfCover} onChange={setPfCover} folder="portfolio" />
@@ -235,8 +235,8 @@ function CmsPage() {
               </div>
               <MediaUploader value={pfMediaUrl} mediaType={pfMediaType} onChange={setPfMediaUrl} folder="portfolio" />
             </div>
-            <input name="link" placeholder="External link (optional)" className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="display_order" type="number" defaultValue={0} placeholder="Display order" className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="link" defaultValue={(pfEdit?.link as string) ?? ""} placeholder="External link (optional)" className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="display_order" type="number" defaultValue={Number(pfEdit?.display_order ?? 0)} placeholder="Display order" className="glass rounded-xl px-3 py-2 text-sm" />
           </>)}
           {tab.key === "services" && (<>
             <input name="title" placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
