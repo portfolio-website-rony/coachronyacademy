@@ -279,44 +279,6 @@ function StudentOverview() {
           )}
         </div>
 
-        <div className="glass rounded-2xl p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold">Recent activity</h2>
-            <Link to="/student/notifications" className="text-xs text-primary-glow hover:underline">
-              All →
-            </Link>
-          </div>
-          <ul className="mt-3 divide-y divide-white/5">
-            {notifs.length === 0 ? (
-              <li className="flex flex-col items-center py-8 text-center text-sm text-muted-foreground">
-                <Bell className="mb-2 h-7 w-7 opacity-40" />
-                No notifications yet.
-              </li>
-            ) : (
-              notifs.map((n) => {
-                const inner = (
-                  <div className="flex items-start gap-2 py-3">
-                    {!n.read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary-glow" />}
-                    <div className={`min-w-0 flex-1 ${n.read ? "opacity-60" : ""}`}>
-                      <div className="text-sm font-medium">{n.title}</div>
-                      {n.body && <div className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{n.body}</div>}
-                      <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-                        {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
-                      </div>
-                    </div>
-                  </div>
-                );
-                return n.link ? (
-                  <li key={n.id}>
-                    <Link to={n.link} className="block hover:bg-white/[0.03]">{inner}</Link>
-                  </li>
-                ) : (
-                  <li key={n.id}>{inner}</li>
-                );
-              })
-            )}
-          </ul>
-        </div>
       </div>
     </div>
   );
