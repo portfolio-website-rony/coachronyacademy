@@ -178,12 +178,6 @@ export function Header() {
                 >
                   Login
                 </Link>
-                <Link
-                  to="/book"
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow transition hover:opacity-90"
-                >
-                  Book a Call
-                </Link>
               </>
             )}
           </div>
@@ -239,13 +233,6 @@ export function Header() {
                     className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold"
                   >
                     Login
-                  </Link>
-                  <Link
-                    to="/book"
-                    onClick={() => setOpen(false)}
-                    className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow"
-                  >
-                    Book a Call
                   </Link>
                 </>
               )}
