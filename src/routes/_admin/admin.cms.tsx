@@ -185,6 +185,7 @@ function CmsPage() {
     toast.success("Saved");
     setShowForm(false);
     resetPortfolioForm();
+    resetBlogForm();
     void load();
   }
 
