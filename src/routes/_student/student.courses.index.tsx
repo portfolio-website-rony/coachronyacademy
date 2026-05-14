@@ -44,7 +44,7 @@ function CatalogPage() {
     const [{ data: c }, { data: e }] = await Promise.all([
       supabase
         .from("courses")
-        .select("id,title,slug,description,cover_url,level,category")
+        .select("id,title,slug,description,cover_url,level,category,price,discount_price,currency")
         .eq("published", true)
         .order("display_order"),
       session
