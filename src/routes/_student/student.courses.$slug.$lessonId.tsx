@@ -347,7 +347,52 @@ function LessonPage() {
           )}
         </div>
 
-        {/* Right: lesson list sidebar */}
+        {/* Right: tabbed sidebar (Lessons / AI Tutor) */}
+        <RightSidebar
+          accessible={accessible}
+          allLessons={allLessons}
+          currentLessonId={lesson.id}
+          completedSet={completedSet}
+          enrollmentId={enrollmentId}
+          slug={slug}
+          navigate={navigate}
+        />
+      </div>
+    </div>
+  );
+}
+
+function RightSidebar({
+  accessible, allLessons, currentLessonId, completedSet, enrollmentId, slug, navigate,
+}: {
+  accessible: boolean;
+  allLessons: Lesson[];
+  currentLessonId: string;
+  completedSet: Set<string>;
+  enrollmentId: string | null;
+  slug: string;
+  navigate: ReturnType<typeof useNavigate>;
+}) {
+  const [tab, setTab] = useState<"lessons" | "ai">("lessons");
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-white/5 p-1 text-xs">
+        <button
+          onClick={() => setTab("lessons")}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 ${tab === "lessons" ? "bg-gradient-primary text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          <ListVideo className="h-3.5 w-3.5" /> Lessons
+        </button>
+        <button
+          onClick={() => setTab("ai")}
+          disabled={!accessible}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 disabled:opacity-40 ${tab === "ai" ? "bg-gradient-primary text-background font-semibold" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          <Sparkles className="h-3.5 w-3.5" /> AI Tutor
+        </button>
+      </div>
+
+      {tab === "lessons" ? (
         <aside className="glass h-fit space-y-2 rounded-2xl p-3 lg:sticky lg:top-4">
           <div className="flex items-center gap-2 px-2 pb-1 pt-1">
             <ListVideo className="h-4 w-4 text-primary-glow" />
@@ -358,7 +403,7 @@ function LessonPage() {
           </div>
           <ul className="max-h-[70vh] space-y-1 overflow-y-auto pr-1">
             {allLessons.map((l, i) => {
-              const isCurrent = l.id === lesson.id;
+              const isCurrent = l.id === currentLessonId;
               const isDone = completedSet.has(l.id);
               const canOpen = !!enrollmentId || l.is_preview;
               return (
@@ -384,7 +429,9 @@ function LessonPage() {
             })}
           </ul>
         </aside>
-      </div>
+      ) : (
+        <AiTutorPanel lessonId={currentLessonId} />
+      )}
     </div>
   );
 }
