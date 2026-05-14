@@ -20,13 +20,6 @@ export function DashboardShell({
 }) {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
-
-  async function logout() {
-    await supabase.auth.signOut();
-    toast.success("Logged out");
-    navigate({ to: "/login" });
-  }
 
   return (
     <div className="flex flex-1 bg-background">
