@@ -1,44 +1,34 @@
 ## লক্ষ্য
 
-লেসন ভিডিওতে যেন কেউ YouTube-এ গিয়ে video না দেখতে পারে, share button না পায়, এবং download/screen recording নিরুৎসাহিত হয়।
+`/student/courses` (My Courses) page-এ student যেগুলো enroll করেছে শুধু সেগুলো উপরে দেখাবে। বাকি (যেগুলো এখনো enroll করেনি) আলাদা একটা "Browse more courses" section-এ নিচে দেখাবে — সেখান থেকে enroll করতে পারবে।
 
-## কী পরিবর্তন হবে
+## পরিবর্তন
 
-শুধু `src/components/learn/YouTubePlayer.tsx` ফাইল আপডেট হবে। অন্য কোনো logic/route/data পরিবর্তন হবে না।
+শুধু একটা ফাইল: `src/routes/_student/student.courses.index.tsx`
 
-### 1. YouTube branding ও share button লুকানো
+### UI structure (নতুন)
 
-YouTube IFrame API সরাসরি share button hide করার option দেয় না, তাই overlay দিয়ে block করতে হবে:
+```
+Page heading: "My courses"
 
-- Player container-এর উপরে `relative` wrapper।
-- **Top bar overlay** (top-right কোণে ~120px × 50px): video title + share/CC/settings button যেই এলাকায় আসে, সেটার উপরে transparent div বসিয়ে click block করা — তবে play/pause-এর জন্য center ফাঁকা থাকবে।
-- **Bottom-right YouTube logo overlay**: ছোট transparent div, যাতে কেউ logo-তে click করে YouTube-এ যেতে না পারে।
-- `playerVars`-এ `modestbranding: 1`, `rel: 0`, `iv_load_policy: 3`, `fs: 0` (fullscreen disable, কারণ fullscreen-এ share বের হয়), `disablekb: 1` যোগ করা।
+[Section 1 — "My enrolled courses"]
+  - শুধু enrolled courses (Continue → button)
+  - যদি কোনো enrolled course না থাকে: "You haven't enrolled in any course yet — browse below."
 
-### 2. Right-click + drag block
+[Section 2 — "Browse more courses"]
+  - বাকি published courses যেগুলো student এখনো enroll করেনি (Enroll free button)
+  - সব enrolled হলে এই section হাইড।
+```
 
-- Player wrapper-এ `onContextMenu={e => e.preventDefault()}` — right-click "copy video URL" block।
-- CSS: `user-select: none`, `-webkit-user-drag: none`।
+### Logic
 
-### 3. Screen recording deterrent
+- বর্তমান data fetching (courses + enrollments) same রাখব।
+- Render-এ courses কে `enrolled` আর `available` দুই array-এ split করে দুইটা grid-এ দেখাব।
+- Card design, enroll function, navigation link — সব same।
 
-ব্রাউজারে screen recording **পুরোপুরি বন্ধ করা সম্ভব না** (এটা OS-level, browser এর hand এর বাইরে)। তবে কিছু deterrent দেওয়া যায়:
+## কী অপরিবর্তিত
 
-- ভিডিওর উপরে subtle watermark overlay (logged-in user-এর email/নাম, কম opacity-তে) — recording হলে চেনা যাবে কে করেছে।
-- DevTools/Print-screen শুধু visual deterrent হিসেবে, কিন্তু এটা bypass করা সহজ।
+- Database, RLS, enrollment flow, video player, route structure — কিছুই touch হচ্ছে না।
+- Heading text এর বাইরে কোনো design change নাই।
 
-**সততার সাথে**: screen recording 100% বন্ধ করা যায় না কোনো web app-এ (Netflix/YouTube-ও পারে না সব ক্ষেত্রে)। শুধু কঠিন করা যায়।
-
-## কী অপরিবর্তিত থাকবে
-
-- Speed selector, progress tracking, lesson navigation, enrollment logic — সব same।
-- Video play/pause normal কাজ করবে।
-
-## একটা প্রশ্ন
-
-Watermark overlay-তে user-এর কোন info দেখাব?
-- (a) Email
-- (b) Full name
-- (c) কিছু না — শুধু share/logo block যথেষ্ট
-
-জানালে সেইভাবে implement করব।
+ঠিক থাকলে implement করে দিচ্ছি।
