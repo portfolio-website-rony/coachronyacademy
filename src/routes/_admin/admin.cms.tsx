@@ -114,15 +114,21 @@ function CmsPage() {
     let payload: Record<string, unknown> = {};
     let result;
     if (tab.key === "blog") {
+      const title = String(form.get("title") || "");
+      const slugRaw = String(form.get("slug") || "").trim() || title;
       payload = {
-        title: String(form.get("title") || ""),
-        slug: String(form.get("slug") || "").toLowerCase().replace(/\s+/g, "-"),
-        excerpt: String(form.get("excerpt") || ""),
-        content: String(form.get("content") || ""),
-        cover_url: String(form.get("cover_url") || "") || null,
+        title,
+        slug: slugRaw.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-"),
+        excerpt: String(form.get("excerpt") || "") || null,
+        content: String(form.get("content") || "") || null,
+        cover_url: blogCover,
+        tags: String(form.get("tags") || "").split(",").map((s) => s.trim()).filter(Boolean),
         published: form.get("published") === "on",
+        published_at: form.get("published") === "on" ? new Date().toISOString() : null,
       };
-      result = await supabase.from(tab.table).insert(payload as never);
+      result = blogEditId
+        ? await supabase.from("cms_blog_posts").update(payload as never).eq("id", blogEditId)
+        : await supabase.from("cms_blog_posts").insert(payload as never);
     } else if (tab.key === "testimonials") {
       payload = {
         author: String(form.get("author") || ""),
