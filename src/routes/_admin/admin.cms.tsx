@@ -64,7 +64,7 @@ function CmsPage() {
 
   async function togglePublished(row: Row) {
     if (tab.key === "banners") return;
-    const { error } = await supabase.from(tab.table).update({ published: !row.published }).eq("id", row.id);
+    const { error } = await supabase.from(tab.table).update({ published: !row.published } as never).eq("id" as never, (row.id ?? "") as never);
     if (error) return toast.error(error.message);
     void load();
   }
