@@ -29,9 +29,25 @@ function CmsPage() {
   const [showForm, setShowForm] = useState(false);
 
   // Portfolio form state
+  const [pfEditId, setPfEditId] = useState<string | null>(null);
+  const [pfEdit, setPfEdit] = useState<Row | null>(null);
   const [pfCover, setPfCover] = useState<string | null>(null);
   const [pfMediaType, setPfMediaType] = useState<"image" | "video">("image");
   const [pfMediaUrl, setPfMediaUrl] = useState<string | null>(null);
+
+  function resetPortfolioForm() {
+    setPfEditId(null); setPfEdit(null);
+    setPfCover(null); setPfMediaUrl(null); setPfMediaType("image");
+  }
+
+  function loadPortfolioForEdit(r: Row) {
+    setPfEditId(String(r.id));
+    setPfEdit(r);
+    setPfCover((r.cover_url as string) ?? null);
+    setPfMediaType(((r.media_type as "image" | "video") ?? "image"));
+    setPfMediaUrl((r.media_url as string) ?? null);
+    setShowForm(true);
+  }
 
   // Banner form state
   const [bnPage, setBnPage] = useState("portfolio");
@@ -114,7 +130,9 @@ function CmsPage() {
         display_order: Number(form.get("display_order") || 0),
         published: form.get("published") === "on",
       };
-      result = await supabase.from(tab.table).insert(payload as never);
+      result = pfEditId
+        ? await supabase.from("cms_portfolio").update(payload as never).eq("id", pfEditId)
+        : await supabase.from("cms_portfolio").insert(payload as never);
     } else if (tab.key === "services") {
       payload = {
         title: String(form.get("title") || ""),
@@ -145,8 +163,7 @@ function CmsPage() {
     if (result?.error) return toast.error(result.error.message);
     toast.success("Saved");
     setShowForm(false);
-    // reset portfolio media
-    setPfCover(null); setPfMediaUrl(null); setPfMediaType("image");
+    resetPortfolioForm();
     void load();
   }
 
@@ -170,13 +187,24 @@ function CmsPage() {
       </div>
 
       <div className="flex justify-end">
-        <button onClick={() => setShowForm((v) => !v)} className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow">
+        <button
+          onClick={() => {
+            if (showForm) { resetPortfolioForm(); setShowForm(false); }
+            else { resetPortfolioForm(); setShowForm(true); }
+          }}
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow"
+        >
           <Plus className="h-4 w-4" /> {tab.key === "banners" ? "Set / Update Banner" : `New ${tab.label.slice(0, -1)}`}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={(e) => { e.preventDefault(); void submit(new FormData(e.currentTarget)); }} className="glass grid gap-3 rounded-2xl p-5">
+        <form key={pfEditId ?? "new"} onSubmit={(e) => { e.preventDefault(); void submit(new FormData(e.currentTarget)); }} className="glass grid gap-3 rounded-2xl p-5">
+          {tab.key === "portfolio" && pfEditId && (
+            <div className="rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary-glow">
+              Editing: <strong>{String(pfEdit?.title ?? "")}</strong>
+            </div>
+          )}
           {tab.key === "blog" && (<>
             <input name="title" placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
             <input name="slug" placeholder="slug-url *" required className="glass rounded-xl px-3 py-2 text-sm" />
@@ -192,9 +220,9 @@ function CmsPage() {
             <input name="rating" type="number" min={1} max={5} defaultValue={5} className="glass rounded-xl px-3 py-2 text-sm" />
           </>)}
           {tab.key === "portfolio" && (<>
-            <input name="title" placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="category" placeholder="Category (e.g. Landing Page, AI Video)" className="glass rounded-xl px-3 py-2 text-sm" />
-            <textarea name="description" placeholder="Description" rows={3} className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="title" defaultValue={(pfEdit?.title as string) ?? ""} placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="category" defaultValue={(pfEdit?.category as string) ?? ""} placeholder="Category (e.g. Landing Page, AI Video)" className="glass rounded-xl px-3 py-2 text-sm" />
+            <textarea name="description" defaultValue={(pfEdit?.description as string) ?? ""} placeholder="Description" rows={3} className="glass rounded-xl px-3 py-2 text-sm" />
             <div>
               <label className="mb-1 block text-xs text-muted-foreground">Cover image (thumbnail)</label>
               <ImageUploader value={pfCover} onChange={setPfCover} folder="portfolio" />
@@ -207,8 +235,8 @@ function CmsPage() {
               </div>
               <MediaUploader value={pfMediaUrl} mediaType={pfMediaType} onChange={setPfMediaUrl} folder="portfolio" />
             </div>
-            <input name="link" placeholder="External link (optional)" className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="display_order" type="number" defaultValue={0} placeholder="Display order" className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="link" defaultValue={(pfEdit?.link as string) ?? ""} placeholder="External link (optional)" className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="display_order" type="number" defaultValue={Number(pfEdit?.display_order ?? 0)} placeholder="Display order" className="glass rounded-xl px-3 py-2 text-sm" />
           </>)}
           {tab.key === "services" && (<>
             <input name="title" placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
@@ -246,10 +274,23 @@ function CmsPage() {
           </>)}
           {tab.key !== "banners" && (
             <label className="flex items-center gap-2 text-sm">
-              <input name="published" type="checkbox" defaultChecked /> Published
+              <input
+                name="published"
+                type="checkbox"
+                defaultChecked={tab.key === "portfolio" ? (pfEdit ? Boolean(pfEdit.published) : true) : true}
+              /> Published
             </label>
           )}
-          <div><button className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background">Save</button></div>
+          <div className="flex gap-2">
+            <button className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background">
+              {pfEditId && tab.key === "portfolio" ? "Update" : "Save"}
+            </button>
+            {pfEditId && tab.key === "portfolio" && (
+              <button type="button" onClick={() => { resetPortfolioForm(); setShowForm(false); }} className="rounded-xl border border-white/10 px-4 py-2 text-sm">
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       )}
 
@@ -274,9 +315,14 @@ function CmsPage() {
                   {tab.key === "banners" ? (
                     <button onClick={() => loadBannerForEdit(String(r.page))} className="rounded-lg bg-white/10 px-2 py-1 text-xs">Edit</button>
                   ) : (
-                    <button onClick={() => togglePublished(r)} className={`rounded-lg px-2 py-1 text-xs ${r.published ? "bg-[oklch(0.72_0.18_152/20%)] text-[oklch(0.85_0.15_152)]" : "bg-white/10"}`}>
-                      {r.published ? "published" : "draft"}
-                    </button>
+                    <>
+                      {tab.key === "portfolio" && (
+                        <button onClick={() => loadPortfolioForEdit(r)} className="rounded-lg bg-white/10 px-2 py-1 text-xs">Edit</button>
+                      )}
+                      <button onClick={() => togglePublished(r)} className={`rounded-lg px-2 py-1 text-xs ${r.published ? "bg-[oklch(0.72_0.18_152/20%)] text-[oklch(0.85_0.15_152)]" : "bg-white/10"}`}>
+                        {r.published ? "published" : "draft"}
+                      </button>
+                    </>
                   )}
                   <button onClick={() => remove(String(r.id ?? ""), r.page as string | undefined)} className="grid h-8 w-8 place-items-center rounded-lg bg-red-500/15 text-red-300"><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
