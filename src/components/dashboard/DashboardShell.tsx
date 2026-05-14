@@ -1,18 +1,8 @@
 import { useState, type ReactNode, type ComponentType } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Menu, X, LogOut, Sparkles, Home, User, BookOpen, BookMarked, Settings } from "lucide-react";
+import { Menu, X, LogOut, Sparkles, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuthUser } from "@/lib/auth/use-auth-user";
-import { UserBell } from "@/components/dashboard/UserBell";
 import { toast } from "sonner";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export type NavItem = {
   to: string;
