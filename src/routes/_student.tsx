@@ -46,8 +46,12 @@ function StudentLayout() {
     );
   }
   return (
-    <DashboardShell brand="Student" nav={NAV}>
-      <Outlet />
-    </DashboardShell>
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <DashboardShell brand="Student" nav={NAV}>
+        <Outlet />
+      </DashboardShell>
+      <Footer />
+    </div>
   );
 }
