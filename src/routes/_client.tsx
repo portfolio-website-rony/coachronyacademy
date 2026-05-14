@@ -37,8 +37,12 @@ function ClientLayout() {
     );
   }
   return (
-    <DashboardShell brand="Client" nav={NAV}>
-      <Outlet />
-    </DashboardShell>
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <DashboardShell brand="Client" nav={NAV}>
+        <Outlet />
+      </DashboardShell>
+      <Footer />
+    </div>
   );
 }
