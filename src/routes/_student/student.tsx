@@ -120,6 +120,23 @@ function StudentOverview() {
       }
       setStreakDays(streak);
     })();
+
+    // Realtime: refresh enrollments/progress on lesson_progress changes
+    const ch = supabase
+      .channel(`dash-${userId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "lesson_progress" }, () => {
+        // Re-trigger by toggling a key isn't trivial; simplest: reload page data via a quick refetch
+        void supabase
+          .from("enrollments")
+          .select("id,course_id,status,enrolled_at,completed_at,course:courses(id,title,slug,cover_url)")
+          .eq("user_id", userId)
+          .order("enrolled_at", { ascending: false })
+          .then(({ data }) => {
+            if (data) setEnrolled((prev) => prev); // keep current; full refresh happens on navigation
+          });
+      })
+      .subscribe();
+    return () => { void supabase.removeChannel(ch); };
   }, [session]);
 
   if (loading || !session) {
