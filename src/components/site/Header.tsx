@@ -36,7 +36,6 @@ const NAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
   const [dark, setDark] = useState(true);
   const { session, profile } = useAuthUser();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -44,14 +43,6 @@ export function Header() {
   const isStudent = pathname.startsWith("/student");
   const email = session?.user?.email ?? "";
   const initial = (profile?.display_name ?? email ?? "U").slice(0, 1).toUpperCase();
-
-  function submitSearch(e: React.FormEvent) {
-    e.preventDefault();
-    const term = q.trim();
-    if (!term) return;
-    navigate({ to: "/courses", search: { q: term } as any });
-    setOpen(false);
-  }
 
   async function logout() {
     await supabase.auth.signOut();
