@@ -130,7 +130,9 @@ function CmsPage() {
         display_order: Number(form.get("display_order") || 0),
         published: form.get("published") === "on",
       };
-      result = await supabase.from(tab.table).insert(payload as never);
+      result = pfEditId
+        ? await supabase.from("cms_portfolio").update(payload as never).eq("id", pfEditId)
+        : await supabase.from("cms_portfolio").insert(payload as never);
     } else if (tab.key === "services") {
       payload = {
         title: String(form.get("title") || ""),
