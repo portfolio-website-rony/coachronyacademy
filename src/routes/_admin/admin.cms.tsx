@@ -221,18 +221,27 @@ function CmsPage() {
       </div>
 
       {showForm && (
-        <form key={pfEditId ?? "new"} onSubmit={(e) => { e.preventDefault(); void submit(new FormData(e.currentTarget)); }} className="glass grid gap-3 rounded-2xl p-5">
+        <form key={`${tab.key}-${pfEditId ?? blogEditId ?? "new"}`} onSubmit={(e) => { e.preventDefault(); void submit(new FormData(e.currentTarget)); }} className="glass grid gap-3 rounded-2xl p-5">
           {tab.key === "portfolio" && pfEditId && (
             <div className="rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary-glow">
               Editing: <strong>{String(pfEdit?.title ?? "")}</strong>
             </div>
           )}
+          {tab.key === "blog" && blogEditId && (
+            <div className="rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary-glow">
+              Editing: <strong>{String(blogEdit?.title ?? "")}</strong>
+            </div>
+          )}
           {tab.key === "blog" && (<>
-            <input name="title" placeholder="Title *" required className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="slug" placeholder="slug-url *" required className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="excerpt" placeholder="Excerpt" className="glass rounded-xl px-3 py-2 text-sm" />
-            <input name="cover_url" placeholder="Cover image URL" className="glass rounded-xl px-3 py-2 text-sm" />
-            <textarea name="content" placeholder="Content (markdown)" rows={6} className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="title" defaultValue={(blogEdit?.title as string) ?? ""} placeholder="Post title *" required className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="slug" defaultValue={(blogEdit?.slug as string) ?? ""} placeholder="slug-url (auto from title if empty)" className="glass rounded-xl px-3 py-2 text-sm" />
+            <input name="excerpt" defaultValue={(blogEdit?.excerpt as string) ?? ""} placeholder="Short excerpt / summary" className="glass rounded-xl px-3 py-2 text-sm" />
+            <div>
+              <label className="mb-1 block text-xs text-muted-foreground">Banner / Cover image</label>
+              <ImageUploader value={blogCover} onChange={setBlogCover} folder="blog" />
+            </div>
+            <textarea name="content" defaultValue={(blogEdit?.content as string) ?? ""} placeholder="Post content (markdown supported — use # for headings, **bold**, [text](url) for links, ![](url) for images)" rows={14} className="glass rounded-xl px-3 py-2 font-mono text-sm" />
+            <input name="tags" defaultValue={Array.isArray(blogEdit?.tags) ? (blogEdit?.tags as string[]).join(", ") : ""} placeholder="Tags (comma separated)" className="glass rounded-xl px-3 py-2 text-sm" />
           </>)}
           {tab.key === "testimonials" && (<>
             <input name="author" placeholder="Author *" required className="glass rounded-xl px-3 py-2 text-sm" />
