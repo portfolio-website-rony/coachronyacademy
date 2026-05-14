@@ -99,8 +99,12 @@ export function DashboardShell({
           </div>
           <div className="flex items-center gap-3">
             <UserBell />
-            <div className="grid h-8 w-8 place-items-center rounded-full bg-gradient-primary text-xs font-bold text-background">
-              {(profile?.display_name ?? "U").slice(0, 1).toUpperCase()}
+            <div className="grid h-8 w-8 place-items-center overflow-hidden rounded-full bg-gradient-primary text-xs font-bold text-background">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+              ) : (
+                (profile?.display_name ?? "U").slice(0, 1).toUpperCase()
+              )}
             </div>
           </div>
         </header>
