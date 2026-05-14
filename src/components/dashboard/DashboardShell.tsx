@@ -36,11 +36,11 @@ export function DashboardShell({
   return (
     <div className="flex min-h-screen bg-background">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-white/10 bg-[oklch(0.16_0.02_270)]/95 backdrop-blur transition-transform lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-white/10 bg-[oklch(0.16_0.02_270)]/95 backdrop-blur transition-transform lg:static lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
           <Link to="/dashboard" className="flex items-center gap-2 font-display font-bold">
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-primary shadow-glow">
               <Sparkles className="h-4 w-4 text-background" />
@@ -51,7 +51,7 @@ export function DashboardShell({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <nav className="flex flex-col gap-1 p-3">
+        <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3">
           {nav.map((n) => {
             const active = n.exact ? pathname === n.to : pathname.startsWith(n.to);
             return (
@@ -59,7 +59,7 @@ export function DashboardShell({
                 key={n.to}
                 to={n.to}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${
+                className={`flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${
                   active
                     ? "bg-gradient-primary text-background shadow-glow font-semibold"
                     : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
@@ -71,7 +71,7 @@ export function DashboardShell({
             );
           })}
         </nav>
-        <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 p-3">
+        <div className="shrink-0 border-t border-white/10 p-3">
           <Link
             to="/"
             className="mb-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-white/5 hover:text-foreground"
