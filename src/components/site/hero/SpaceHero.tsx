@@ -69,17 +69,7 @@ export function SpaceHero() {
             </span>
           </motion.h1>
 
-          <motion.div
-            className="mt-5 inline-flex items-center gap-2 rounded-full glass-strong px-4 py-2 shadow-neon-purple"
-          >
-            <span className="text-[10px] uppercase tracking-[0.25em] text-primary-glow">
-              Mission
-            </span>
-            <span className="h-3 w-px bg-white/20" />
-            <span className="font-display text-sm font-semibold sm:text-base">
-              Teach AI to <span className="text-gradient glow-text">1M</span> People
-            </span>
-          </motion.div>
+
 
           <motion.p
             className="mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg"
