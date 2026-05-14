@@ -110,13 +110,84 @@ export function DashboardShell({
           </div>
           <div className="flex items-center gap-3">
             <UserBell />
-            <div className="grid h-8 w-8 place-items-center overflow-hidden rounded-full bg-gradient-primary text-xs font-bold text-background">
-              {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-              ) : (
-                (profile?.display_name ?? "U").slice(0, 1).toUpperCase()
-              )}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="flex items-center gap-2 rounded-full p-0.5 outline-none ring-primary/40 transition hover:ring-2"
+                  aria-label="Account menu"
+                >
+                  <span className="grid h-8 w-8 place-items-center overflow-hidden rounded-full bg-gradient-primary text-xs font-bold text-background">
+                    {profile?.avatar_url ? (
+                      <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      initial
+                    )}
+                  </span>
+                  <span className="hidden text-sm font-medium sm:block">
+                    {profile?.display_name ?? "Account"}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel className="flex items-center gap-3 py-2">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-primary text-sm font-bold text-background">
+                    {profile?.avatar_url ? (
+                      <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      initial
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">
+                      {profile?.display_name ?? "Student"}
+                    </span>
+                    {email && (
+                      <span className="block truncate text-xs font-normal text-muted-foreground">
+                        {email}
+                      </span>
+                    )}
+                  </span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {isStudent ? (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/student/profile" className="flex items-center gap-2">
+                        <User className="h-4 w-4" /> My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/student/courses" className="flex items-center gap-2">
+                        <BookOpen className="h-4 w-4" /> My Courses
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/student/ebooks" className="flex items-center gap-2">
+                        <BookMarked className="h-4 w-4" /> My Ebooks
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/student/profile" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" /> Settings
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="flex items-center gap-2">
+                      <User className="h-4 w-4" /> Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={logout}
+                  className="flex items-center gap-2 text-red-400 focus:text-red-400"
+                >
+                  <LogOut className="h-4 w-4" /> Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
