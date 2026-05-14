@@ -70,6 +70,7 @@ export function AvatarUploader({
       <div className="space-y-2">
         <input ref={inputRef} type="file" accept="image/*" onChange={onFile} className="hidden" />
         <button
+          type="button"
           onClick={() => inputRef.current?.click()}
           disabled={busy}
           className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10 disabled:opacity-50"
@@ -78,6 +79,7 @@ export function AvatarUploader({
         </button>
         {currentUrl && (
           <button
+            type="button"
             onClick={remove}
             disabled={busy}
             className="ml-2 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-muted-foreground hover:text-destructive disabled:opacity-50"
