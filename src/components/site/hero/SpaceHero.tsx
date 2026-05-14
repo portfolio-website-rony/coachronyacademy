@@ -23,7 +23,16 @@ export function SpaceHero() {
       />
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-12 px-4 pt-28 pb-24 text-center sm:px-6 lg:pt-32">
-        {/* TOP — orbit system */}
+        <motion.img
+          src={missionBadge}
+          alt="Mission: Teach AI to 1M People"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="w-full max-w-[400px] drop-shadow-[0_0_30px_oklch(0.7_0.2_30/0.4)]"
+        />
+
+
         <motion.div
           className="relative flex w-full items-center justify-center"
         >
