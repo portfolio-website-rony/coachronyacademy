@@ -59,8 +59,9 @@ function PaymentsPage() {
   }
 
   async function setStatus(id: string, status: "paid" | "verified" | "rejected" | "pending") {
-    const patch: Record<string, unknown> = { status };
-    if (status === "paid" || status === "verified") patch.paid_at = new Date().toISOString();
+    const patch = status === "paid" || status === "verified"
+      ? { status, paid_at: new Date().toISOString() }
+      : { status };
     const { error } = await supabase.from("payments").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(`Marked ${status}`);
