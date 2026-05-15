@@ -65,6 +65,9 @@ function Home() {
         </div>
       </Section>
 
+      {/* WORK EXPERIENCE */}
+      <WorkExperience />
+
       {/* SERVICES */}
       <Section
         eyebrow="Services"
