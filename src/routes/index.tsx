@@ -5,6 +5,7 @@ import { LeadForm } from "@/components/site/LeadForm";
 import { SERVICES, PROGRAMS, PORTFOLIO, TESTIMONIALS, STATS, SKILLS } from "@/lib/site-data";
 import { SpaceHero } from "@/components/site/hero/SpaceHero";
 import { CountUp } from "@/components/site/CountUp";
+import { WorkExperience } from "@/components/site/WorkExperience";
 import { useContactSettings } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/")({
