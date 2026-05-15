@@ -56,16 +56,19 @@ import { Route as ClientClientProfileRouteImport } from './routes/_client/client
 import { Route as ClientClientPaymentsRouteImport } from './routes/_client/client.payments'
 import { Route as ClientClientMessagesRouteImport } from './routes/_client/client.messages'
 import { Route as ClientClientMeetingsRouteImport } from './routes/_client/client.meetings'
+import { Route as AdminAdminUsersRouteImport } from './routes/_admin/admin.users'
 import { Route as AdminAdminStudentsRouteImport } from './routes/_admin/admin.students'
 import { Route as AdminAdminSettingsRouteImport } from './routes/_admin/admin.settings'
 import { Route as AdminAdminPaymentsRouteImport } from './routes/_admin/admin.payments'
 import { Route as AdminAdminMeetingsRouteImport } from './routes/_admin/admin.meetings'
 import { Route as AdminAdminLeadsRouteImport } from './routes/_admin/admin.leads'
+import { Route as AdminAdminFilesRouteImport } from './routes/_admin/admin.files'
 import { Route as AdminAdminCoursesRouteImport } from './routes/_admin/admin.courses'
 import { Route as AdminAdminCommunityRouteImport } from './routes/_admin/admin.community'
 import { Route as AdminAdminCmsRouteImport } from './routes/_admin/admin.cms'
 import { Route as AdminAdminClientsRouteImport } from './routes/_admin/admin.clients'
 import { Route as AdminAdminBookingsRouteImport } from './routes/_admin/admin.bookings'
+import { Route as AdminAdminActivityRouteImport } from './routes/_admin/admin.activity'
 import { Route as StudentStudentCoursesIndexRouteImport } from './routes/_student/student.courses.index'
 import { Route as StudentStudentCoursesSlugRouteImport } from './routes/_student/student.courses.$slug'
 import { Route as AdminAdminCoursesCourseIdRouteImport } from './routes/_admin/admin.courses_.$courseId'
@@ -306,6 +309,11 @@ const ClientClientMeetingsRoute = ClientClientMeetingsRouteImport.update({
   path: '/meetings',
   getParentRoute: () => ClientClientRoute,
 } as any)
+const AdminAdminUsersRoute = AdminAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminStudentsRoute = AdminAdminStudentsRouteImport.update({
   id: '/students',
   path: '/students',
@@ -331,6 +339,11 @@ const AdminAdminLeadsRoute = AdminAdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const AdminAdminFilesRoute = AdminAdminFilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminCoursesRoute = AdminAdminCoursesRouteImport.update({
   id: '/courses',
   path: '/courses',
@@ -354,6 +367,11 @@ const AdminAdminClientsRoute = AdminAdminClientsRouteImport.update({
 const AdminAdminBookingsRoute = AdminAdminBookingsRouteImport.update({
   id: '/bookings',
   path: '/bookings',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
+const AdminAdminActivityRoute = AdminAdminActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
   getParentRoute: () => AdminAdminRoute,
 } as any)
 const StudentStudentCoursesIndexRoute =
@@ -413,16 +431,19 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/courses/': typeof CoursesIndexRoute
+  '/admin/activity': typeof AdminAdminActivityRoute
   '/admin/bookings': typeof AdminAdminBookingsRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
   '/admin/community': typeof AdminAdminCommunityRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
+  '/admin/files': typeof AdminAdminFilesRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
   '/admin/students': typeof AdminAdminStudentsRoute
+  '/admin/users': typeof AdminAdminUsersRoute
   '/client/meetings': typeof ClientClientMeetingsRoute
   '/client/messages': typeof ClientClientMessagesRoute
   '/client/payments': typeof ClientClientPaymentsRoute
@@ -472,16 +493,19 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/courses': typeof CoursesIndexRoute
+  '/admin/activity': typeof AdminAdminActivityRoute
   '/admin/bookings': typeof AdminAdminBookingsRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
   '/admin/community': typeof AdminAdminCommunityRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
+  '/admin/files': typeof AdminAdminFilesRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
   '/admin/students': typeof AdminAdminStudentsRoute
+  '/admin/users': typeof AdminAdminUsersRoute
   '/client/meetings': typeof ClientClientMeetingsRoute
   '/client/messages': typeof ClientClientMessagesRoute
   '/client/payments': typeof ClientClientPaymentsRoute
@@ -536,16 +560,19 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/courses/': typeof CoursesIndexRoute
+  '/_admin/admin/activity': typeof AdminAdminActivityRoute
   '/_admin/admin/bookings': typeof AdminAdminBookingsRoute
   '/_admin/admin/clients': typeof AdminAdminClientsRoute
   '/_admin/admin/cms': typeof AdminAdminCmsRoute
   '/_admin/admin/community': typeof AdminAdminCommunityRoute
   '/_admin/admin/courses': typeof AdminAdminCoursesRoute
+  '/_admin/admin/files': typeof AdminAdminFilesRoute
   '/_admin/admin/leads': typeof AdminAdminLeadsRoute
   '/_admin/admin/meetings': typeof AdminAdminMeetingsRoute
   '/_admin/admin/payments': typeof AdminAdminPaymentsRoute
   '/_admin/admin/settings': typeof AdminAdminSettingsRoute
   '/_admin/admin/students': typeof AdminAdminStudentsRoute
+  '/_admin/admin/users': typeof AdminAdminUsersRoute
   '/_client/client/meetings': typeof ClientClientMeetingsRoute
   '/_client/client/messages': typeof ClientClientMessagesRoute
   '/_client/client/payments': typeof ClientClientPaymentsRoute
@@ -599,16 +626,19 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/courses/$slug'
     | '/courses/'
+    | '/admin/activity'
     | '/admin/bookings'
     | '/admin/clients'
     | '/admin/cms'
     | '/admin/community'
     | '/admin/courses'
+    | '/admin/files'
     | '/admin/leads'
     | '/admin/meetings'
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
+    | '/admin/users'
     | '/client/meetings'
     | '/client/messages'
     | '/client/payments'
@@ -658,16 +688,19 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/courses/$slug'
     | '/courses'
+    | '/admin/activity'
     | '/admin/bookings'
     | '/admin/clients'
     | '/admin/cms'
     | '/admin/community'
     | '/admin/courses'
+    | '/admin/files'
     | '/admin/leads'
     | '/admin/meetings'
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
+    | '/admin/users'
     | '/client/meetings'
     | '/client/messages'
     | '/client/payments'
@@ -721,16 +754,19 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/courses/$slug'
     | '/courses/'
+    | '/_admin/admin/activity'
     | '/_admin/admin/bookings'
     | '/_admin/admin/clients'
     | '/_admin/admin/cms'
     | '/_admin/admin/community'
     | '/_admin/admin/courses'
+    | '/_admin/admin/files'
     | '/_admin/admin/leads'
     | '/_admin/admin/meetings'
     | '/_admin/admin/payments'
     | '/_admin/admin/settings'
     | '/_admin/admin/students'
+    | '/_admin/admin/users'
     | '/_client/client/meetings'
     | '/_client/client/messages'
     | '/_client/client/payments'
@@ -1116,6 +1152,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientClientMeetingsRouteImport
       parentRoute: typeof ClientClientRoute
     }
+    '/_admin/admin/users': {
+      id: '/_admin/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminAdminUsersRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/students': {
       id: '/_admin/admin/students'
       path: '/students'
@@ -1151,6 +1194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminLeadsRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_admin/admin/files': {
+      id: '/_admin/admin/files'
+      path: '/files'
+      fullPath: '/admin/files'
+      preLoaderRoute: typeof AdminAdminFilesRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/courses': {
       id: '/_admin/admin/courses'
       path: '/courses'
@@ -1184,6 +1234,13 @@ declare module '@tanstack/react-router' {
       path: '/bookings'
       fullPath: '/admin/bookings'
       preLoaderRoute: typeof AdminAdminBookingsRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
+    '/_admin/admin/activity': {
+      id: '/_admin/admin/activity'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AdminAdminActivityRouteImport
       parentRoute: typeof AdminAdminRoute
     }
     '/_student/student/courses/': {
@@ -1225,31 +1282,37 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminAdminRouteChildren {
+  AdminAdminActivityRoute: typeof AdminAdminActivityRoute
   AdminAdminBookingsRoute: typeof AdminAdminBookingsRoute
   AdminAdminClientsRoute: typeof AdminAdminClientsRoute
   AdminAdminCmsRoute: typeof AdminAdminCmsRoute
   AdminAdminCommunityRoute: typeof AdminAdminCommunityRoute
   AdminAdminCoursesRoute: typeof AdminAdminCoursesRoute
+  AdminAdminFilesRoute: typeof AdminAdminFilesRoute
   AdminAdminLeadsRoute: typeof AdminAdminLeadsRoute
   AdminAdminMeetingsRoute: typeof AdminAdminMeetingsRoute
   AdminAdminPaymentsRoute: typeof AdminAdminPaymentsRoute
   AdminAdminSettingsRoute: typeof AdminAdminSettingsRoute
   AdminAdminStudentsRoute: typeof AdminAdminStudentsRoute
+  AdminAdminUsersRoute: typeof AdminAdminUsersRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
   AdminAdminCoursesCourseIdRoute: typeof AdminAdminCoursesCourseIdRoute
 }
 
 const AdminAdminRouteChildren: AdminAdminRouteChildren = {
+  AdminAdminActivityRoute: AdminAdminActivityRoute,
   AdminAdminBookingsRoute: AdminAdminBookingsRoute,
   AdminAdminClientsRoute: AdminAdminClientsRoute,
   AdminAdminCmsRoute: AdminAdminCmsRoute,
   AdminAdminCommunityRoute: AdminAdminCommunityRoute,
   AdminAdminCoursesRoute: AdminAdminCoursesRoute,
+  AdminAdminFilesRoute: AdminAdminFilesRoute,
   AdminAdminLeadsRoute: AdminAdminLeadsRoute,
   AdminAdminMeetingsRoute: AdminAdminMeetingsRoute,
   AdminAdminPaymentsRoute: AdminAdminPaymentsRoute,
   AdminAdminSettingsRoute: AdminAdminSettingsRoute,
   AdminAdminStudentsRoute: AdminAdminStudentsRoute,
+  AdminAdminUsersRoute: AdminAdminUsersRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
   AdminAdminCoursesCourseIdRoute: AdminAdminCoursesCourseIdRoute,
 }
@@ -1405,13 +1468,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
