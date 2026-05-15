@@ -72,7 +72,7 @@ function CmsPage() {
   const [bnMediaType, setBnMediaType] = useState<"image" | "video">("image");
   const [bnMediaUrl, setBnMediaUrl] = useState<string | null>(null);
 
-  useEffect(() => { void load(); setShowForm(false); }, [tab]);
+  useEffect(() => { if (tab.key !== "experience") void load(); setShowForm(false); }, [tab]);
 
   async function load() {
     setLoading(true);
