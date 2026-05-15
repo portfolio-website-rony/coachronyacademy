@@ -56,6 +56,7 @@ import { Route as ClientClientProfileRouteImport } from './routes/_client/client
 import { Route as ClientClientPaymentsRouteImport } from './routes/_client/client.payments'
 import { Route as ClientClientMessagesRouteImport } from './routes/_client/client.messages'
 import { Route as ClientClientMeetingsRouteImport } from './routes/_client/client.meetings'
+import { Route as AdminAdminUsersRouteImport } from './routes/_admin/admin.users'
 import { Route as AdminAdminStudentsRouteImport } from './routes/_admin/admin.students'
 import { Route as AdminAdminSettingsRouteImport } from './routes/_admin/admin.settings'
 import { Route as AdminAdminPaymentsRouteImport } from './routes/_admin/admin.payments'
@@ -306,6 +307,11 @@ const ClientClientMeetingsRoute = ClientClientMeetingsRouteImport.update({
   path: '/meetings',
   getParentRoute: () => ClientClientRoute,
 } as any)
+const AdminAdminUsersRoute = AdminAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminStudentsRoute = AdminAdminStudentsRouteImport.update({
   id: '/students',
   path: '/students',
@@ -423,6 +429,7 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
   '/admin/students': typeof AdminAdminStudentsRoute
+  '/admin/users': typeof AdminAdminUsersRoute
   '/client/meetings': typeof ClientClientMeetingsRoute
   '/client/messages': typeof ClientClientMessagesRoute
   '/client/payments': typeof ClientClientPaymentsRoute
@@ -482,6 +489,7 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AdminAdminPaymentsRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
   '/admin/students': typeof AdminAdminStudentsRoute
+  '/admin/users': typeof AdminAdminUsersRoute
   '/client/meetings': typeof ClientClientMeetingsRoute
   '/client/messages': typeof ClientClientMessagesRoute
   '/client/payments': typeof ClientClientPaymentsRoute
@@ -546,6 +554,7 @@ export interface FileRoutesById {
   '/_admin/admin/payments': typeof AdminAdminPaymentsRoute
   '/_admin/admin/settings': typeof AdminAdminSettingsRoute
   '/_admin/admin/students': typeof AdminAdminStudentsRoute
+  '/_admin/admin/users': typeof AdminAdminUsersRoute
   '/_client/client/meetings': typeof ClientClientMeetingsRoute
   '/_client/client/messages': typeof ClientClientMessagesRoute
   '/_client/client/payments': typeof ClientClientPaymentsRoute
@@ -609,6 +618,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
+    | '/admin/users'
     | '/client/meetings'
     | '/client/messages'
     | '/client/payments'
@@ -668,6 +678,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
+    | '/admin/users'
     | '/client/meetings'
     | '/client/messages'
     | '/client/payments'
@@ -731,6 +742,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/payments'
     | '/_admin/admin/settings'
     | '/_admin/admin/students'
+    | '/_admin/admin/users'
     | '/_client/client/meetings'
     | '/_client/client/messages'
     | '/_client/client/payments'
@@ -1116,6 +1128,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientClientMeetingsRouteImport
       parentRoute: typeof ClientClientRoute
     }
+    '/_admin/admin/users': {
+      id: '/_admin/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminAdminUsersRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/students': {
       id: '/_admin/admin/students'
       path: '/students'
@@ -1235,6 +1254,7 @@ interface AdminAdminRouteChildren {
   AdminAdminPaymentsRoute: typeof AdminAdminPaymentsRoute
   AdminAdminSettingsRoute: typeof AdminAdminSettingsRoute
   AdminAdminStudentsRoute: typeof AdminAdminStudentsRoute
+  AdminAdminUsersRoute: typeof AdminAdminUsersRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
   AdminAdminCoursesCourseIdRoute: typeof AdminAdminCoursesCourseIdRoute
 }
@@ -1250,6 +1270,7 @@ const AdminAdminRouteChildren: AdminAdminRouteChildren = {
   AdminAdminPaymentsRoute: AdminAdminPaymentsRoute,
   AdminAdminSettingsRoute: AdminAdminSettingsRoute,
   AdminAdminStudentsRoute: AdminAdminStudentsRoute,
+  AdminAdminUsersRoute: AdminAdminUsersRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
   AdminAdminCoursesCourseIdRoute: AdminAdminCoursesCourseIdRoute,
 }
