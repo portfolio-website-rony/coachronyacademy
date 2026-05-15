@@ -11,7 +11,7 @@ export const SERVICES = [
   { icon: Package, title: "Digital Product Strategy", desc: "Idea থেকে launch পর্যন্ত complete roadmap।" },
   { icon: Megaphone, title: "Facebook Ads Setup", desc: "Pixel + CAPI + creative system, full funnel।" },
   { icon: MessageSquare, title: "WhatsApp Automation", desc: "Auto-reply, lead capture, drip sequences।" },
-  { icon: GraduationCap, title: "AI Coaching", desc: "1:1 mentorship for creators ও freelancers।" },
+  { icon: GraduationCap, title: "1 ON 1 Coaching", desc: "1:1 mentorship for creators ও freelancers।" },
   { icon: Code2, title: "Vibe Coding Training", desc: "Lovable, Cursor, AI tools — শিখো ও বানাও।" },
 ] as const;
 
