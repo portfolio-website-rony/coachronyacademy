@@ -173,6 +173,18 @@ function PaymentsPage() {
           </div>
         )}
       </div>
+
+      {previewUrl && (
+        <div onClick={() => setPreviewUrl(null)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+          <div onClick={(e) => e.stopPropagation()} className="glass max-h-[90vh] max-w-3xl overflow-auto rounded-2xl p-3">
+            <img src={previewUrl} alt="Payment screenshot" className="max-h-[80vh] rounded-xl" />
+            <div className="mt-3 flex justify-end gap-2">
+              <a href={previewUrl} target="_blank" rel="noreferrer" className="rounded-lg bg-white/10 px-3 py-1.5 text-xs">Open in new tab</a>
+              <button onClick={() => setPreviewUrl(null)} className="rounded-lg bg-gradient-primary px-3 py-1.5 text-xs font-semibold text-background">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
