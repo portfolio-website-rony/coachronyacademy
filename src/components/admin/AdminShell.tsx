@@ -16,6 +16,9 @@ import {
   GraduationCap,
   BookOpen,
   MessageSquare,
+  ShieldCheck,
+  FolderOpen,
+  Activity,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
