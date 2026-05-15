@@ -75,5 +75,5 @@ export const STATS = [
   { value: "43,800+", label: "Hours Experience" },
   { value: "10,000+", label: "Students Trained" },
   { value: "500+", label: "Projects Delivered" },
-  { value: "50+", label: "AI Tools Mastered" },
+  { value: "25+", label: "AI Tools Mastered" },
 ] as const;
