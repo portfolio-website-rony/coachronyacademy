@@ -18,6 +18,7 @@ const TABS = [
   { key: "services", label: "Services", table: "cms_services" },
   { key: "programs", label: "Programs", table: "cms_programs" },
   { key: "banners", label: "Page Banners", table: "cms_page_banners" },
+  { key: "experience", label: "Work Experience", table: "cms_site_settings" },
 ] as const;
 
 type Row = Record<string, unknown> & { id?: string; page?: string };
