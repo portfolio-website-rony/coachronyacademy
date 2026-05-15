@@ -58,10 +58,19 @@ function PaymentsPage() {
     void load();
   }
 
-  async function markPaid(id: string) {
-    const { error } = await supabase.from("payments").update({ status: "paid", paid_at: new Date().toISOString() }).eq("id", id);
+  async function setStatus(id: string, status: "paid" | "verified" | "rejected" | "pending") {
+    const patch: Record<string, unknown> = { status };
+    if (status === "paid" || status === "verified") patch.paid_at = new Date().toISOString();
+    const { error } = await supabase.from("payments").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
+    toast.success(`Marked ${status}`);
     void load();
+  }
+
+  async function viewScreenshot(path: string) {
+    const { data, error } = await supabase.storage.from("payment-screenshots").createSignedUrl(path, 3600);
+    if (error) return toast.error(error.message);
+    setPreviewUrl(data.signedUrl);
   }
 
   async function remove(id: string) {
