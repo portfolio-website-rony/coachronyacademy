@@ -62,6 +62,7 @@ import { Route as AdminAdminSettingsRouteImport } from './routes/_admin/admin.se
 import { Route as AdminAdminPaymentsRouteImport } from './routes/_admin/admin.payments'
 import { Route as AdminAdminMeetingsRouteImport } from './routes/_admin/admin.meetings'
 import { Route as AdminAdminLeadsRouteImport } from './routes/_admin/admin.leads'
+import { Route as AdminAdminFilesRouteImport } from './routes/_admin/admin.files'
 import { Route as AdminAdminCoursesRouteImport } from './routes/_admin/admin.courses'
 import { Route as AdminAdminCommunityRouteImport } from './routes/_admin/admin.community'
 import { Route as AdminAdminCmsRouteImport } from './routes/_admin/admin.cms'
@@ -337,6 +338,11 @@ const AdminAdminLeadsRoute = AdminAdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const AdminAdminFilesRoute = AdminAdminFilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminCoursesRoute = AdminAdminCoursesRouteImport.update({
   id: '/courses',
   path: '/courses',
@@ -424,6 +430,7 @@ export interface FileRoutesByFullPath {
   '/admin/cms': typeof AdminAdminCmsRoute
   '/admin/community': typeof AdminAdminCommunityRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
+  '/admin/files': typeof AdminAdminFilesRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
@@ -484,6 +491,7 @@ export interface FileRoutesByTo {
   '/admin/cms': typeof AdminAdminCmsRoute
   '/admin/community': typeof AdminAdminCommunityRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
+  '/admin/files': typeof AdminAdminFilesRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
@@ -549,6 +557,7 @@ export interface FileRoutesById {
   '/_admin/admin/cms': typeof AdminAdminCmsRoute
   '/_admin/admin/community': typeof AdminAdminCommunityRoute
   '/_admin/admin/courses': typeof AdminAdminCoursesRoute
+  '/_admin/admin/files': typeof AdminAdminFilesRoute
   '/_admin/admin/leads': typeof AdminAdminLeadsRoute
   '/_admin/admin/meetings': typeof AdminAdminMeetingsRoute
   '/_admin/admin/payments': typeof AdminAdminPaymentsRoute
@@ -613,6 +622,7 @@ export interface FileRouteTypes {
     | '/admin/cms'
     | '/admin/community'
     | '/admin/courses'
+    | '/admin/files'
     | '/admin/leads'
     | '/admin/meetings'
     | '/admin/payments'
@@ -673,6 +683,7 @@ export interface FileRouteTypes {
     | '/admin/cms'
     | '/admin/community'
     | '/admin/courses'
+    | '/admin/files'
     | '/admin/leads'
     | '/admin/meetings'
     | '/admin/payments'
@@ -737,6 +748,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/cms'
     | '/_admin/admin/community'
     | '/_admin/admin/courses'
+    | '/_admin/admin/files'
     | '/_admin/admin/leads'
     | '/_admin/admin/meetings'
     | '/_admin/admin/payments'
@@ -1170,6 +1182,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminLeadsRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_admin/admin/files': {
+      id: '/_admin/admin/files'
+      path: '/files'
+      fullPath: '/admin/files'
+      preLoaderRoute: typeof AdminAdminFilesRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/courses': {
       id: '/_admin/admin/courses'
       path: '/courses'
@@ -1249,6 +1268,7 @@ interface AdminAdminRouteChildren {
   AdminAdminCmsRoute: typeof AdminAdminCmsRoute
   AdminAdminCommunityRoute: typeof AdminAdminCommunityRoute
   AdminAdminCoursesRoute: typeof AdminAdminCoursesRoute
+  AdminAdminFilesRoute: typeof AdminAdminFilesRoute
   AdminAdminLeadsRoute: typeof AdminAdminLeadsRoute
   AdminAdminMeetingsRoute: typeof AdminAdminMeetingsRoute
   AdminAdminPaymentsRoute: typeof AdminAdminPaymentsRoute
@@ -1265,6 +1285,7 @@ const AdminAdminRouteChildren: AdminAdminRouteChildren = {
   AdminAdminCmsRoute: AdminAdminCmsRoute,
   AdminAdminCommunityRoute: AdminAdminCommunityRoute,
   AdminAdminCoursesRoute: AdminAdminCoursesRoute,
+  AdminAdminFilesRoute: AdminAdminFilesRoute,
   AdminAdminLeadsRoute: AdminAdminLeadsRoute,
   AdminAdminMeetingsRoute: AdminAdminMeetingsRoute,
   AdminAdminPaymentsRoute: AdminAdminPaymentsRoute,
