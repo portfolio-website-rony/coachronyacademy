@@ -1,50 +1,59 @@
-## Blog System — Admin Panel + Public Page
+## Work Experience Section — Above Services
 
-Goal: Admin theke banner image soho blog post lika, edit, delete kora jabe. Public `/blog` page real data theke load hobe, ar `/blog/$slug` te full post pora jabe.
+Services section-er **uporey** ekta notun "Work Experience" section add korbo, jekhane apnar past/current work places-er logo gulo **ekta sliding marquee** (continuously scroll kore) hisebe dekha jabe — ekta logo-er por ekta.
 
-### 1. Admin Panel — Blog Tab Upgrade (`src/routes/_admin/admin.cms.tsx`)
+### Experience list (apnar deya)
 
-Existing Blog tab te edit functionality + banner uploader add korbo (Portfolio jevabe ache):
+1. DBBL Bank
+2. Land Office
+3. Primary School
+4. High School
+5. Learning & Earning Project
+6. Mobile Banking
+7. International Marketing (Fiverr / Freelancer)
 
-- **Edit state**: `blogEditId`, `blogEdit`, `blogCover` track korbe.
-- **Cover banner**: existing text input bad diye `ImageUploader` use korbo (folder: `blog`).
-- **Form fields**:
-  - Title (required)
-  - Slug (auto-generate from title, editable)
-  - Excerpt (short summary)
-  - Cover image — ImageUploader
-  - Content — boro textarea (markdown supported, ~12 rows)
-  - Tags (comma separated)
-  - Published checkbox
-- **Edit button** prottek row e — click korle form prefilled hobe.
-- **Update vs Insert** logic — `pfEditId` patterner moto.
-- **Cancel button** edit mode e.
+### Implementation
 
-### 2. Public Blog List Page (`src/routes/blog.tsx`)
+**1. Logo upload — Admin theke**
+- `cms_site_settings` table-e ekta key `work_experience` add korbo (JSON array)
+- Each item: `{ name, logo_url, role? }`
+- Admin Panel → CMS tab e notun "Work Experience" sub-section, jekhane:
+  - Add new item (name + ImageUploader for logo)
+  - Edit / Delete existing items
+  - Reorder (display_order)
 
-Hardcoded `POSTS` array bad. Supabase theke fetch:
-- `cms_blog_posts` where `published = true`, ordered by `published_at` / `created_at` desc
-- `cms_page_banners` where `page = 'blog'` → optional hero banner above grid
-- Each card: cover image, title, excerpt, tags, date, link to `/blog/$slug`
-- Search input — client-side filter on title/excerpt
-- Empty state if no posts
+**2. Public section — `/` (home)**
+- File: notun component `src/components/site/WorkExperience.tsx`
+- Position: Stats section-er por, About section-er age (mane Services-er upore — ja apni cheyechen)
+- Layout:
+  - Eyebrow: "Experience"
+  - Title: "Where I've worked"
+  - Continuous **horizontal marquee** (existing testimonial marquee-er moto same animation)
+  - Each card: logo + name (small caption nichey)
+  - Hover korle pause hobe
+  - Glassmorphism style, gold border, project-er existing design system match korbe
 
-### 3. Single Post Page (NEW: `src/routes/blog.$slug.tsx`)
+**3. Initial seed data**
+- Migration-er sathe 7-ta item seed kore debo (logo URL khali rakhbo, admin upload korbe)
+- Admin tar pore prottek-tar logo upload korbe
 
-- Fetch post by slug from `cms_blog_posts`
-- Render: cover banner, title, date, tags, then content (markdown rendered)
-- Use `react-markdown` for content rendering — install via `bun add react-markdown`
-- Back to blog link
-- SEO meta tags from post data (title, excerpt, og:image = cover_url)
-- 404 if not found / not published
+### Technical details
 
-### 4. No DB changes needed
-`cms_blog_posts` table already has all required columns (title, slug, excerpt, content, cover_url, tags, published, published_at). Banner support already exists via `cms_page_banners` (admin can already set 'blog' banner from Page Banners tab).
+- New table na — `cms_site_settings` JSON-e store korle simple, admin UI o easy
+- Logo storage: existing `cms-media` bucket use korbo
+- Hook: `useContactSettings` pattern follow kore ekta `useWorkExperience` hook banabo
+- Marquee: existing `animate-marquee-right` class reuse
+
+### Files to change
+
+- `supabase/config.toml` — na, just data seed
+- Migration: insert default `work_experience` row in `cms_site_settings`
+- `src/lib/site-settings.ts` — `useWorkExperience` hook add
+- `src/components/site/WorkExperience.tsx` — NEW
+- `src/routes/index.tsx` — section render korbo Stats-er por
+- `src/routes/_admin/admin.cms.tsx` — Work Experience management UI add
 
 ### Out of scope
-- Rich text WYSIWYG editor (markdown textarea diye start, later upgrade kora jabe)
-- Comments / likes
-- Categories beyond tags
-- Related posts / recommendations
 
-Shob admin theke control hobe — ekta dedicated "Write New Post" button thakbe Blog tab e, banner ekhane cover image hisebe attach hobe.
+- Per-experience detail page
+- Date ranges / timeline view (just logo carousel, jevabe apni cheyechen)

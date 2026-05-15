@@ -18,6 +18,7 @@ const TABS = [
   { key: "services", label: "Services", table: "cms_services" },
   { key: "programs", label: "Programs", table: "cms_programs" },
   { key: "banners", label: "Page Banners", table: "cms_page_banners" },
+  { key: "experience", label: "Work Experience", table: "cms_site_settings" },
 ] as const;
 
 type Row = Record<string, unknown> & { id?: string; page?: string };
@@ -71,7 +72,7 @@ function CmsPage() {
   const [bnMediaType, setBnMediaType] = useState<"image" | "video">("image");
   const [bnMediaUrl, setBnMediaUrl] = useState<string | null>(null);
 
-  useEffect(() => { void load(); setShowForm(false); }, [tab]);
+  useEffect(() => { if (tab.key !== "experience") void load(); setShowForm(false); }, [tab]);
 
   async function load() {
     setLoading(true);
@@ -208,6 +209,10 @@ function CmsPage() {
         ))}
       </div>
 
+      {tab.key === "experience" ? (
+        <WorkExperienceAdmin />
+      ) : (
+      <>
       <div className="flex justify-end">
         <button
           onClick={() => {
@@ -369,6 +374,124 @@ function CmsPage() {
           </ul>
         )}
       </div>
+      </>
+      )}
     </div>
+  );
+}
+
+type WEItem = { name: string; logo_url: string };
+
+function WorkExperienceAdmin() {
+  const [items, setItems] = useState<WEItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [name, setName] = useState("");
+  const [logo, setLogo] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    const { data } = await supabase.from("cms_site_settings").select("value").eq("key", "work_experience").maybeSingle();
+    const v = data?.value as { items?: WEItem[] } | null;
+    setItems(Array.isArray(v?.items) ? v!.items : []);
+    setLoading(false);
+  }
+  useEffect(() => { void load(); }, []);
+
+  async function persist(next: WEItem[]) {
+    setSaving(true);
+    const { error } = await supabase.from("cms_site_settings").upsert({ key: "work_experience", value: { items: next } } as never, { onConflict: "key" });
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    setItems(next);
+    toast.success("Saved");
+  }
+
+  function add() {
+    if (!name.trim()) return toast.error("Name required");
+    void persist([...items, { name: name.trim(), logo_url: logo ?? "" }]);
+    setName(""); setLogo(null);
+  }
+  function removeAt(i: number) {
+    if (!confirm("Delete?")) return;
+    void persist(items.filter((_, idx) => idx !== i));
+  }
+  function updateLogo(i: number, url: string | null) {
+    const next = [...items];
+    next[i] = { ...next[i], logo_url: url ?? "" };
+    void persist(next);
+  }
+  function move(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    void persist(next);
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="glass space-y-3 rounded-2xl p-5">
+        <h3 className="font-display text-lg font-semibold">Add new experience</h3>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. DBBL Bank" className="glass w-full rounded-xl px-3 py-2 text-sm" />
+        <div>
+          <label className="mb-1 block text-xs text-muted-foreground">Logo</label>
+          <ImageUploader value={logo} onChange={setLogo} folder="work-experience" aspect="square" />
+        </div>
+        <button onClick={add} disabled={saving} className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow disabled:opacity-50">
+          <Plus className="mr-1 inline h-4 w-4" /> Add
+        </button>
+      </div>
+
+      <div className="glass overflow-hidden rounded-2xl">
+        {loading ? (
+          <div className="flex h-40 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div>
+        ) : items.length === 0 ? (
+          <div className="p-10 text-center text-sm text-muted-foreground">No items yet.</div>
+        ) : (
+          <ul className="divide-y divide-white/5">
+            {items.map((it, i) => (
+              <li key={i} className="flex flex-wrap items-center gap-3 p-4">
+                <div className="h-12 w-12 overflow-hidden rounded-lg bg-white/5">
+                  {it.logo_url ? <img src={it.logo_url} alt={it.name} className="h-full w-full object-contain" /> : null}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium">{it.name}</div>
+                  <div className="truncate text-xs text-muted-foreground">{it.logo_url || "No logo yet"}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => move(i, -1)} className="rounded-lg bg-white/10 px-2 py-1 text-xs">↑</button>
+                  <button onClick={() => move(i, 1)} className="rounded-lg bg-white/10 px-2 py-1 text-xs">↓</button>
+                  <UpdateLogoBtn current={it.logo_url} onChange={(u) => updateLogo(i, u)} />
+                  <button onClick={() => removeAt(i)} className="grid h-8 w-8 place-items-center rounded-lg bg-red-500/15 text-red-300"><Trash2 className="h-3.5 w-3.5" /></button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function UpdateLogoBtn({ current, onChange }: { current: string; onChange: (url: string | null) => void }) {
+  const [open, setOpen] = useState(false);
+  const [val, setVal] = useState<string | null>(current || null);
+  return (
+    <>
+      <button onClick={() => setOpen(true)} className="rounded-lg bg-white/10 px-2 py-1 text-xs">Logo</button>
+      {open && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={() => setOpen(false)}>
+          <div className="glass w-full max-w-md space-y-3 rounded-2xl p-5" onClick={(e) => e.stopPropagation()}>
+            <h4 className="font-semibold">Update logo</h4>
+            <ImageUploader value={val} onChange={setVal} folder="work-experience" aspect="square" />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setOpen(false)} className="rounded-xl border border-white/10 px-4 py-2 text-sm">Cancel</button>
+              <button onClick={() => { onChange(val); setOpen(false); }} className="rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
