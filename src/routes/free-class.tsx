@@ -18,10 +18,12 @@ export const Route = createFileRoute("/free-class")({
   component: FreeClass,
 });
 
+import { safeName, safeEmail, safeOptionalPhone } from "@/lib/security/schemas";
+
 const schema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(255),
-  phone: z.string().trim().max(30).optional().or(z.literal("")),
+  name: safeName,
+  email: safeEmail,
+  phone: safeOptionalPhone,
 });
 
 const PERKS = [
