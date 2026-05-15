@@ -128,33 +128,46 @@ function PaymentsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <tr><th className="px-4 py-3">Amount</th><th className="px-4 py-3">Method</th><th className="px-4 py-3">Txn</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Date</th><th className="px-4 py-3">Actions</th></tr>
+                <tr><th className="px-4 py-3">Amount</th><th className="px-4 py-3">Method</th><th className="px-4 py-3">Txn</th><th className="px-4 py-3">Screenshot</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Date</th><th className="px-4 py-3">Actions</th></tr>
               </thead>
               <tbody>
-                {rows.map((p) => (
+                {rows.map((p) => {
+                  const verified = p.status === "paid" || p.status === "verified";
+                  return (
                   <tr key={p.id} className="border-b border-white/5 hover:bg-white/5">
                     <td className="px-4 py-3 font-semibold">{p.currency} {Number(p.amount).toLocaleString()}</td>
                     <td className="px-4 py-3 text-xs">{p.method}</td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">{p.transaction_id ?? "—"}</td>
                     <td className="px-4 py-3">
+                      {p.screenshot_path ? (
+                        <button onClick={() => viewScreenshot(p.screenshot_path!)} className="inline-flex items-center gap-1 rounded-lg bg-white/5 px-2 py-1 text-xs hover:bg-white/10">
+                          <ImageIcon className="h-3 w-3" /> View
+                        </button>
+                      ) : <span className="text-xs text-muted-foreground">—</span>}
+                    </td>
+                    <td className="px-4 py-3">
                       <span className={`rounded-full px-2 py-0.5 text-xs ${
-                        p.status === "paid" ? "bg-[oklch(0.72_0.18_152/20%)] text-[oklch(0.85_0.15_152)]"
-                        : p.status === "refunded" ? "bg-red-500/20 text-red-300"
+                        verified ? "bg-[oklch(0.72_0.18_152/20%)] text-[oklch(0.85_0.15_152)]"
+                        : p.status === "rejected" || p.status === "refunded" ? "bg-red-500/20 text-red-300"
                         : "bg-amber-500/20 text-amber-300"
                       }`}>{p.status}</span>
                     </td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">{new Date(p.paid_at ?? p.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        {p.status !== "paid" && (
-                          <button onClick={() => markPaid(p.id)} className="grid h-8 w-8 place-items-center rounded-lg bg-[oklch(0.72_0.18_152/20%)] text-[oklch(0.85_0.15_152)]"><Check className="h-3.5 w-3.5" /></button>
+                        {!verified && (
+                          <button onClick={() => setStatus(p.id, "verified")} title="Verify & enroll" className="grid h-8 w-8 place-items-center rounded-lg bg-[oklch(0.72_0.18_152/20%)] text-[oklch(0.85_0.15_152)]"><Check className="h-3.5 w-3.5" /></button>
+                        )}
+                        {p.status !== "rejected" && (
+                          <button onClick={() => setStatus(p.id, "rejected")} title="Reject" className="grid h-8 w-8 place-items-center rounded-lg bg-amber-500/15 text-amber-300"><XIcon className="h-3.5 w-3.5" /></button>
                         )}
                         <button onClick={() => remove(p.id)} className="grid h-8 w-8 place-items-center rounded-lg bg-red-500/15 text-red-300"><Trash2 className="h-3.5 w-3.5" /></button>
                       </div>
                     </td>
                   </tr>
-                ))}
-                {rows.length === 0 && <tr><td colSpan={6} className="px-4 py-10 text-center text-sm text-muted-foreground">No payments yet.</td></tr>}
+                  );
+                })}
+                {rows.length === 0 && <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-muted-foreground">No payments yet.</td></tr>}
               </tbody>
             </table>
           </div>
