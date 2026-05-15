@@ -40,3 +40,30 @@ export function useContactSettings(): ContactSettings {
   }, []);
   return s;
 }
+
+export type WorkExperienceItem = { name: string; logo_url: string; role?: string };
+
+let weCache: WorkExperienceItem[] | null = null;
+
+export function useWorkExperience(): WorkExperienceItem[] {
+  const [items, setItems] = useState<WorkExperienceItem[]>(weCache ?? []);
+  useEffect(() => {
+    let mounted = true;
+    void supabase
+      .from("cms_site_settings")
+      .select("value")
+      .eq("key", "work_experience")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!mounted || !data) return;
+        const v = data.value as { items?: WorkExperienceItem[] } | null;
+        const list = Array.isArray(v?.items) ? v!.items : [];
+        weCache = list;
+        setItems(list);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+  return items;
+}
