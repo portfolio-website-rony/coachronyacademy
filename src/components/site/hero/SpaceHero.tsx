@@ -76,11 +76,10 @@ export function SpaceHero() {
           </motion.h1>
 
           <motion.p
-            className="mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg"
+            className="mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg my-[17px]"
           >
             Helping creators, freelancers, and students master AI, websites, and digital business
-            through futuristic learning experiences. শুরু করুন আজই —{" "}
-            <b className="text-foreground">CoachRony</b>-এর সাথে।
+            through futuristic learning experiences. শুরু করুন আজই CoachRony এর সাথে।
           </motion.p>
 
           <motion.div
