@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Section, GlassCard } from "@/components/site/Section";
+import { WorkExperience } from "@/components/site/WorkExperience";
 import { Button } from "@/components/ui/button";
 import portrait from "@/assets/coach-rony-portrait.webp";
 import {
@@ -191,6 +192,9 @@ function About() {
           </div>
         </div>
       </Section>
+
+      {/* Work Experience marquee */}
+      <WorkExperience />
 
       {/* Mission CTA band */}
       <Section className="!pt-4">
