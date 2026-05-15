@@ -1,15 +1,38 @@
-## Add Work Experience Section to About Page
+## Plan: Add "Learn with Coach Rony" Course
 
-Currently `<WorkExperience />` only renders on the home page (`/`). User wants it also on the About page (`/about`) — same component, same data source, no duplication of logic.
+### Course Details
+- **Title:** Learn with Coach Rony — 10 Day Digital Product Challenge
+- **Slug:** `learn-with-coach-rony`
+- **Type:** Live (scheduled classes)
+- **Price:** ৳ 10,000 BDT
+- **Language:** Bangla
+- **Level:** Beginner
+- **Tagline:** "Freelancing থেকে Digital Product Business — ১০ দিনে প্রথম income এর roadmap"
+- **Description:** এই ১০ দিনের challenge-এ শিখবেন কিভাবে freelancing থেকে নিজের digital product business শুরু করবেন। Website setup, Facebook marketing, এবং প্রথম ১,০০০ থেকে ১০,০০০ টাকা income করার সম্পূর্ণ roadmap।
+- **Cover image:** Placeholder (you'll upload later via admin)
+- **Promo video:** Empty for now
+- **Published:** `true` (so it appears on `/courses`)
 
-### Change
+### What gets created (single migration / insert)
+1. **Course row** in `courses` table with the above fields.
+2. **10 placeholder modules** in `course_modules`:
+   - Day 1 — Niche Selection & Mindset
+   - Day 2 — Digital Product Idea Validation
+   - Day 3 — Website Setup
+   - Day 4 — Product Creation
+   - Day 5 — Sales Page & Payment Setup
+   - Day 6 — Facebook Page & Content Strategy
+   - Day 7 — Facebook Marketing & Ads Basics
+   - Day 8 — First ১,০০০ Taka Roadmap
+   - Day 9 — Scaling to ১০,০০০ Taka
+   - Day 10 — Long-term Business Setup
+3. Each module gets one placeholder lesson so structure is editable from the admin panel later.
+4. `learn_outcomes`, `who_for`, `requirements` left as small placeholder arrays — editable from admin.
 
-**File:** `src/routes/about.tsx`
-- Import `WorkExperience` from `@/components/site/WorkExperience`
-- Render `<WorkExperience />` between the "Social proof badges" section and the "Skill / Expertise grid" section (so it appears mid-page, after trust badges and before expertise cards — natural spot for credibility content)
+### Where it appears
+- Listed on `/courses`
+- Detail page at `/courses/learn-with-coach-rony`
+- Editable from admin CMS → Courses (titles, lessons, video URLs, schedule, cover, price all editable)
 
-### What stays the same
-
-- Same admin panel manages it (CMS → Work Experience tab) — edits show up in both places automatically
-- Same data, same marquee, same styling
-- No DB or hook changes
+### Next steps after approval
+You can edit any placeholder content (module titles, lesson videos, cover image, live schedule URL, learn outcomes, etc.) from the admin panel. Just give me details when ready and I can also pre-fill them.
