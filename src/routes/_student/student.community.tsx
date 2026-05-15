@@ -4,6 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { Heart, MessageCircle, Pin, Send } from "lucide-react";
 import { toast } from "sonner";
+import { isMalicious } from "@/lib/security/schemas";
+import { stripHtml, normalizeText } from "@/lib/security/sanitize";
+
+const MAX_POST = 5000;
+const MAX_COMMENT = 2000;
+const MAX_TITLE = 200;
 
 export const Route = createFileRoute("/_student/student/community")({
   head: () => ({ meta: [{ title: "Community — CoachRony" }] }),
@@ -90,11 +96,19 @@ function CommunityPage() {
 
   async function createPost() {
     if (!session || !activeSpace || !body.trim()) return;
+    const cleanBody = stripHtml(normalizeText(body));
+    const cleanTitle = title.trim() ? stripHtml(normalizeText(title)) : "";
+    if (!cleanBody || cleanBody.length > MAX_POST || cleanTitle.length > MAX_TITLE) {
+      return toast.error(`Post must be 1–${MAX_POST} characters.`);
+    }
+    if (isMalicious(cleanBody) || isMalicious(cleanTitle)) {
+      return toast.error("Invalid or unsafe input detected.");
+    }
     const { error } = await supabase.from("community_posts").insert({
       space_id: activeSpace,
       author_id: session.user.id,
-      title: title.trim() || null,
-      body: body.trim(),
+      title: cleanTitle || null,
+      body: cleanBody,
     });
     if (error) return toast.error(error.message);
     setBody("");
@@ -126,9 +140,16 @@ function CommunityPage() {
 
   async function addComment(postId: string) {
     if (!session || !commentDraft.trim()) return;
+    const clean = stripHtml(normalizeText(commentDraft));
+    if (!clean || clean.length > MAX_COMMENT) {
+      return toast.error(`Comment must be 1–${MAX_COMMENT} characters.`);
+    }
+    if (isMalicious(clean)) {
+      return toast.error("Invalid or unsafe input detected.");
+    }
     const { error } = await supabase
       .from("community_comments")
-      .insert({ post_id: postId, author_id: session.user.id, body: commentDraft.trim() });
+      .insert({ post_id: postId, author_id: session.user.id, body: clean });
     if (error) return toast.error(error.message);
     setCommentDraft("");
     void toggleComments(postId);
