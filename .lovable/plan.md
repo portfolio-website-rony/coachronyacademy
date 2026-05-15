@@ -1,38 +1,58 @@
-## Plan: Add "Learn with Coach Rony" Course
+## Goal
 
-### Course Details
-- **Title:** Learn with Coach Rony — 10 Day Digital Product Challenge
-- **Slug:** `learn-with-coach-rony`
-- **Type:** Live (scheduled classes)
-- **Price:** ৳ 10,000 BDT
-- **Language:** Bangla
-- **Level:** Beginner
-- **Tagline:** "Freelancing থেকে Digital Product Business — ১০ দিনে প্রথম income এর roadmap"
-- **Description:** এই ১০ দিনের challenge-এ শিখবেন কিভাবে freelancing থেকে নিজের digital product business শুরু করবেন। Website setup, Facebook marketing, এবং প্রথম ১,০০০ থেকে ১০,০০০ টাকা income করার সম্পূর্ণ roadmap।
-- **Cover image:** Placeholder (you'll upload later via admin)
-- **Promo video:** Empty for now
-- **Published:** `true` (so it appears on `/courses`)
+Existing `/admin` panel আছে এবং Leads, Bookings, Meetings, Clients, Courses, Students, Community, Payments, CMS, Settings সব আছে। কিন্তু **supervisor (super-admin) এর জন্য কিছু critical view missing**:
 
-### What gets created (single migration / insert)
-1. **Course row** in `courses` table with the above fields.
-2. **10 placeholder modules** in `course_modules`:
-   - Day 1 — Niche Selection & Mindset
-   - Day 2 — Digital Product Idea Validation
-   - Day 3 — Website Setup
-   - Day 4 — Product Creation
-   - Day 5 — Sales Page & Payment Setup
-   - Day 6 — Facebook Page & Content Strategy
-   - Day 7 — Facebook Marketing & Ads Basics
-   - Day 8 — First ১,০০০ Taka Roadmap
-   - Day 9 — Scaling to ১০,০০০ Taka
-   - Day 10 — Long-term Business Setup
-3. Each module gets one placeholder lesson so structure is editable from the admin panel later.
-4. `learn_outcomes`, `who_for`, `requirements` left as small placeholder arrays — editable from admin.
+| Missing | Why it matters |
+|---|---|
+| **Users & Auth viewer** | সব signed-up user, role, last login, account_type এক জায়গায় দেখা যায় না |
+| **Files / Storage browser** | `cms-media` ও `payment-screenshots` bucket-এর সব file browse/download/delete করা যায় না |
+| **Activity Log viewer** | `activity_log` table আছে কিন্তু UI নেই |
+| **Payment screenshot preview** | payments page-এ screenshot signed URL দিয়ে দেখা যায় না (verify করতে হলে দরকার) |
 
-### Where it appears
-- Listed on `/courses`
-- Detail page at `/courses/learn-with-coach-rony`
-- Editable from admin CMS → Courses (titles, lessons, video URLs, schedule, cover, price all editable)
+## What I'll build
 
-### Next steps after approval
-You can edit any placeholder content (module titles, lesson videos, cover image, live schedule URL, learn outcomes, etc.) from the admin panel. Just give me details when ready and I can also pre-fill them.
+### 1. New route: `/admin/users` (Users & Auth)
+- সব profile + role list (search, filter by role/account_type)
+- Promote / demote role (admin / student / client)
+- Last login, signup date, email, phone
+- Server-fn দিয়ে `supabaseAdmin.auth.admin.listUsers()` call করে auth.users data merge
+
+### 2. New route: `/admin/files` (Storage browser)
+- Two tabs: **CMS Media** + **Payment Screenshots**
+- File grid + preview + signed-URL download + delete
+- Upload to cms-media থেকে directly
+
+### 3. New route: `/admin/activity` (Activity Log)
+- `activity_log` table-এর realtime feed
+- Filter by user, action, date range
+
+### 4. Enhance `/admin/payments`
+- প্রতি row-এ screenshot thumbnail + click করলে signed URL preview modal
+- Verify / reject button (status update + auto-enroll trigger fire হবে)
+
+### 5. AdminShell update
+- Sidebar-এ ৩টা নতুন nav item: **Users**, **Files**, **Activity**
+
+## Technical notes
+
+- **Server function** `src/lib/admin/users.functions.ts` — uses `supabaseAdmin` to list auth users (browser client RLS দিয়ে auth.users access করা যায় না)। `requireSupabaseAuth` middleware + admin role check।
+- **Storage browser** — browser client থেকে `supabase.storage.from(bucket).list()` কাজ করে যেহেতু admin RLS bypass-এর জন্য bucket policy already configured আছে। Signed URL `createSignedUrl(path, 3600)`।
+- কোনো DB schema change লাগবে না — সব existing tables/buckets ব্যবহার হবে।
+- কোনো নতুন secret বা integration লাগবে না।
+
+## Files to create
+```
+src/lib/admin/users.functions.ts          (server fn)
+src/routes/_admin/admin.users.tsx
+src/routes/_admin/admin.files.tsx
+src/routes/_admin/admin.activity.tsx
+src/components/admin/PaymentScreenshotPreview.tsx
+```
+
+## Files to modify
+```
+src/components/admin/AdminShell.tsx       (3 nav items)
+src/routes/_admin/admin.payments.tsx      (screenshot preview + verify button)
+```
+
+Approve করলে আমি implement শুরু করব।
