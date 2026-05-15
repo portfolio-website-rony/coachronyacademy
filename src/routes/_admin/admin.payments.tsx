@@ -29,6 +29,7 @@ function PaymentsPage() {
   const [rows, setRows] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => { void load(); }, []);
   useRealtime(["payments"], () => void load());
