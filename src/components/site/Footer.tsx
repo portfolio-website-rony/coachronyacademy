@@ -44,9 +44,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-muted-foreground sm:flex-row">
+        <div className="mt-10 flex items-center justify-center gap-3 border-t border-white/10 pt-6 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} CoachRony. All rights reserved.</span>
-          <span>Built with ♥ — AI Creator HQ</span>
         </div>
       </div>
     </footer>
