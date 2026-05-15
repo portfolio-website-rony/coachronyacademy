@@ -193,6 +193,9 @@ function About() {
         </div>
       </Section>
 
+      {/* Work Experience marquee */}
+      <WorkExperience />
+
       {/* Mission CTA band */}
       <Section className="!pt-4">
         <motion.div
