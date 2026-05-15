@@ -5,6 +5,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, CalendarCheck } from "lucide-react";
+import { safeName, safeEmail, safeOptionalPhone, safeOptionalText } from "@/lib/security/schemas";
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -21,13 +22,13 @@ export const Route = createFileRoute("/book")({
 const TIMES = ["10:00 AM", "12:00 PM", "3:00 PM", "5:00 PM", "8:00 PM"];
 
 const schema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(255),
-  phone: z.string().trim().max(30).optional().or(z.literal("")),
-  topic: z.string().trim().max(255).optional().or(z.literal("")),
-  preferred_date: z.string().min(1),
-  preferred_time: z.string().min(1),
-  notes: z.string().trim().max(1000).optional().or(z.literal("")),
+  name: safeName,
+  email: safeEmail,
+  phone: safeOptionalPhone,
+  topic: safeOptionalText(255),
+  preferred_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date"),
+  preferred_time: z.string().min(1).max(20),
+  notes: safeOptionalText(1000),
 });
 
 function BookPage() {

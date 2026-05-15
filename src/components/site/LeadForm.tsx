@@ -3,12 +3,13 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { safeName, safeOptionalEmail, safeOptionalPhone, safeOptionalText } from "@/lib/security/schemas";
 
 const schema = z.object({
-  name: z.string().trim().min(2, "Name too short").max(100),
-  email: z.string().trim().email("Invalid email").max(255).optional().or(z.literal("")),
-  phone: z.string().trim().max(30).optional().or(z.literal("")),
-  message: z.string().trim().max(1000).optional().or(z.literal("")),
+  name: safeName,
+  email: safeOptionalEmail,
+  phone: safeOptionalPhone,
+  message: safeOptionalText(1000),
 });
 
 export function LeadForm({
