@@ -3,6 +3,15 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Sparkles, GraduationCap, Briefcase } from "lucide-react";
+import { safeName, safeEmail, safePassword } from "@/lib/security/schemas";
+import { z } from "zod";
+
+const signupSchema = z.object({
+  name: safeName,
+  email: safeEmail,
+  password: safePassword,
+  accountType: z.enum(["student", "client"]),
+});
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Sign up — CoachRony" }] }),
@@ -21,17 +30,18 @@ function SignupPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
+    const parsed = signupSchema.safeParse({ name, email, password, accountType });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
       return;
     }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: parsed.data.email,
+      password: parsed.data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/login`,
-        data: { display_name: name, account_type: accountType },
+        data: { display_name: parsed.data.name, account_type: parsed.data.accountType },
       },
     });
     setLoading(false);
