@@ -209,6 +209,10 @@ function CmsPage() {
         ))}
       </div>
 
+      {tab.key === "experience" ? (
+        <WorkExperienceAdmin />
+      ) : (
+      <>
       <div className="flex justify-end">
         <button
           onClick={() => {
