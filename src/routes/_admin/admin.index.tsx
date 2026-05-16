@@ -235,6 +235,7 @@ function Dashboard() {
             )}
           </div>
         </div>
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <RecentPanel title="Recent leads" href="/admin/leads" empty="No leads yet">
