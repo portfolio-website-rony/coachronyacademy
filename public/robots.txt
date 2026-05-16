@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /student
+Disallow: /client
+Disallow: /dashboard
+Disallow: /login
+Disallow: /signup
+Disallow: /reset-password
+Disallow: /thank-you
+
+Sitemap: https://coachronyacademy.lovable.app/sitemap.xml
