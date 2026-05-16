@@ -45,7 +45,9 @@ function LoginPage() {
       return;
     }
     toast.success("Welcome back");
-    navigate({ to: "/admin" });
+    // Full reload so the new session is hydrated before the admin layout's
+    // role check runs — avoids a race that bounces back to /admin/login.
+    window.location.assign("/admin");
   }
 
   return (
