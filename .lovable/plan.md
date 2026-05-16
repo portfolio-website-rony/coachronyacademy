@@ -1,32 +1,46 @@
 ## Goal
-Admin panel-e course edit page-e jokhon YouTube link paste kora hobe, tokhon duration (minutes) **automatically** populate hobe. Same behavior lesson-er YouTube URL → lesson `duration_seconds` o auto-fill korbo.
-
-## How it works
-YouTube oEmbed-e duration thake na, ar API key dorkar holey extra setup lage. Tai ekta **server function** banabo je YouTube watch page-er HTML fetch kore `"lengthSeconds":"NNN"` regex diye duration ber korbe. No API key, no user setup.
+1. **Admin → Course editor**: lesson add experience ke shundor inline form e convert kora (ekhon browser `prompt()` use hoy — kharap UX).
+2. **Course landing page (image 2)**: "13 min" jaiga te course-er **total duration auto-calculate** kore dekhabe (sob lessons-er `duration_seconds` jog kore), manual field-er upor depend na kore.
 
 ## Changes
 
-### 1. New file — `src/lib/admin/youtube-duration.functions.ts`
-- `getYoutubeDuration` server fn (`createServerFn` + `requireSupabaseAuth` + admin check)
-- Zod input: `{ url: string }`
-- Server-side: fetch `https://www.youtube.com/watch?v=<id>` with a normal browser User-Agent, regex `"lengthSeconds":"(\d+)"`, return `{ seconds: number }`
-- Returns `{ seconds: 0 }` if URL invalid / parsing fails (no throw → graceful)
+### A) `src/routes/_admin/admin.courses_.$courseId.tsx` — Lesson add UI
 
-### 2. `src/routes/_admin/admin.courses_.$courseId.tsx`
-- Import `getYoutubeDuration` + `useServerFn`
-- **Promo Video URL field**: `onBlur` (and after paste) → if URL valid → call server fn → set `course.duration_minutes = Math.round(seconds / 60)`
-  - Show a small inline hint while loading: "Fetching duration…"
-  - Toast on success: "Duration auto-filled: X min"
-- **Lesson `youtube_url` field** (same file, line ~763): same behavior → set `l.duration_seconds = seconds`
-- Don't overwrite if fetch fails or returns 0; admin can still manually edit
+**Replace `prompt()`-based `addLesson`** with an inline "Add lesson" card per module:
+- Each module-er nicche ekta toggle button: **"+ Add lesson"**
+- Click korle inline form khulbe with 3 fields:
+  - **Title** (required)
+  - **YouTube URL** (optional — paste korle existing auto-duration logic chole, ar `duration_seconds` populate hobe automatic)
+  - **Preview checkbox** ("Free preview lesson")
+- Buttons: **Add lesson** + **Cancel**
+- Successful add → form reset, list refresh, toast "Lesson added"
+- Add-time YouTube duration fetch ekhono kaaj korbe — same `getYoutubeDuration` server fn use korbo
 
-### 3. No DB migration needed — existing `duration_minutes` / `duration_seconds` columns used as-is
+Also: **Module add** o same pattern e inline kore debo (`prompt()` → inline input), karon consistency. FAQ row already inline.
 
-## UX
-- Auto-fill triggers on blur of the URL input (paste + tab/click away)
-- Small "Auto" badge next to the duration field after auto-fill
-- Manual edit always wins (just type over the value)
+Per-module footer-e show korbo: **"N lessons · Xh Ym total"** (sum of `duration_seconds` of lessons in that module) — admin-er jonno helpful.
+
+### B) `src/routes/courses.$slug.tsx` — Total duration auto-display
+
+Line 135 e ekhon dekhay: `formatDuration(course.duration_minutes)` (= manual field).
+
+**Change**: compute `totalDurationMin` from lessons:
+```ts
+const totalDurationMin = Math.round(
+  lessons.reduce((sum, l) => sum + (l.duration_seconds || 0), 0) / 60
+);
+const displayDuration = totalDurationMin > 0 ? totalDurationMin : course.duration_minutes;
+```
+Then render `formatDuration(displayDuration)`.
+
+Effect: jodi lessons-e YouTube link diye duration auto-fill hoy, hero badge te real total (e.g. "2h 13m") dekhabe. Lessons na thakle fallback hisebe manual `duration_minutes` use hobe (backward compatible).
+
+### C) Admin editor Basics card — label clarify
+
+`Duration (minutes)` field-er nicche choto hint:
+> "Lessons add korle total duration automatic dekhabe. Ei field optional fallback."
 
 ## Out of scope
-- Total course duration auto-sum from all lessons (separate request)
-- Live courses / non-YouTube providers
+- DB migration — no schema change
+- Auto-update korar trigger Postgres-e — frontend compute enough
+- Drag-and-drop lesson reorder

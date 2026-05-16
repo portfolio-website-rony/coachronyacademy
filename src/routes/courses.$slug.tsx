@@ -99,6 +99,8 @@ function CourseSalesPage() {
   const hasDiscount = course.discount_price !== null && course.discount_price < course.price;
   const isFree = finalPrice === 0;
   const totalLessons = lessons.length;
+  const lessonsTotalMin = Math.round(lessons.reduce((s, l) => s + (l.duration_seconds || 0), 0) / 60);
+  const displayDurationMin = lessonsTotalMin > 0 ? lessonsTotalMin : course.duration_minutes;
   const promoEmbed = youtubeEmbedUrl(course.promo_video_url);
 
   function onEnroll() {
@@ -132,7 +134,7 @@ function CourseSalesPage() {
               <p className="text-lg text-muted-foreground sm:text-xl">{course.tagline}</p>
             )}
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4" /> {formatDuration(course.duration_minutes)}</span>
+              <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4" /> {formatDuration(displayDurationMin)}</span>
               <span className="inline-flex items-center gap-1.5"><BarChart3 className="h-4 w-4" /> {course.level}</span>
               <span className="inline-flex items-center gap-1.5"><Globe className="h-4 w-4" /> {course.language === "bn" ? "Bangla" : "English"}</span>
               {totalLessons > 0 && <span className="inline-flex items-center gap-1.5"><Play className="h-4 w-4" /> {totalLessons} lessons</span>}

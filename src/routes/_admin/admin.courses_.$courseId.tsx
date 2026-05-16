@@ -164,13 +164,13 @@ function CourseEditor() {
     else toast.success("Course saved");
   }
 
-  async function addModule() {
-    const title = prompt("Module title");
-    if (!title) return;
+  async function addModule(title: string) {
+    if (!title.trim()) return;
     const { error } = await supabase
       .from("course_modules")
-      .insert({ course_id: courseId, title, display_order: modules.length });
+      .insert({ course_id: courseId, title: title.trim(), display_order: modules.length });
     if (error) return toast.error(error.message);
+    toast.success("Module added");
     void load();
   }
 
@@ -188,14 +188,24 @@ function CourseEditor() {
     void load();
   }
 
-  async function addLesson(moduleId: string) {
-    const title = prompt("Lesson title");
-    if (!title) return;
+  async function addLesson(
+    moduleId: string,
+    payload: { title: string; youtube_url: string | null; duration_seconds: number; is_preview: boolean },
+  ) {
+    if (!payload.title.trim()) return;
     const count = lessons.filter((l) => l.module_id === moduleId).length;
     const { error } = await supabase
       .from("course_lessons")
-      .insert({ module_id: moduleId, title, display_order: count });
+      .insert({
+        module_id: moduleId,
+        title: payload.title.trim(),
+        youtube_url: payload.youtube_url,
+        duration_seconds: payload.duration_seconds,
+        is_preview: payload.is_preview,
+        display_order: count,
+      });
     if (error) return toast.error(error.message);
+    toast.success("Lesson added");
     void load();
   }
 
@@ -303,11 +313,14 @@ function CourseEditor() {
               ]}
             />
           </Field>
-          <Field label="Duration (minutes)">
+          <Field label="Duration (minutes) — fallback only">
             <NumberInput
               value={course.duration_minutes}
               onChange={(v) => setCourse({ ...course, duration_minutes: v })}
             />
+            <span className="mt-1 block text-[11px] text-muted-foreground">
+              Lessons add korle total duration automatic dekhabe. Ei field optional fallback.
+            </span>
           </Field>
           <Field label="Display order">
             <NumberInput
@@ -545,45 +558,43 @@ function CourseEditor() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl font-bold">Modules & lessons</h2>
-          <button
-            onClick={addModule}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-1.5 text-sm"
-          >
-            <Plus className="h-4 w-4" /> Add module
-          </button>
         </div>
+
+        <AddModuleForm onAdd={addModule} />
 
         {modules.length === 0 && (
           <div className="glass rounded-2xl p-6 text-sm text-muted-foreground">No modules yet.</div>
         )}
 
-        {modules.map((m) => (
-          <div key={m.id} className="glass space-y-3 rounded-2xl p-4">
-            <div className="flex items-center justify-between">
-              <button onClick={() => renameModule(m)} className="font-semibold hover:text-primary-glow">
-                {m.title}
-              </button>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => addLesson(m.id)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1 text-xs"
-                >
-                  <Plus className="h-3 w-3" /> Lesson
+        {modules.map((m) => {
+          const mLessons = lessons.filter((l) => l.module_id === m.id);
+          const totalSec = mLessons.reduce((s, l) => s + (l.duration_seconds || 0), 0);
+          const totalMin = Math.round(totalSec / 60);
+          return (
+            <div key={m.id} className="glass space-y-3 rounded-2xl p-4">
+              <div className="flex items-center justify-between">
+                <button onClick={() => renameModule(m)} className="font-semibold hover:text-primary-glow">
+                  {m.title}
                 </button>
-                <button onClick={() => removeModule(m.id)} className="text-muted-foreground hover:text-destructive">
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {mLessons.length} lesson{mLessons.length === 1 ? "" : "s"}
+                    {totalMin > 0 && ` · ${totalMin < 60 ? `${totalMin}m` : `${Math.floor(totalMin / 60)}h ${totalMin % 60}m`}`}
+                  </span>
+                  <button onClick={() => removeModule(m.id)} className="text-muted-foreground hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="space-y-2">
-              {lessons
-                .filter((l) => l.module_id === m.id)
-                .map((l) => (
+              <div className="space-y-2">
+                {mLessons.map((l) => (
                   <LessonRow key={l.id} lesson={l} onSave={updateLesson} onDelete={() => removeLesson(l.id)} />
                 ))}
+              </div>
+              <AddLessonForm onAdd={(payload) => addLesson(m.id, payload)} />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* FAQs */}
@@ -874,6 +885,175 @@ function FaqRow({ faq, onSave, onDelete }: { faq: Faq; onSave: (f: Faq) => void;
         <button onClick={onDelete} className="text-muted-foreground hover:text-destructive">
           <Trash2 className="h-4 w-4" />
         </button>
+      </div>
+    </div>
+  );
+}
+
+function AddModuleForm({ onAdd }: { onAdd: (title: string) => unknown }) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 rounded-xl border border-dashed border-white/15 px-3 py-2 text-sm text-muted-foreground hover:border-primary/40 hover:text-foreground"
+      >
+        <Plus className="h-4 w-4" /> Add module
+      </button>
+    );
+  }
+  return (
+    <div className="glass flex flex-wrap items-center gap-2 rounded-2xl p-3">
+      <input
+        autoFocus
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && title.trim()) {
+            void onAdd(title);
+            setTitle("");
+            setOpen(false);
+          }
+        }}
+        placeholder="Module title (e.g. Getting Started)"
+        className="flex-1 rounded-lg border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary"
+      />
+      <button
+        onClick={() => {
+          if (!title.trim()) return;
+          void onAdd(title);
+          setTitle("");
+          setOpen(false);
+        }}
+        className="rounded-lg bg-gradient-primary px-3 py-2 text-xs font-semibold text-background"
+      >
+        Add module
+      </button>
+      <button
+        onClick={() => {
+          setTitle("");
+          setOpen(false);
+        }}
+        className="rounded-lg border border-white/10 px-3 py-2 text-xs text-muted-foreground"
+      >
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+function AddLessonForm({
+  onAdd,
+}: {
+  onAdd: (payload: {
+    title: string;
+    youtube_url: string | null;
+    duration_seconds: number;
+    is_preview: boolean;
+  }) => unknown;
+}) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const [duration, setDuration] = useState(0);
+  const [preview, setPreview] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const fetchYtDuration = useServerFn(getYoutubeDuration);
+
+  function reset() {
+    setTitle("");
+    setUrl("");
+    setDuration(0);
+    setPreview(false);
+    setOpen(false);
+  }
+
+  async function handleUrlBlur(v: string) {
+    if (!v.trim()) return;
+    setFetching(true);
+    try {
+      const { seconds } = await fetchYtDuration({ data: { url: v } });
+      if (seconds > 0) {
+        setDuration(seconds);
+        toast.success(`Duration: ${Math.round(seconds / 60)} min`);
+      }
+    } catch {
+      // silent
+    } finally {
+      setFetching(false);
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 rounded-lg border border-dashed border-white/15 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/40 hover:text-foreground"
+      >
+        <Plus className="h-3.5 w-3.5" /> Add lesson
+      </button>
+    );
+  }
+
+  return (
+    <div className="space-y-2 rounded-xl border border-primary/30 bg-primary/[0.04] p-3">
+      <input
+        autoFocus
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Lesson title (required)"
+        className="w-full rounded-lg border border-white/10 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary"
+      />
+      <div className="relative">
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onBlur={(e) => handleUrlBlur(e.target.value)}
+          placeholder="YouTube URL (optional — auto-fetches duration)"
+          className="w-full rounded-lg border border-white/10 bg-background/60 px-3 py-2 pr-8 text-sm outline-none focus:border-primary"
+        />
+        {fetching && (
+          <Loader2 className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-primary-glow" />
+        )}
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="text-xs text-muted-foreground">
+          Duration (sec)
+          <input
+            type="number"
+            value={duration}
+            onChange={(e) => setDuration(Number(e.target.value))}
+            className="ml-2 w-24 rounded-lg border border-white/10 bg-background/60 px-2 py-1 text-sm"
+          />
+        </label>
+        <label className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+          <input type="checkbox" checked={preview} onChange={(e) => setPreview(e.target.checked)} />
+          Free preview lesson
+        </label>
+        <div className="ml-auto flex gap-2">
+          <button
+            onClick={() => {
+              if (!title.trim()) {
+                toast.error("Title required");
+                return;
+              }
+              void onAdd({
+                title,
+                youtube_url: url.trim() || null,
+                duration_seconds: duration || 0,
+                is_preview: preview,
+              });
+              reset();
+            }}
+            className="rounded-lg bg-gradient-primary px-3 py-1.5 text-xs font-semibold text-background"
+          >
+            Add lesson
+          </button>
+          <button onClick={reset} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-muted-foreground">
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );
