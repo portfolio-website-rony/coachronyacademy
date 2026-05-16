@@ -74,11 +74,11 @@ export function Header() {
             </div>
           </nav>
 
-          <div className="ml-auto hidden items-center gap-2 lg:flex">
+          <div className="ml-auto flex items-center gap-2">
             {session && <UserBell />}
             <button
               onClick={() => setDark((v) => !v)}
-              className="grid h-9 w-16 place-items-center rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.06]"
+              className="hidden h-9 w-16 place-items-center rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] lg:grid"
               aria-label="Toggle theme"
               title="Theme"
             >
@@ -95,7 +95,7 @@ export function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-gradient-primary text-xs font-bold text-background outline-none ring-primary/40 transition hover:ring-2"
+                    className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-primary text-xs font-bold text-background outline-none ring-primary/40 transition hover:ring-2"
                     aria-label="Account menu"
                   >
                     {profile?.avatar_url ? (
@@ -105,7 +105,7 @@ export function Header() {
                     )}
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuContent align="end" className="w-64 max-w-[calc(100vw-1rem)]">
                   <DropdownMenuLabel className="flex items-center gap-3 py-2">
                     <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-primary text-sm font-bold text-background">
                       {profile?.avatar_url ? (
@@ -171,24 +171,22 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-white/5"
-                >
-                  Login
-                </Link>
-              </>
+              <Link
+                to="/login"
+                className="hidden items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-white/5 lg:inline-flex"
+              >
+                Login
+              </Link>
             )}
-          </div>
 
-          <button
-            className="ml-auto rounded-lg p-2 lg:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+            <button
+              className="rounded-lg p-2 lg:hidden"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
         {open && (
