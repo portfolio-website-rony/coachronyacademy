@@ -775,6 +775,25 @@ function LessonRow({
   onDelete: () => void;
 }) {
   const [l, setL] = useState(lesson);
+  const [fetchingDur, setFetchingDur] = useState(false);
+  const fetchYtDuration = useServerFn(getYoutubeDuration);
+
+  async function autofillLessonDuration(url: string) {
+    if (!url) return;
+    setFetchingDur(true);
+    try {
+      const { seconds } = await fetchYtDuration({ data: { url } });
+      if (seconds > 0) {
+        setL((prev) => ({ ...prev, duration_seconds: seconds }));
+        toast.success(`Lesson duration: ${Math.round(seconds / 60)} min`);
+      }
+    } catch {
+      // silent
+    } finally {
+      setFetchingDur(false);
+    }
+  }
+
   return (
     <div className="space-y-2 rounded-xl border border-white/10 bg-background/30 p-3">
       <div className="grid gap-2 sm:grid-cols-[1fr_1fr_120px_auto]">
@@ -784,12 +803,18 @@ function LessonRow({
           placeholder="Lesson title"
           className="rounded-lg border border-white/10 bg-background/40 px-2 py-1.5 text-sm"
         />
-        <input
-          value={l.youtube_url ?? ""}
-          onChange={(e) => setL({ ...l, youtube_url: e.target.value })}
-          placeholder="YouTube unlisted URL"
-          className="rounded-lg border border-white/10 bg-background/40 px-2 py-1.5 text-sm"
-        />
+        <div className="relative">
+          <input
+            value={l.youtube_url ?? ""}
+            onChange={(e) => setL({ ...l, youtube_url: e.target.value })}
+            onBlur={(e) => autofillLessonDuration(e.target.value)}
+            placeholder="YouTube unlisted URL"
+            className="w-full rounded-lg border border-white/10 bg-background/40 px-2 py-1.5 pr-7 text-sm"
+          />
+          {fetchingDur && (
+            <Loader2 className="absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin text-primary-glow" />
+          )}
+        </div>
         <input
           type="number"
           value={l.duration_seconds}
