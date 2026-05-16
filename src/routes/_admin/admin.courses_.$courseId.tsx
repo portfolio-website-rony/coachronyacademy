@@ -313,11 +313,14 @@ function CourseEditor() {
               ]}
             />
           </Field>
-          <Field label="Duration (minutes)">
+          <Field label="Duration (minutes) — fallback only">
             <NumberInput
               value={course.duration_minutes}
               onChange={(v) => setCourse({ ...course, duration_minutes: v })}
             />
+            <span className="mt-1 block text-[11px] text-muted-foreground">
+              Lessons add korle total duration automatic dekhabe. Ei field optional fallback.
+            </span>
           </Field>
           <Field label="Display order">
             <NumberInput
