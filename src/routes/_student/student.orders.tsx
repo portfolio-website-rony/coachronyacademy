@@ -44,8 +44,8 @@ function OrdersPage() {
           <p className="mt-3 text-sm text-muted-foreground">No orders yet.</p>
         </div>
       ) : (
-        <div className="glass overflow-hidden rounded-2xl">
-          <table className="w-full text-sm">
+        <div className="glass overflow-x-auto rounded-2xl">
+          <table className="w-full min-w-[640px] text-sm">
             <thead className="bg-white/5 text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="px-4 py-3 text-left">Item</th>
