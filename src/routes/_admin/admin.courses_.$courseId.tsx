@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2, Save, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, ExternalLink, Loader2, ChevronUp, ChevronDown } from "lucide-react";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { getYoutubeDuration } from "@/lib/admin/youtube-duration.functions";
 
@@ -228,6 +228,37 @@ function CourseEditor() {
     if (!confirm("Delete lesson?")) return;
     await supabase.from("course_lessons").delete().eq("id", id);
     void load();
+  }
+
+  async function swapDisplayOrder(
+    table: "course_modules" | "course_lessons",
+    a: { id: string; display_order: number },
+    b: { id: string; display_order: number },
+  ) {
+    // Two-step swap to avoid unique-constraint conflicts (use sentinel -1)
+    const r1 = await supabase.from(table).update({ display_order: -1 }).eq("id", a.id);
+    if (r1.error) return toast.error(r1.error.message);
+    const r2 = await supabase.from(table).update({ display_order: a.display_order }).eq("id", b.id);
+    if (r2.error) return toast.error(r2.error.message);
+    const r3 = await supabase.from(table).update({ display_order: b.display_order }).eq("id", a.id);
+    if (r3.error) return toast.error(r3.error.message);
+    void load();
+  }
+
+  async function moveModule(index: number, dir: -1 | 1) {
+    const sorted = [...modules].sort((x, y) => x.display_order - y.display_order);
+    const target = index + dir;
+    if (target < 0 || target >= sorted.length) return;
+    await swapDisplayOrder("course_modules", sorted[index], sorted[target]);
+  }
+
+  async function moveLesson(moduleId: string, index: number, dir: -1 | 1) {
+    const sorted = lessons
+      .filter((l) => l.module_id === moduleId)
+      .sort((x, y) => x.display_order - y.display_order);
+    const target = index + dir;
+    if (target < 0 || target >= sorted.length) return;
+    await swapDisplayOrder("course_lessons", sorted[index], sorted[target]);
   }
 
   async function addFaq() {
@@ -566,16 +597,36 @@ function CourseEditor() {
           <div className="glass rounded-2xl p-6 text-sm text-muted-foreground">No modules yet.</div>
         )}
 
-        {modules.map((m) => {
-          const mLessons = lessons.filter((l) => l.module_id === m.id);
+        {[...modules].sort((a, b) => a.display_order - b.display_order).map((m, mIdx, mArr) => {
+          const mLessons = [...lessons.filter((l) => l.module_id === m.id)].sort(
+            (a, b) => a.display_order - b.display_order,
+          );
           const totalSec = mLessons.reduce((s, l) => s + (l.duration_seconds || 0), 0);
           const totalMin = Math.round(totalSec / 60);
           return (
             <div key={m.id} className="glass space-y-3 rounded-2xl p-4">
-              <div className="flex items-center justify-between">
-                <button onClick={() => renameModule(m)} className="font-semibold hover:text-primary-glow">
-                  {m.title}
-                </button>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => moveModule(mIdx, -1)}
+                    disabled={mIdx === 0}
+                    title="Move up"
+                    className="rounded-md border border-white/10 p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => moveModule(mIdx, 1)}
+                    disabled={mIdx === mArr.length - 1}
+                    title="Move down"
+                    className="rounded-md border border-white/10 p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                  <button onClick={() => renameModule(m)} className="ml-2 font-semibold hover:text-primary-glow">
+                    {m.title}
+                  </button>
+                </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-muted-foreground">
                     {mLessons.length} lesson{mLessons.length === 1 ? "" : "s"}
@@ -587,8 +638,17 @@ function CourseEditor() {
                 </div>
               </div>
               <div className="space-y-2">
-                {mLessons.map((l) => (
-                  <LessonRow key={l.id} lesson={l} onSave={updateLesson} onDelete={() => removeLesson(l.id)} />
+                {mLessons.map((l, lIdx) => (
+                  <LessonRow
+                    key={l.id}
+                    lesson={l}
+                    canMoveUp={lIdx > 0}
+                    canMoveDown={lIdx < mLessons.length - 1}
+                    onMoveUp={() => moveLesson(m.id, lIdx, -1)}
+                    onMoveDown={() => moveLesson(m.id, lIdx, 1)}
+                    onSave={updateLesson}
+                    onDelete={() => removeLesson(l.id)}
+                  />
                 ))}
               </div>
               <AddLessonForm onAdd={(payload) => addLesson(m.id, payload)} />
@@ -780,10 +840,18 @@ function LessonRow({
   lesson,
   onSave,
   onDelete,
+  canMoveUp,
+  canMoveDown,
+  onMoveUp,
+  onMoveDown,
 }: {
   lesson: Lesson;
   onSave: (l: Lesson) => void;
   onDelete: () => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }) {
   const [l, setL] = useState(lesson);
   const [fetchingDur, setFetchingDur] = useState(false);
@@ -833,8 +901,24 @@ function LessonRow({
           placeholder="Duration (s)"
           className="rounded-lg border border-white/10 bg-background/40 px-2 py-1.5 text-sm"
         />
-        <div className="flex items-center gap-2">
-          <button onClick={() => onSave(l)} className="rounded-lg bg-primary/20 px-2.5 py-1 text-xs text-primary-glow">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={onMoveUp}
+            disabled={!canMoveUp}
+            title="Move up"
+            className="rounded-md border border-white/10 p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
+          >
+            <ChevronUp className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onMoveDown}
+            disabled={!canMoveDown}
+            title="Move down"
+            className="rounded-md border border-white/10 p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
+          >
+            <ChevronDown className="h-3.5 w-3.5" />
+          </button>
+          <button onClick={() => onSave(l)} className="ml-1 rounded-lg bg-primary/20 px-2.5 py-1 text-xs text-primary-glow">
             Save
           </button>
           <button onClick={onDelete} className="text-muted-foreground hover:text-destructive">
