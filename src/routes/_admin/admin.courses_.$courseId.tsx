@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2, Save, ExternalLink } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, ExternalLink, Loader2 } from "lucide-react";
 import { ImageUploader } from "@/components/admin/ImageUploader";
+import { getYoutubeDuration } from "@/lib/admin/youtube-duration.functions";
 
 export const Route = createFileRoute("/_admin/admin/courses_/$courseId")({
   head: () => ({ meta: [{ title: "Edit Course — Admin" }] }),
