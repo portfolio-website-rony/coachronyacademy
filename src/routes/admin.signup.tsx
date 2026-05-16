@@ -32,7 +32,7 @@ function SignupPage() {
       toast.error(error.message);
       return;
     }
-    toast.success("Account created. Check your email to confirm, then log in.");
+    toast.success("Account created. You can sign in now.");
     navigate({ to: "/admin/login" });
   }
 

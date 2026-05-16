@@ -49,7 +49,7 @@ function SignupPage() {
       toast.error(error.message);
       return;
     }
-    toast.success("Account created. Check your email to confirm, then sign in.");
+    toast.success("Account created. You can sign in now.");
     const sp = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
     const returnTo = sp?.get("returnTo");
     if (returnTo && returnTo.startsWith("/")) {
