@@ -555,45 +555,43 @@ function CourseEditor() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-xl font-bold">Modules & lessons</h2>
-          <button
-            onClick={addModule}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-1.5 text-sm"
-          >
-            <Plus className="h-4 w-4" /> Add module
-          </button>
         </div>
+
+        <AddModuleForm onAdd={addModule} />
 
         {modules.length === 0 && (
           <div className="glass rounded-2xl p-6 text-sm text-muted-foreground">No modules yet.</div>
         )}
 
-        {modules.map((m) => (
-          <div key={m.id} className="glass space-y-3 rounded-2xl p-4">
-            <div className="flex items-center justify-between">
-              <button onClick={() => renameModule(m)} className="font-semibold hover:text-primary-glow">
-                {m.title}
-              </button>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => addLesson(m.id)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1 text-xs"
-                >
-                  <Plus className="h-3 w-3" /> Lesson
+        {modules.map((m) => {
+          const mLessons = lessons.filter((l) => l.module_id === m.id);
+          const totalSec = mLessons.reduce((s, l) => s + (l.duration_seconds || 0), 0);
+          const totalMin = Math.round(totalSec / 60);
+          return (
+            <div key={m.id} className="glass space-y-3 rounded-2xl p-4">
+              <div className="flex items-center justify-between">
+                <button onClick={() => renameModule(m)} className="font-semibold hover:text-primary-glow">
+                  {m.title}
                 </button>
-                <button onClick={() => removeModule(m.id)} className="text-muted-foreground hover:text-destructive">
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {mLessons.length} lesson{mLessons.length === 1 ? "" : "s"}
+                    {totalMin > 0 && ` · ${totalMin < 60 ? `${totalMin}m` : `${Math.floor(totalMin / 60)}h ${totalMin % 60}m`}`}
+                  </span>
+                  <button onClick={() => removeModule(m.id)} className="text-muted-foreground hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="space-y-2">
-              {lessons
-                .filter((l) => l.module_id === m.id)
-                .map((l) => (
+              <div className="space-y-2">
+                {mLessons.map((l) => (
                   <LessonRow key={l.id} lesson={l} onSave={updateLesson} onDelete={() => removeLesson(l.id)} />
                 ))}
+              </div>
+              <AddLessonForm onAdd={(payload) => addLesson(m.id, payload)} />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* FAQs */}
