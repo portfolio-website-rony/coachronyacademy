@@ -34,11 +34,25 @@ function LoginPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const cleanEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+    if (!password) {
+      toast.error("Please enter your password");
+      return;
+    }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      const msg = /invalid login/i.test(error.message)
+        ? "Wrong email or password"
+        : /email not confirmed/i.test(error.message)
+        ? "Email not confirmed yet — please try again in a moment"
+        : error.message;
+      toast.error(msg);
       return;
     }
     toast.success("Welcome back");
