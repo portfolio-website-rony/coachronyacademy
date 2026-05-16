@@ -71,6 +71,25 @@ function CourseEditor() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [faqs, setFaqs] = useState<Faq[]>([]);
   const [saving, setSaving] = useState(false);
+  const [fetchingDuration, setFetchingDuration] = useState(false);
+  const fetchYtDuration = useServerFn(getYoutubeDuration);
+
+  async function autofillPromoDuration(url: string) {
+    if (!url || !course) return;
+    setFetchingDuration(true);
+    try {
+      const { seconds } = await fetchYtDuration({ data: { url } });
+      if (seconds > 0) {
+        const mins = Math.max(1, Math.round(seconds / 60));
+        setCourse((c) => (c ? { ...c, duration_minutes: mins } : c));
+        toast.success(`Duration auto-filled: ${mins} min`);
+      }
+    } catch {
+      // silent — admin can fill manually
+    } finally {
+      setFetchingDuration(false);
+    }
+  }
 
   async function load() {
     const [{ data: c }, { data: m }, { data: f }] = await Promise.all([
