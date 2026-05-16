@@ -1,0 +1,25 @@
+# CoachRony
+
+> CoachRony — AI দিয়ে স্কিল, ব্র্যান্ড ও ইনকাম তৈরি করুন। Bangla AI creator coaching, programs, courses ও services for content creation, vibe coding, digital products, and online business.
+
+CoachRony helps Bangla-speaking creators and entrepreneurs use AI to build skills, brands, and income through structured courses, programs, mentorship, workshops, and 1:1 coaching.
+
+## Pages
+
+- [Home](/): Overview of CoachRony's offerings and mission.
+- [About](/about): Background on Coach Rony and the academy.
+- [Services](/services): 1:1 coaching, consulting, and done-for-you services.
+- [Programs](/programs): Cohort-based programs and mentorships.
+- [Courses](/courses): Self-paced courses on AI, content creation, and vibe coding.
+- [Shop](/shop): Digital products, ebooks, and templates.
+- [Portfolio](/portfolio): Past work and case studies.
+- [Events](/events): Upcoming workshops and live sessions.
+- [Free Class](/free-class): Free intro class on AI for creators.
+- [Book a Call](/book): Schedule a discovery call.
+- [Blog](/blog): Articles, guides, and tutorials.
+- [Contact](/contact): Get in touch.
+
+## Optional
+
+- [Privacy Policy](/privacy)
+- [Terms of Service](/terms)
