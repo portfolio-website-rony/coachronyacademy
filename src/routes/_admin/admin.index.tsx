@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRealtime } from "@/lib/admin/use-realtime";
@@ -10,7 +10,10 @@ import {
   CreditCard,
   Clock,
   TrendingUp,
+  Mail,
+  ArrowRight,
 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import {
   ResponsiveContainer,
   LineChart,
