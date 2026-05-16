@@ -1,35 +1,38 @@
-## লক্ষ্য
-Supabase linter এর সব ২৪টি WARN ক্লিয়ার করা — তারপর আবার রি-রান করে নিশ্চিত করা।
+## Findings
 
-## সমস্যা বিশ্লেষণ (২৪টি WARN, ৪ গ্রুপ)
+- Lovable Cloud backend is healthy and reachable.
+- Database tables are not empty:
+  - `profiles`: 4 rows
+  - `user_roles`: 5 rows
+  - `leads`: 7 rows
+  - `bookings`: 3 rows
+  - `subscribers`: 1 row
+- Security linter currently shows no issues.
+- Admin role exists for the admin user id, so the admin role table is present.
+- The current screenshot error (`Invalid login credentials`) means the email/password authentication itself is failing before the admin panel role check runs.
+- The admin login form currently sends the email exactly as typed; unlike the normal login page, it does not trim/lowercase the email or show a friendlier error.
 
-**Group A — RLS "Always True" (৪টি):** `bookings`, `leads`, `subscribers`, `course_views` টেবিলে public/anon INSERT policy `WITH CHECK (true)` ব্যবহার করছে। এগুলো ইচ্ছাকৃত পাবলিক জমা endpoint কিন্তু basic validation যোগ করা দরকার।
+## Likely cause
 
-**Group B — Public bucket listing (১টি):** `cms-media` bucket এ broad `SELECT` policy আছে যা file listing allow করে। পাবলিক bucket এর জন্য individual file CDN URL এ serve হয় — policy ছাড়াই কাজ করে।
+The backend is connected, but the admin password being entered does not match the current auth password, or the email has hidden spacing/case differences in the admin login form.
 
-**Group C+D — SECURITY DEFINER functions (১০+১০=২০টি):** public schema এর ১০টি function anon ও authenticated উভয়ের জন্য executable। বেশিরভাগই trigger function, কারো client থেকে call করার দরকার নেই।
+## Plan
 
-## পরিকল্পনা
+1. Verify the admin auth user exists for `coachronyacademy@gmail.com` and reset its password again to a known value.
+2. Update the admin login form to normalize the email before login:
+   - trim spaces
+   - lowercase email
+   - validate required password
+   - show `Wrong email or password` instead of the raw backend error
+3. Ensure the admin signup/login flow is not misleading:
+   - keep `/admin/login` as the login route
+   - if an admin already exists, the signup route should not imply another first admin can be created
+4. Re-test:
+   - admin login with `coachronyacademy@gmail.com`
+   - admin dashboard redirect/access
+   - confirm no backend/security linter issues after the fix
 
-### Migration ১: Function lockdown
-- **Trigger-only functions** (anon/authenticated থেকে EXECUTE revoke):
-  `set_updated_at`, `handle_new_user`, `bootstrap_first_admin`, `on_new_comment`, `on_new_booking`, `on_new_payment`, `on_new_enrollment`, `on_new_lead`, `bump_post_likes`, `bump_post_comments`, `maybe_complete_enrollment`, `auto_enroll_on_payment`, `notify_admins`
-- **RLS helper + RPC functions** (`has_role`, `is_enrolled`, `validate_coupon`): এগুলো `public` schema থেকে নতুন `private` schema-তে move। RLS policy গুলো reference update। `validate_coupon` কে `public` এ একটা thin wrapper হিসেবে রেখে দিব authenticated user দের জন্য (RPC API থেকে call করতে হয়) — তবে এই একটাও warn করবে; বিকল্পে wrapper কে SECURITY INVOKER করব যেটা warning ক্লিয়ার করবে।
+## Technical details
 
-### Migration ২: Storage tightening
-- `cms-media` bucket এর broad public SELECT policy drop — পাবলিক bucket এর file গুলো CDN URL দিয়েই accessible থাকবে, শুধু listing বন্ধ হবে।
-
-### Migration ৩: RLS policy validation
-চারটা পাবলিক INSERT policy এ `true` এর জায়গায় basic field validation:
-- `bookings`: `name`, `email`, `preferred_date`, `preferred_time` non-empty + length cap
-- `leads`: `name` non-empty + length cap
-- `subscribers`: `email` non-empty + format-like check
-- `course_views`: `course_id IS NOT NULL`
-
-### Verification
-সব migration এর পরে `supabase--linter` আবার চালিয়ে confirm করব সব ২৪টি ক্লিয়ার হয়েছে।
-
-## টেকনিক্যাল নোট
-- `validate_coupon` move করলে frontend এ `supabase.rpc("validate_coupon", ...)` call টা public schema এ wrapper দিয়ে কাজ করতে থাকবে — কোনো frontend code change লাগবে না।
-- RLS policy reference করা functions (`has_role`, `is_enrolled`) policy expression এ schema-qualified করে update করব।
-- কোনো trigger বা existing data নষ্ট হবে না।
+- Changes should be limited to the admin auth UI and, if needed, a safe admin password reset through the backend admin API.
+- No schema migration appears necessary because tables, roles, and policies are already present and the linter is clear.
