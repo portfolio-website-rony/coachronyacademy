@@ -1,38 +1,37 @@
-## Findings
+## সমস্যা যা পাওয়া গেছে
 
-- Lovable Cloud backend is healthy and reachable.
-- Database tables are not empty:
-  - `profiles`: 4 rows
-  - `user_roles`: 5 rows
-  - `leads`: 7 rows
-  - `bookings`: 3 rows
-  - `subscribers`: 1 row
-- Security linter currently shows no issues.
-- Admin role exists for the admin user id, so the admin role table is present.
-- The current screenshot error (`Invalid login credentials`) means the email/password authentication itself is failing before the admin panel role check runs.
-- The admin login form currently sends the email exactly as typed; unlike the normal login page, it does not trim/lowercase the email or show a friendlier error.
-
-## Likely cause
-
-The backend is connected, but the admin password being entered does not match the current auth password, or the email has hidden spacing/case differences in the admin login form.
+- Backend healthy আছে এবং ডেটা আছে: leads, bookings, subscribers, profiles, roles, site settings সব টেবিলে ডেটা আছে।
+- Work experience ডেটাও database-এ আছে, কিন্তু সাইটে না দেখানোর সম্ভাব্য কারণ হচ্ছে frontend read/request বা asset/loading issue।
+- সবচেয়ে বড় backend সমস্যা: public/authenticated role-এর table grants খালি দেখাচ্ছে। RLS policy থাকলেও table privilege না থাকলে login-related role reads, form insert, এবং CMS reads কাজ নাও করতে পারে।
+- Database triggers তালিকায় খালি দেখাচ্ছে, তাই signup করলে profile/role auto-create এবং lead/booking notification trigger কাজ নাও করতে পারে।
 
 ## Plan
 
-1. Verify the admin auth user exists for `coachronyacademy@gmail.com` and reset its password again to a known value.
-2. Update the admin login form to normalize the email before login:
-   - trim spaces
-   - lowercase email
-   - validate required password
-   - show `Wrong email or password` instead of the raw backend error
-3. Ensure the admin signup/login flow is not misleading:
-   - keep `/admin/login` as the login route
-   - if an admin already exists, the signup route should not imply another first admin can be created
-4. Re-test:
-   - admin login with `coachronyacademy@gmail.com`
-   - admin dashboard redirect/access
-   - confirm no backend/security linter issues after the fix
+1. **Database permissions ঠিক করা**
+   - `leads`, `bookings`, `subscribers`, `cms_site_settings`, `profiles`, `user_roles` টেবিলে দরকারি anon/authenticated privileges restore করব।
+   - Public visitors যেন lead/booking/subscriber submit করতে পারে এবং site settings/work experience পড়তে পারে।
+   - Logged-in users যেন নিজের profile/roles পড়তে পারে, admin যেন admin data manage করতে পারে।
+
+2. **Missing triggers restore করা**
+   - New signup হলে profile ও role auto-create করার trigger ফিরিয়ে আনব।
+   - New lead/booking হলে admin notification trigger ফিরিয়ে আনব।
+   - Updated rows-এর timestamp trigger দরকার হলে existing tables অনুযায়ী restore করব।
+
+3. **Frontend error visibility improve করা**
+   - Login/signup/form submit failure হলে generic “kaj hocce na” না দেখিয়ে actual helpful message দেখাবে।
+   - Work experience fetch fail করলে silently hide না করে console/error handling যোগ করব, যাতে future debugging সহজ হয়।
+
+4. **Work experience display verify/fix করা**
+   - `cms_site_settings.work_experience` থেকে items load হচ্ছে কিনা নিশ্চিত করব।
+   - Logo image URL কাজ না করলে fallback icon/name দেখানোর behavior রাখব, যাতে section পুরোপুরি hidden না হয়।
+   - Home এবং About page-এ section render হচ্ছে কিনা verify করব।
+
+5. **Validation**
+   - Public lead form, booking form, signup/login flow, admin role check, এবং work experience read path test করব।
+   - Database query দিয়ে নতুন submitted rows আসছে কিনা confirm করব।
 
 ## Technical details
 
-- Changes should be limited to the admin auth UI and, if needed, a safe admin password reset through the backend admin API.
-- No schema migration appears necessary because tables, roles, and policies are already present and the linter is clear.
+- Database changes migration দিয়ে হবে, direct source edit নয়।
+- Auth/admin security server-side role table অনুযায়ী থাকবে; client-side fake admin check করা হবে না।
+- Existing security schemas (`safeName`, `safeEmail`, etc.) বজায় থাকবে।
