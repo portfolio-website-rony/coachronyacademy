@@ -890,7 +890,7 @@ function FaqRow({ faq, onSave, onDelete }: { faq: Faq; onSave: (f: Faq) => void;
   );
 }
 
-function AddModuleForm({ onAdd }: { onAdd: (title: string) => void | Promise<void> }) {
+function AddModuleForm({ onAdd }: { onAdd: (title: string) => unknown }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   if (!open) {
@@ -951,7 +951,7 @@ function AddLessonForm({
     youtube_url: string | null;
     duration_seconds: number;
     is_preview: boolean;
-  }) => void | Promise<void>;
+  }) => unknown;
 }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
