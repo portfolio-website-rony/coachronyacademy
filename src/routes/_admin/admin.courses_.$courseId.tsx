@@ -629,10 +629,12 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function TextInput({
   value,
   onChange,
+  onBlur,
   type = "text",
 }: {
   value: string;
   onChange: (v: string) => void;
+  onBlur?: (v: string) => void;
   type?: string;
 }) {
   return (
@@ -640,6 +642,7 @@ function TextInput({
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur ? (e) => onBlur(e.target.value) : undefined}
       className="w-full rounded-xl border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary"
     />
   );
