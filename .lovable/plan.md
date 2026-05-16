@@ -1,67 +1,64 @@
+# Deploy CoachRony to Vercel
+
+## Problem
+
+The site at `coachronyacademy.vercel.app` returns `404: NOT_FOUND` on every path. Root cause:
+
+- The project is **TanStack Start** (SSR framework) configured for **Cloudflare Workers** (`src/server.ts` + `wrangler.jsonc`).
+- `vercel.json` tells Vercel to serve only the static `dist/client` folder with `framework: null`. There is no server runtime on Vercel, so every TanStack route 404s.
+- The current Vite config uses `@lovable.dev/vite-tanstack-config`, which bundles the Cloudflare plugin and emits a Cloudflare Worker — not a Vercel-compatible output.
+
 ## Goal
-Make the entire site (public pages + Student/Client/Admin dashboards) cleanly usable on mobile (320–414px), tablet (768px), and desktop. Focus on the spots that break today.
 
-## Findings from audit
+Make `coachronyacademy.vercel.app` (and any custom domain on Vercel) serve the full SSR app, including `/`, `/student`, `/admin`, server functions, and API routes.
 
-**Public site (Header / pages)**
-- `src/components/site/Header.tsx`: on mobile the user avatar, notification bell (`UserBell`), and theme toggle are completely hidden — they only show at `lg:`. Logged-in users on phones can't access notifications or the account menu from the header.
-- Mobile nav drawer doesn't show profile info or links to Profile/Courses/Ebooks (only a "Dashboard" button).
-- Most marketing pages already use responsive grids; spot-check Hero/Footer for horizontal overflow at 360px.
+## Approach
 
-**Student dashboard (`_student.tsx` + DashboardShell)**
-- Sidebar nav has 11 items; mobile drawer works but the top mobile bar (`h-12`) is very thin and lacks the notification bell / user menu — same issue as the site header.
-- `student.index.tsx`, `student.community.tsx`, `student.orders.tsx`, `student.progress.tsx`, `student.notifications.tsx` use tables / wide cards — need to verify horizontal scroll wrappers and stack on small screens.
-- Lesson player route (`student.courses.$slug.$lessonId.tsx`) and AI tutor panel commonly overflow on phones.
+Switch TanStack Start's build **target** from Cloudflare to Vercel so it emits a Vercel-compatible serverless function + static assets. Update `vercel.json` so Vercel picks up the generated build.
 
-**Client dashboard**
-- Same shell as Student, lighter content. Mostly fine but `client.payments.tsx` / `client.projects.tsx` likely need table wrappers checked.
+### Steps
 
-**Admin dashboard (`AdminShell.tsx`)**
-- Sidebar drawer works on mobile. Tables in `admin.users`, `admin.payments`, `admin.leads`, `admin.bookings` are already wrapped in `overflow-x-auto` ✓.
-- But other admin pages (`admin.students`, `admin.clients`, `admin.community`, `admin.activity`, `admin.cms`, `admin.courses`, `admin.courses_.$courseId`) need the same wrapper audit.
-- Header bar lacks a page title on mobile (only menu icon + bell + "View site").
-- `NotificationBell` dropdown / `LeadDrawer` / `BookingDrawer` need width caps on small viewports.
+1. **Replace the Vite config wrapper with a direct TanStack Start config.**
+   - Stop using `@lovable.dev/vite-tanstack-config` (Cloudflare-locked).
+   - Use the official `@tanstack/react-start/plugin/vite` with `target: 'vercel'`.
+   - Keep `@tailwindcss/vite`, `vite-tsconfig-paths`, `@` alias.
 
-**Cross-cutting issues to fix**
-1. Header on mobile: surface avatar menu + notification bell (currently `lg:`-only).
-2. Mobile sidebar top bar (Student/Client) too thin; add user actions there.
-3. All data tables: ensure parent has `overflow-x-auto` and table has `min-w-[Npx]` so columns don't squish.
-4. Long page titles / stat numbers: use `text-xl sm:text-2xl lg:text-3xl` and `truncate` where needed.
-5. Dialogs/Drawers: use `max-w-[calc(100vw-2rem)]`.
-6. Lesson player: video container `aspect-video w-full`, AI panel collapses below video on `<lg`.
-7. Forms (book/free-class/signup/login): single column on mobile, full-width inputs.
+2. **Remove Cloudflare-only files / settings** that don't apply to Vercel:
+   - Delete or ignore `wrangler.jsonc` (keep file but it becomes unused).
+   - `src/server.ts` (Cloudflare Worker entry wrapper) is no longer the build entry — TanStack's Vercel preset generates its own serverless entry. We keep the `error-capture` + `error-page` modules, but stop wiring `src/server.ts` as `tanstackStart.server.entry`.
 
-## Scope of changes (UI only — no business logic)
+3. **Rewrite `vercel.json`** to a minimal config that lets TanStack's Vercel preset take over (it writes to `.vercel/output` in the [Build Output API v3](https://vercel.com/docs/build-output-api/v3) format that Vercel auto-detects):
+   ```json
+   {
+     "$schema": "https://openapi.vercel.sh/vercel.json",
+     "buildCommand": "npm run build",
+     "installCommand": "npm install"
+   }
+   ```
+   Remove `outputDirectory` and `framework: null` — those force static-only serving.
 
-### Phase 1 — Shell fixes (highest impact)
-- `src/components/site/Header.tsx`: show `UserBell` + avatar (with dropdown) on mobile too; reorganize buttons so they fit at 360px.
-- `src/components/dashboard/DashboardShell.tsx`: enrich the mobile top bar (`h-12` → `h-14`) with user menu + notification bell.
-- `src/components/admin/AdminShell.tsx`: add page title slot in mobile header; cap NotificationBell dropdown width.
+4. **Environment variables on Vercel** (user action, documented in chat):
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - `VITE_SUPABASE_PROJECT_ID`
+   - Any server-side secrets used by server functions (no `VITE_` prefix).
+   These must be added in Vercel → Project → Settings → Environment Variables, then redeploy.
 
-### Phase 2 — Tables & wide content
-Wrap all `<table>` instances in `<div className="overflow-x-auto"><table className="min-w-[640px]">` for:
-- Student: `student.orders.tsx`, `student.progress.tsx`, `student.notifications.tsx`, `student.community.tsx`
-- Client: `client.payments.tsx`, `client.projects.tsx`, `client.meetings.tsx`
-- Admin: `admin.students.tsx`, `admin.clients.tsx`, `admin.community.tsx`, `admin.activity.tsx`, `admin.cms.tsx`, `admin.courses.tsx`, `admin.courses_.$courseId.tsx`, `admin.meetings.tsx`
-
-### Phase 3 — Page-level polish
-- Stat grids: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` across all dashboard index pages.
-- Lesson player (`student.courses.$slug.$lessonId.tsx`): stack video/AI panel on `<lg`; AI panel collapsible.
-- Dialogs/Drawers (`LeadDrawer`, `BookingDrawer`, payment screenshot modal): `w-full max-w-[calc(100vw-2rem)] sm:max-w-lg`.
-- Forms (`book.tsx`, `free-class.tsx`, `signup.tsx`, `login.tsx`): grids collapse to single column on mobile.
-
-### Phase 4 — QA pass
-- Browser-test at 360×800, 414×896, 768×1024, 1280×720 on:
-  - `/`, `/courses`, `/about`, `/contact`, `/book`
-  - `/student`, `/student/courses`, `/student/courses/:slug/:lessonId`, `/student/community`, `/student/orders`
-  - `/client`, `/client/payments`
-  - `/admin`, `/admin/users`, `/admin/payments`, `/admin/courses`, `/admin/cms`
-- Check no horizontal page scroll, all CTAs reachable, drawers don't clip, tables scroll cleanly.
+5. **Redeploy on Vercel** — push (or trigger redeploy). Verify `/`, `/login`, `/student`, and an admin route all render.
 
 ## Out of scope
-- No backend / RLS / business-logic changes.
-- No redesign of components — only responsive tweaks (Tailwind classes, layout structure).
-- No new dependencies.
 
-## Estimated edits
-~15–20 files modified, all small className/structure changes. No migrations.
+- No changes to routes, UI, RLS, or business logic.
+- Lovable's own published URL (`coachronyacademy.lovable.app`) keeps working alongside Vercel — they're independent.
+
+## Risks / notes
+
+- Cloudflare-specific runtime assumptions (e.g. `nodejs_compat`) don't matter on Vercel — Vercel functions run on Node.js, which is more permissive. No code change needed for that.
+- If a custom domain is currently pointed at Vercel, no DNS change is required; the deploy itself just needs to succeed.
+- After the switch, `wrangler deploy` will no longer work for this project unless the Cloudflare config is restored. We're committing to Vercel as the host.
+
+## Files to change
+
+- `vite.config.ts` — swap wrapper for direct TanStack Start plugin with `target: 'vercel'`.
+- `vercel.json` — minimal config, remove `outputDirectory` + `framework: null`.
+- `package.json` — ensure `@tanstack/react-start` plugin entry is available (already a dep); add `@vercel/...` only if required by the preset.
