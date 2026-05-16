@@ -98,7 +98,7 @@ function ClientsPage() {
           <div className="flex h-40 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[720px] text-sm">
               <thead className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
                 <tr><th className="px-4 py-3">Name</th><th className="px-4 py-3">Contact</th><th className="px-4 py-3">Country</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Actions</th></tr>
               </thead>
