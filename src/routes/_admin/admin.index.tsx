@@ -53,12 +53,15 @@ function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [revenueSeries, setRevenueSeries] = useState<{ day: string; amount: number }[]>([]);
   const [sourcePie, setSourcePie] = useState<{ name: string; value: number }[]>([]);
+  const [recentLeads, setRecentLeads] = useState<RecentLead[]>([]);
+  const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([]);
+  const [recentSubscribers, setRecentSubscribers] = useState<RecentSubscriber[]>([]);
 
   useEffect(() => {
     void load();
   }, []);
 
-  useRealtime(["leads", "bookings", "payments", "clients"], () => void load());
+  useRealtime(["leads", "bookings", "payments", "clients", "subscribers"], () => void load());
 
   async function load() {
     const today = startOfDay(new Date()).toISOString().split("T")[0];
@@ -69,8 +72,12 @@ function Dashboard() {
       payments,
       pendingPayments,
       clients,
+      subscribers,
       paymentRows,
       leadRows,
+      latestLeads,
+      latestBookings,
+      latestSubscribers,
     ] = await Promise.all([
       supabase.from("leads").select("*", { count: "exact", head: true }),
       supabase.from("bookings").select("*", { count: "exact", head: true }),
@@ -81,11 +88,27 @@ function Dashboard() {
       supabase.from("payments").select("amount").eq("status", "paid"),
       supabase.from("payments").select("*", { count: "exact", head: true }).eq("status", "pending"),
       supabase.from("clients").select("*", { count: "exact", head: true }),
+      supabase.from("subscribers").select("*", { count: "exact", head: true }),
       supabase
         .from("payments")
         .select("amount, paid_at, created_at, status")
         .eq("status", "paid"),
       supabase.from("leads").select("source, created_at"),
+      supabase
+        .from("leads")
+        .select("id, name, email, phone, created_at, status")
+        .order("created_at", { ascending: false })
+        .limit(5),
+      supabase
+        .from("bookings")
+        .select("id, name, email, preferred_date, preferred_time, status")
+        .order("created_at", { ascending: false })
+        .limit(5),
+      supabase
+        .from("subscribers")
+        .select("id, email, created_at")
+        .order("created_at", { ascending: false })
+        .limit(5),
     ]);
 
     const revenue = (payments.data ?? []).reduce(
@@ -100,7 +123,12 @@ function Dashboard() {
       revenue,
       pending: pendingPayments.count ?? 0,
       clients: clients.count ?? 0,
+      subscribers: subscribers.count ?? 0,
     });
+
+    setRecentLeads((latestLeads.data ?? []) as RecentLead[]);
+    setRecentBookings((latestBookings.data ?? []) as RecentBooking[]);
+    setRecentSubscribers((latestSubscribers.data ?? []) as RecentSubscriber[]);
 
     const days: { day: string; amount: number }[] = [];
     for (let i = 29; i >= 0; i--) {
