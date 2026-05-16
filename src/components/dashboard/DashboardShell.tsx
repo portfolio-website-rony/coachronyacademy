@@ -62,11 +62,11 @@ export function DashboardShell({
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <div className="flex h-12 items-center border-b border-white/10 bg-background/80 px-4 backdrop-blur lg:hidden">
-          <button onClick={() => setOpen(true)} aria-label="Open menu">
+        <div className="flex h-14 items-center gap-3 border-b border-white/10 bg-background/80 px-4 backdrop-blur lg:hidden">
+          <button onClick={() => setOpen(true)} aria-label="Open menu" className="rounded-lg p-1 hover:bg-white/5">
             <Menu className="h-5 w-5" />
           </button>
-          <span className="ml-3 text-sm font-semibold text-muted-foreground">{brand}</span>
+          <span className="text-sm font-semibold text-muted-foreground">{brand}</span>
         </div>
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
