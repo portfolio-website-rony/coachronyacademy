@@ -14,9 +14,24 @@ function ResetPasswordPage() {
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check the URL hash for an error (e.g. expired link) before waiting.
+    if (typeof window !== "undefined" && window.location.hash) {
+      const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const errCode = params.get("error_code");
+      const errDesc = params.get("error_description");
+      if (errCode || params.get("error")) {
+        setLinkError(
+          errCode === "otp_expired"
+            ? "This reset link has expired. Please request a new one."
+            : (errDesc?.replace(/\+/g, " ") ?? "This reset link is invalid.")
+        );
+        return;
+      }
+    }
     // Supabase parses the recovery hash and emits a PASSWORD_RECOVERY event.
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") setReady(true);
@@ -57,7 +72,18 @@ function ResetPasswordPage() {
           </span>
           <span className="text-gradient">Set new password</span>
         </div>
-        {!ready ? (
+        {linkError ? (
+          <>
+            <h1 className="text-2xl font-bold">Link not valid</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {linkError}{" "}
+              <Link to="/admin/forgot-password" className="text-primary-glow hover:underline">
+                Request a new reset link
+              </Link>
+              .
+            </p>
+          </>
+        ) : !ready ? (
           <>
             <h1 className="text-2xl font-bold">Verifying link…</h1>
             <p className="mt-2 text-sm text-muted-foreground">
