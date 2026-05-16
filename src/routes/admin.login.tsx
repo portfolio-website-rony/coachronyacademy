@@ -88,12 +88,7 @@ function LoginPage() {
             Sign in
           </button>
         </form>
-        <p className="mt-4 text-center text-xs">
-          <Link to="/admin/forgot-password" className="text-primary-glow hover:underline">
-            Forgot your password?
-          </Link>
-        </p>
-        <p className="mt-3 text-center text-xs text-muted-foreground">
+        <p className="mt-4 text-center text-xs text-muted-foreground">
           First time here?{" "}
           <Link to="/admin/signup" className="text-primary-glow hover:underline">
             Create the admin account
