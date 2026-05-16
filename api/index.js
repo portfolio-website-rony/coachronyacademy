@@ -5,7 +5,7 @@ import server from "../dist/server/server.js";
 
 export const config = {
   // Use Node.js runtime — the built server depends on node:async_hooks (h3 v2).
-  runtime: "nodejs20.x",
+  runtime: "nodejs",
 };
 
 function buildRequest(req) {
