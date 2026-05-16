@@ -87,8 +87,8 @@ function StudentsPage() {
       ) : rows.length === 0 ? (
         <EmptyState icon={GraduationCap} title="No students yet" description="Enrollments will appear here." />
       ) : (
-        <div className="glass overflow-hidden rounded-2xl">
-          <table className="w-full text-sm">
+        <div className="glass overflow-x-auto rounded-2xl">
+          <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="px-4 py-3">Student</th>

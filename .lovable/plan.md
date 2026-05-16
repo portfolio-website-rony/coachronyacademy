@@ -1,110 +1,67 @@
-# Security & Validation Hardening Plan — CoachRony
+## Goal
+Make the entire site (public pages + Student/Client/Admin dashboards) cleanly usable on mobile (320–414px), tablet (768px), and desktop. Focus on the spots that break today.
 
-Enterprise-grade security across all forms, server functions, storage, auth, and RLS. Note: backend rate limiting is not implemented (no primitives available on this stack); all other layers will be hardened.
+## Findings from audit
 
-## 1. Shared Validation & Sanitization Layer
+**Public site (Header / pages)**
+- `src/components/site/Header.tsx`: on mobile the user avatar, notification bell (`UserBell`), and theme toggle are completely hidden — they only show at `lg:`. Logged-in users on phones can't access notifications or the account menu from the header.
+- Mobile nav drawer doesn't show profile info or links to Profile/Courses/Ebooks (only a "Dashboard" button).
+- Most marketing pages already use responsive grids; spot-check Hero/Footer for horizontal overflow at 360px.
 
-Create reusable Zod schemas + sanitization helpers used by **both** client forms and every server function.
+**Student dashboard (`_student.tsx` + DashboardShell)**
+- Sidebar nav has 11 items; mobile drawer works but the top mobile bar (`h-12`) is very thin and lacks the notification bell / user menu — same issue as the site header.
+- `student.index.tsx`, `student.community.tsx`, `student.orders.tsx`, `student.progress.tsx`, `student.notifications.tsx` use tables / wide cards — need to verify horizontal scroll wrappers and stack on small screens.
+- Lesson player route (`student.courses.$slug.$lessonId.tsx`) and AI tutor panel commonly overflow on phones.
 
-**New files:**
-- `src/lib/security/schemas.ts` — Zod primitives:
-  - `safeName` (letters/spaces/Bangla unicode, 1–100, regex blocks `<>{}\\;`)
-  - `safePhone` (`^\+?[0-9]{6,20}$`)
-  - `safeEmail` (z.string().email().max(255))
-  - `safeText` (1–5000, stripped of control chars)
-  - `safeUrl` (https/http only, blocks `javascript:`, `data:`, `vbscript:`)
-  - `safePassword` (≥8, upper, lower, digit)
-  - `safeSlug`, `safeUuid`
-- `src/lib/security/sanitize.ts`:
-  - `sanitizeHtml(input)` — uses `dompurify` (allowlist: b, i, em, strong, a[href], br, p, ul, ol, li) for rich text only
-  - `stripHtml(input)` — for plain-text fields (messages, comments, posts)
-  - `detectMalicious(input)` — regex blocklist (`javascript:`, `<script`, `onerror=`, `onload=`, `eval(`, `document.cookie`, `DROP\s+TABLE`, `INSERT\s+INTO`, `DELETE\s+FROM`, `<iframe`, `srcdoc=`); throws `Error("Invalid or unsafe input detected.")`
-- `src/lib/security/files.ts`:
-  - `validateUpload(file)` — MIME + extension allowlist (jpg/jpeg/png/webp/pdf), size limits (image 5MB, pdf 10MB), rejects svg, exe, js, php, html, zip; checks magic bytes for images.
+**Client dashboard**
+- Same shell as Student, lighter content. Mostly fine but `client.payments.tsx` / `client.projects.tsx` likely need table wrappers checked.
 
-**Dependencies to add:** `dompurify`, `isomorphic-dompurify` (server-safe).
+**Admin dashboard (`AdminShell.tsx`)**
+- Sidebar drawer works on mobile. Tables in `admin.users`, `admin.payments`, `admin.leads`, `admin.bookings` are already wrapped in `overflow-x-auto` ✓.
+- But other admin pages (`admin.students`, `admin.clients`, `admin.community`, `admin.activity`, `admin.cms`, `admin.courses`, `admin.courses_.$courseId`) need the same wrapper audit.
+- Header bar lacks a page title on mobile (only menu icon + bell + "View site").
+- `NotificationBell` dropdown / `LeadDrawer` / `BookingDrawer` need width caps on small viewports.
 
-## 2. Server Function Hardening
+**Cross-cutting issues to fix**
+1. Header on mobile: surface avatar menu + notification bell (currently `lg:`-only).
+2. Mobile sidebar top bar (Student/Client) too thin; add user actions there.
+3. All data tables: ensure parent has `overflow-x-auto` and table has `min-w-[Npx]` so columns don't squish.
+4. Long page titles / stat numbers: use `text-xl sm:text-2xl lg:text-3xl` and `truncate` where needed.
+5. Dialogs/Drawers: use `max-w-[calc(100vw-2rem)]`.
+6. Lesson player: video container `aspect-video w-full`, AI panel collapses below video on `<lg`.
+7. Forms (book/free-class/signup/login): single column on mobile, full-width inputs.
 
-Audit every `createServerFn` under `src/lib/**/*.functions.ts` and ensure each one:
-1. Has `.inputValidator(zodSchema.parse)` — no raw passthrough validators.
-2. Calls `detectMalicious()` on free-text fields before insert.
-3. Uses `requireSupabaseAuth` unless explicitly public (lead/booking submission).
-4. For admin-only ops, additionally checks `has_role(userId, 'admin')` server-side via a new `requireAdmin` middleware.
+## Scope of changes (UI only — no business logic)
 
-**New file:** `src/integrations/supabase/admin-middleware.ts` — `requireAdmin` middleware (extends `requireSupabaseAuth`, queries `user_roles`, throws 403 if not admin).
+### Phase 1 — Shell fixes (highest impact)
+- `src/components/site/Header.tsx`: show `UserBell` + avatar (with dropdown) on mobile too; reorganize buttons so they fit at 360px.
+- `src/components/dashboard/DashboardShell.tsx`: enrich the mobile top bar (`h-12` → `h-14`) with user menu + notification bell.
+- `src/components/admin/AdminShell.tsx`: add page title slot in mobile header; cap NotificationBell dropdown width.
 
-**Apply `requireAdmin` to:**
-- `src/lib/admin/users.functions.ts` (list/toggle role/delete)
-- Any admin-only function in courses, payments, CMS, leads, clients.
+### Phase 2 — Tables & wide content
+Wrap all `<table>` instances in `<div className="overflow-x-auto"><table className="min-w-[640px]">` for:
+- Student: `student.orders.tsx`, `student.progress.tsx`, `student.notifications.tsx`, `student.community.tsx`
+- Client: `client.payments.tsx`, `client.projects.tsx`, `client.meetings.tsx`
+- Admin: `admin.students.tsx`, `admin.clients.tsx`, `admin.community.tsx`, `admin.activity.tsx`, `admin.cms.tsx`, `admin.courses.tsx`, `admin.courses_.$courseId.tsx`, `admin.meetings.tsx`
 
-## 3. Form Validation (client-side)
+### Phase 3 — Page-level polish
+- Stat grids: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` across all dashboard index pages.
+- Lesson player (`student.courses.$slug.$lessonId.tsx`): stack video/AI panel on `<lg`; AI panel collapsible.
+- Dialogs/Drawers (`LeadDrawer`, `BookingDrawer`, payment screenshot modal): `w-full max-w-[calc(100vw-2rem)] sm:max-w-lg`.
+- Forms (`book.tsx`, `free-class.tsx`, `signup.tsx`, `login.tsx`): grids collapse to single column on mobile.
 
-Wire every public/auth form to the shared Zod schemas via `react-hook-form` + `zodResolver`:
-- Lead form, Booking form, Newsletter subscribe
-- Signup, Login, Reset password, Profile edit
-- Community post/comment editor, Lesson notes
-- Payment submission (manual screenshot)
-- Admin: course/module/lesson editors, CMS editors, coupon editor
+### Phase 4 — QA pass
+- Browser-test at 360×800, 414×896, 768×1024, 1280×720 on:
+  - `/`, `/courses`, `/about`, `/contact`, `/book`
+  - `/student`, `/student/courses`, `/student/courses/:slug/:lessonId`, `/student/community`, `/student/orders`
+  - `/client`, `/client/payments`
+  - `/admin`, `/admin/users`, `/admin/payments`, `/admin/courses`, `/admin/cms`
+- Check no horizontal page scroll, all CTAs reachable, drawers don't clip, tables scroll cleanly.
 
-Replace any current ad-hoc validation. All free-text rendering goes through `stripHtml` or React's default text interpolation — **no `dangerouslySetInnerHTML`** unless content passes `sanitizeHtml`.
+## Out of scope
+- No backend / RLS / business-logic changes.
+- No redesign of components — only responsive tweaks (Tailwind classes, layout structure).
+- No new dependencies.
 
-## 4. Authentication Hardening
-
-- Call `supabase--configure_auth` with `password_hibp_enabled: true`, `auto_confirm_email: false`, `external_anonymous_users_enabled: false`, `disable_signup: false`.
-- Enforce `safePassword` schema in signup + reset-password forms with inline error UX.
-- Verify `/reset-password` route exists and handles `type=recovery` correctly.
-- Confirm Google OAuth uses Lovable broker (`lovable.auth.signInWithOAuth("google")`) and `supabase--configure_social_auth` for `["google"]`.
-
-## 5. RLS Audit & Fixes
-
-Run `supabase--linter` and review every table. Current schema is largely correct, but verify/tighten:
-- `lesson_ai_queries` — currently has no INSERT policy (broken). Add `INSERT WITH CHECK (user_id = auth.uid())`.
-- `lesson_ai_summaries` — admin-only INSERT policy needed (currently none).
-- `notifications` — INSERT policy allows users to insert for themselves; tighten to admin-only or service role for system events.
-- `subscribers` — confirm public INSERT is intentional; add unique-email constraint if missing.
-- All `*_views`, `activity_log` — confirm no PII leak via SELECT.
-
-Add a single migration that patches the gaps.
-
-## 6. Storage Bucket Security
-
-- `cms-media` (public): keep public read, restrict INSERT/UPDATE/DELETE to admins via storage policies.
-- `payment-screenshots` (private): owner-only read + admin read; INSERT only by authenticated user into their own `{user_id}/...` folder.
-- Add storage policies migration if missing.
-- All client uploads pass through `validateUpload()` first.
-
-## 7. Realtime Channel Scoping
-
-Audit `useRealtime` subscriptions:
-- Notifications channel: filter `user_id=eq.{auth.uid()}`.
-- Community posts: filter by `space_id` user has access to.
-- Admin activity feed: only mounted under `_admin` layout.
-
-RLS already enforces row visibility, but explicit `filter` reduces wire traffic.
-
-## 8. Admin Panel Guards
-
-- Confirm `_admin` layout `beforeLoad` checks `has_role('admin')` via server fn (not client-only).
-- Every admin server function uses new `requireAdmin` middleware.
-- Log admin mutations to `activity_log` (already exists; add inserts in admin server fns: role changes, user deletes, payment verify/reject, course publish, file delete).
-
-## 9. Security Memory & Scan
-
-- Create `mem://security/baseline` documenting the access-control model + intentionally-public surfaces (leads, bookings, subscribers, published courses/blog/portfolio).
-- Run `security--run_security_scan` after migrations; resolve or document each finding.
-
-## 10. Out of Scope (with reason)
-
-- **Backend rate limiting** — not supported on this stack; documented as known gap. If you want, we can add ad-hoc client-side debouncing on public forms (lead/booking/subscribe) instead.
-
----
-
-## Deliverables
-
-**New files (~6):** validation schemas, sanitize, file validator, admin middleware, security memory, RLS migration.
-**Modified files (~25):** all `*.functions.ts`, all form components, auth pages, storage upload sites.
-**Migrations:** 1 (RLS patches + storage policies).
-**Auth config:** 1 call to enable HIBP.
-
-After implementation, run `supabase--linter` + `security--run_security_scan` and report findings.
+## Estimated edits
+~15–20 files modified, all small className/structure changes. No migrations.
