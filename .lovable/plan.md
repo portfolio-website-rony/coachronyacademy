@@ -1,15 +1,32 @@
-## Plan: Email verification বন্ধ করা
+## Problem found
 
-**সমস্যা:** এখন signup করলে user-কে email verify করতে হয়, না করলে "Email not confirmed" error আসে।
+- Lovable Cloud backend/auth is healthy.
+- New user creation is currently not showing in the database, so the latest signup attempt likely failed before account creation.
+- The signup page still tells users to “Check your email to confirm”, even though email verification was intentionally disabled.
+- The database trigger that should create profiles/roles for new users is missing, so even successful new signups can get stuck after login because `/student` depends on a `student` role.
+- The login/signup forms also need consistent validation/error messaging so the exact blocker is visible.
 
-**সমাধান:** Supabase auth settings-এ `auto_confirm_email` enable করব। এর পর নতুন signup-এ email automatic confirm হয়ে যাবে — verification ছাড়াই সরাসরি login হবে।
+## Plan
 
-### Steps
-1. `supabase--configure_auth` tool দিয়ে `auto_confirm_email: true` set করব।
-2. বিদ্যমান unconfirmed user (যেমন `throny2000@gmail.com`) — এদের জন্য একটা migration দিয়ে `auth.users.email_confirmed_at` set করে দেব যাতে তারা এখনই login করতে পারে।
+1. **Restore auth user setup trigger**
+   - Add the missing trigger on new auth users so every signup automatically creates:
+     - a profile
+     - the correct user role (`student` or `client`)
+   - Keep the first-admin bootstrap behavior intact if still needed.
 
-### কোনো code change লাগবে না
-শুধু backend setting + এক migration। Frontend / login flow অপরিবর্তিত থাকবে।
+2. **Backfill existing users**
+   - For any user who already exists but has no profile/role, create the missing profile and role.
+   - Confirm all existing users are email-confirmed.
 
-### Note
-Production-এর জন্য email verification রাখা সাধারণত safer (fake email আটকায়)। আপনি এখন off করতে চাইলে পরে আবার on করা যাবে।
+3. **Fix signup UX**
+   - Change the success message from “check your email” to “account created, you can sign in now”.
+   - Keep redirecting users to login after signup.
+
+4. **Improve form diagnostics**
+   - Validate login email/password with the shared security schemas.
+   - Show clearer messages for common cases like weak password, invalid email, existing account, or invalid login credentials.
+
+5. **Verify**
+   - Test signup with a new email.
+   - Confirm the new account appears with `email_confirmed_at`, profile, and `student` role.
+   - Test login redirects correctly to `/student`.
