@@ -99,6 +99,8 @@ function CourseSalesPage() {
   const hasDiscount = course.discount_price !== null && course.discount_price < course.price;
   const isFree = finalPrice === 0;
   const totalLessons = lessons.length;
+  const lessonsTotalMin = Math.round(lessons.reduce((s, l) => s + (l.duration_seconds || 0), 0) / 60);
+  const displayDurationMin = lessonsTotalMin > 0 ? lessonsTotalMin : course.duration_minutes;
   const promoEmbed = youtubeEmbedUrl(course.promo_video_url);
 
   function onEnroll() {
