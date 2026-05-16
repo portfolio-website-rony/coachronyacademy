@@ -1,27 +1,15 @@
-## Fix Vercel runtime config error
+## Plan: Email verification বন্ধ করা
 
-**Error:** `api/index.js` declares `runtime: "nodejs20.x"`, but Vercel's `config` export only accepts `"edge"`, `"experimental-edge"`, or `"nodejs"`. The `nodejs20.x` form belongs in a different config surface (`vercel.json` `functions` block), not in the file's exported `config`.
+**সমস্যা:** এখন signup করলে user-কে email verify করতে হয়, না করলে "Email not confirmed" error আসে।
 
-**Fix:** change `api/index.js` so its exported config uses the valid value:
+**সমাধান:** Supabase auth settings-এ `auto_confirm_email` enable করব। এর পর নতুন signup-এ email automatic confirm হয়ে যাবে — verification ছাড়াই সরাসরি login হবে।
 
-```js
-export const config = {
-  runtime: "nodejs",
-};
-```
+### Steps
+1. `supabase--configure_auth` tool দিয়ে `auto_confirm_email: true` set করব।
+2. বিদ্যমান unconfirmed user (যেমন `throny2000@gmail.com`) — এদের জন্য একটা migration দিয়ে `auth.users.email_confirmed_at` set করে দেব যাতে তারা এখনই login করতে পারে।
 
-To pin the Node.js major version (recommended, since the built SSR bundle uses modern Node APIs like `Readable.toWeb`), add an `engines` field to `package.json`:
+### কোনো code change লাগবে না
+শুধু backend setting + এক migration। Frontend / login flow অপরিবর্তিত থাকবে।
 
-```json
-"engines": { "node": "20.x" }
-```
-
-Vercel reads `engines.node` to select the Node runtime version for all Node serverless functions.
-
-**Files to change**
-- `api/index.js` — replace `runtime: "nodejs20.x"` with `runtime: "nodejs"`.
-- `package.json` — add `"engines": { "node": "20.x" }` if not already present.
-
-**Out of scope:** no changes to the SSR handler logic, `vercel.json`, `vite.config.ts`, or any app code.
-
-**After deploy:** redeploy on Vercel; the build should succeed and routes should render via the serverless function.
+### Note
+Production-এর জন্য email verification রাখা সাধারণত safer (fake email আটকায়)। আপনি এখন off করতে চাইলে পরে আবার on করা যাবে।
