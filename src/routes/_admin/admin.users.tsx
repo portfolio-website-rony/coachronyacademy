@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { listAllUsers, setUserRole, deleteUser } from "@/lib/admin/users.functions";
+import { listAllUsers, setUserRole, deleteUser, resetUserPassword } from "@/lib/admin/users.functions";
 import { toast } from "sonner";
-import { Loader2, Shield, ShieldOff, Trash2, Search } from "lucide-react";
+import { Loader2, Shield, ShieldOff, Trash2, Search, KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/_admin/admin/users")({
   head: () => ({ meta: [{ title: "Users — Admin" }] }),
@@ -16,6 +16,7 @@ function UsersPage() {
   const fetchUsers = useServerFn(listAllUsers);
   const setRole = useServerFn(setUserRole);
   const delUser = useServerFn(deleteUser);
+  const resetPw = useServerFn(resetUserPassword);
 
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +43,20 @@ function UsersPage() {
       await setRole({ data: { userId: u.id, role: "admin", action: isAdmin ? "remove" : "add" } });
       toast.success(isAdmin ? "Admin removed" : "Admin granted");
       void load();
+    } catch (e: any) { toast.error(e.message); }
+  }
+
+  async function resetPassword(u: Row) {
+    const pw = prompt(`Set a new password for ${u.email}\n(at least 8 characters):`);
+    if (pw === null) return;
+    if (pw.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+    if (!confirm(`Reset password for ${u.email}? Share the new password with them securely.`)) return;
+    try {
+      await resetPw({ data: { userId: u.id, newPassword: pw } });
+      toast.success(`Password reset for ${u.email}`);
     } catch (e: any) { toast.error(e.message); }
   }
 
@@ -128,7 +143,10 @@ function UsersPage() {
                         <button onClick={() => toggleAdmin(u)} title={u.roles.includes("admin") ? "Remove admin" : "Make admin"} className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary-glow hover:bg-primary/25">
                           {u.roles.includes("admin") ? <ShieldOff className="h-3.5 w-3.5" /> : <Shield className="h-3.5 w-3.5" />}
                         </button>
-                        <button onClick={() => remove(u)} className="grid h-8 w-8 place-items-center rounded-lg bg-red-500/15 text-red-300 hover:bg-red-500/25">
+                        <button onClick={() => resetPassword(u)} title="Reset password" className="grid h-8 w-8 place-items-center rounded-lg bg-amber-500/15 text-amber-300 hover:bg-amber-500/25">
+                          <KeyRound className="h-3.5 w-3.5" />
+                        </button>
+                        <button onClick={() => remove(u)} title="Delete user" className="grid h-8 w-8 place-items-center rounded-lg bg-red-500/15 text-red-300 hover:bg-red-500/25">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
