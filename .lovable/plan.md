@@ -1,20 +1,30 @@
-## সমস্যা
+## Goal
+Admin panel → Users page-এ প্রতিটি user-এর জন্য "Reset password" button যোগ করব, যাতে admin যেকোনো user-এর জন্য নতুন password set করতে পারে।
 
-ডাটাবেইসে সব ফাংশন (`handle_new_user`, `on_new_lead`, `on_new_booking`, `set_updated_at`, `bootstrap_first_admin`, ইত্যাদি) আছে — কিন্তু **কোনো trigger attach করা নেই** (`There are no triggers in the database`)।
+## Changes
 
-এই কারণে লাইভ সাইটে:
+### 1. `src/lib/admin/users.functions.ts`
+নতুন server function `resetUserPassword` যোগ করব:
+- `requireSupabaseAuth` + `assertAdmin()` দিয়ে শুধু admin call করতে পারবে
+- Input: `{ userId: uuid, newPassword: string (min 8) }` — Zod validate
+- `supabaseAdmin.auth.admin.updateUserById(userId, { password })` দিয়ে password update
+- Return: `{ ok: true }`
 
-- নতুন ইউজার signup করলে `profiles` + `user_roles` row তৈরি হচ্ছে না → পরের বার login করতে গেলে role/permission নেই, dashboard খালি।
-- নতুন lead / booking / payment / enrollment আসলে admin notification তৈরি হচ্ছে না।
-- কোনো table-এ row update করলে `updated_at` auto-update হচ্ছে না।
-- First admin auto-bootstrap কাজ করছে না।
+### 2. `src/routes/_admin/admin.users.tsx`
+- নতুন **Key** icon button যোগ করব actions column-এ (Shield ও Trash-এর পাশে)
+- Click করলে `prompt()` দিয়ে নতুন password চাইবে (min 8 chars validate)
+- Confirm-এ `resetUserPassword` server fn call → success toast: "Password reset for {email}"
+- Email-এ user-কে notify করা হবে না — admin মুখে/অন্য চ্যানেলে নতুন password শেয়ার করবে
 
-Forms নিজেরা কাজ করছে (API test-এ 201 আসছে), Work Experience-ও লোড হচ্ছে — শুধু trigger-নির্ভর সব behavior bhanga।
+## Two options for admin UI
+আমি **inline prompt** ব্যবহার করব (simple, কোনো extra modal নয়) — fastest path।
+চাইলে পরে dedicated modal/drawer-এ upgrade করা যাবে।
 
-## পরিকল্পনা
+## Security notes
+- শুধু admin role-এর user এই function call করতে পারবে (server-side enforced)
+- Password Zod-এ min 8 char check
+- নিজের password এভাবেই reset করা যাবে (no self-block, কারণ valid use case)
 
-একটি migration দিয়ে নিচের সব trigger পুনরায় তৈরি করব (function-গুলো ইতিমধ্যে আছে, শুধু trigger বাইন্ড করা):
-
-### Auth triggers (`auth.users` table)
-- `on_auth_user_created` → `handle_new_user()` (signup-এ profile + role তৈরি)
-- `on_auth_user_created_bootstrap_admin` → `bootstrap_first_admin()
+## Out of scope
+- Email notification user-কে — চাইলে পরে যোগ করব
+- Force-logout user's existing sessions — চাইলে পরে যোগ করা যাবে
