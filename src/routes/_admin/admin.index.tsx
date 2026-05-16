@@ -159,9 +159,10 @@ function Dashboard() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
         <StatCard label="Leads" value={stats?.leads ?? "…"} icon={Users} />
         <StatCard label="Bookings" value={stats?.bookings ?? "…"} icon={CalendarDays} />
+        <StatCard label="Subscribers" value={stats?.subscribers ?? "…"} icon={Mail} />
         <StatCard label="Today's meetings" value={stats?.todayMeetings ?? "…"} icon={Video} />
         <StatCard
           label="Revenue"
