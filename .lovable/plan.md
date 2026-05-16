@@ -1,37 +1,20 @@
-## সমস্যা যা পাওয়া গেছে
+## সমস্যা
 
-- Backend healthy আছে এবং ডেটা আছে: leads, bookings, subscribers, profiles, roles, site settings সব টেবিলে ডেটা আছে।
-- Work experience ডেটাও database-এ আছে, কিন্তু সাইটে না দেখানোর সম্ভাব্য কারণ হচ্ছে frontend read/request বা asset/loading issue।
-- সবচেয়ে বড় backend সমস্যা: public/authenticated role-এর table grants খালি দেখাচ্ছে। RLS policy থাকলেও table privilege না থাকলে login-related role reads, form insert, এবং CMS reads কাজ নাও করতে পারে।
-- Database triggers তালিকায় খালি দেখাচ্ছে, তাই signup করলে profile/role auto-create এবং lead/booking notification trigger কাজ নাও করতে পারে।
+ডাটাবেইসে সব ফাংশন (`handle_new_user`, `on_new_lead`, `on_new_booking`, `set_updated_at`, `bootstrap_first_admin`, ইত্যাদি) আছে — কিন্তু **কোনো trigger attach করা নেই** (`There are no triggers in the database`)।
 
-## Plan
+এই কারণে লাইভ সাইটে:
 
-1. **Database permissions ঠিক করা**
-   - `leads`, `bookings`, `subscribers`, `cms_site_settings`, `profiles`, `user_roles` টেবিলে দরকারি anon/authenticated privileges restore করব।
-   - Public visitors যেন lead/booking/subscriber submit করতে পারে এবং site settings/work experience পড়তে পারে।
-   - Logged-in users যেন নিজের profile/roles পড়তে পারে, admin যেন admin data manage করতে পারে।
+- নতুন ইউজার signup করলে `profiles` + `user_roles` row তৈরি হচ্ছে না → পরের বার login করতে গেলে role/permission নেই, dashboard খালি।
+- নতুন lead / booking / payment / enrollment আসলে admin notification তৈরি হচ্ছে না।
+- কোনো table-এ row update করলে `updated_at` auto-update হচ্ছে না।
+- First admin auto-bootstrap কাজ করছে না।
 
-2. **Missing triggers restore করা**
-   - New signup হলে profile ও role auto-create করার trigger ফিরিয়ে আনব।
-   - New lead/booking হলে admin notification trigger ফিরিয়ে আনব।
-   - Updated rows-এর timestamp trigger দরকার হলে existing tables অনুযায়ী restore করব।
+Forms নিজেরা কাজ করছে (API test-এ 201 আসছে), Work Experience-ও লোড হচ্ছে — শুধু trigger-নির্ভর সব behavior bhanga।
 
-3. **Frontend error visibility improve করা**
-   - Login/signup/form submit failure হলে generic “kaj hocce na” না দেখিয়ে actual helpful message দেখাবে।
-   - Work experience fetch fail করলে silently hide না করে console/error handling যোগ করব, যাতে future debugging সহজ হয়।
+## পরিকল্পনা
 
-4. **Work experience display verify/fix করা**
-   - `cms_site_settings.work_experience` থেকে items load হচ্ছে কিনা নিশ্চিত করব।
-   - Logo image URL কাজ না করলে fallback icon/name দেখানোর behavior রাখব, যাতে section পুরোপুরি hidden না হয়।
-   - Home এবং About page-এ section render হচ্ছে কিনা verify করব।
+একটি migration দিয়ে নিচের সব trigger পুনরায় তৈরি করব (function-গুলো ইতিমধ্যে আছে, শুধু trigger বাইন্ড করা):
 
-5. **Validation**
-   - Public lead form, booking form, signup/login flow, admin role check, এবং work experience read path test করব।
-   - Database query দিয়ে নতুন submitted rows আসছে কিনা confirm করব।
-
-## Technical details
-
-- Database changes migration দিয়ে হবে, direct source edit নয়।
-- Auth/admin security server-side role table অনুযায়ী থাকবে; client-side fake admin check করা হবে না।
-- Existing security schemas (`safeName`, `safeEmail`, etc.) বজায় থাকবে।
+### Auth triggers (`auth.users` table)
+- `on_auth_user_created` → `handle_new_user()` (signup-এ profile + role তৈরি)
+- `on_auth_user_created_bootstrap_admin` → `bootstrap_first_admin()
