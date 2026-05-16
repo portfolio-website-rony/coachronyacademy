@@ -235,7 +235,90 @@ function Dashboard() {
             )}
           </div>
         </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <RecentPanel title="Recent leads" href="/admin/leads" empty="No leads yet">
+          {recentLeads.map((l) => (
+            <li key={l.id} className="flex items-start justify-between gap-3 border-b border-white/5 py-2.5 last:border-0">
+              <div className="min-w-0">
+                <div className="truncate text-sm font-medium">{l.name}</div>
+                <div className="truncate text-xs text-muted-foreground">
+                  {l.email || l.phone || "—"}
+                </div>
+              </div>
+              <div className="shrink-0 text-right">
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary-glow">
+                  {l.status}
+                </span>
+                <div className="mt-1 text-[10px] text-muted-foreground">
+                  {formatDistanceToNow(new Date(l.created_at), { addSuffix: true })}
+                </div>
+              </div>
+            </li>
+          ))}
+        </RecentPanel>
+
+        <RecentPanel title="Recent bookings" href="/admin/bookings" empty="No bookings yet">
+          {recentBookings.map((b) => (
+            <li key={b.id} className="flex items-start justify-between gap-3 border-b border-white/5 py-2.5 last:border-0">
+              <div className="min-w-0">
+                <div className="truncate text-sm font-medium">{b.name}</div>
+                <div className="truncate text-xs text-muted-foreground">{b.email}</div>
+              </div>
+              <div className="shrink-0 text-right text-xs">
+                <div className="font-medium">{b.preferred_date}</div>
+                <div className="text-[10px] text-muted-foreground">{b.preferred_time}</div>
+              </div>
+            </li>
+          ))}
+        </RecentPanel>
+
+        <RecentPanel title="Recent subscribers" href="/admin/leads" empty="No subscribers yet">
+          {recentSubscribers.map((s) => (
+            <li key={s.id} className="flex items-center justify-between gap-3 border-b border-white/5 py-2.5 last:border-0">
+              <div className="truncate text-sm">{s.email}</div>
+              <div className="shrink-0 text-[10px] text-muted-foreground">
+                {formatDistanceToNow(new Date(s.created_at), { addSuffix: true })}
+              </div>
+            </li>
+          ))}
+        </RecentPanel>
       </div>
+    </div>
+  );
+}
+
+function RecentPanel({
+  title,
+  href,
+  empty,
+  children,
+}: {
+  title: string;
+  href: string;
+  empty: string;
+  children: React.ReactNode;
+}) {
+  const items = Array.isArray(children) ? children : [children];
+  const isEmpty = items.length === 0 || (items.length === 1 && !items[0]);
+  return (
+    <div className="glass rounded-2xl p-5">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold">{title}</h3>
+        <Link
+          to={href}
+          className="inline-flex items-center gap-1 text-xs text-primary-glow hover:underline"
+        >
+          View all <ArrowRight className="h-3 w-3" />
+        </Link>
+      </div>
+      {isEmpty ? (
+        <div className="mt-4 grid place-items-center py-8 text-sm text-muted-foreground">
+          {empty}
+        </div>
+      ) : (
+        <ul className="mt-2">{children}</ul>
+      )}
     </div>
   );
 }
