@@ -40,7 +40,12 @@ type Stats = {
   revenue: number;
   pending: number;
   clients: number;
+  subscribers: number;
 };
+
+type RecentLead = { id: string; name: string; email: string | null; phone: string | null; created_at: string; status: string };
+type RecentBooking = { id: string; name: string; email: string; preferred_date: string; preferred_time: string; status: string };
+type RecentSubscriber = { id: string; email: string; created_at: string };
 
 const COLORS = ["oklch(0.7 0.2 290)", "oklch(0.72 0.18 220)", "oklch(0.75 0.18 152)", "oklch(0.78 0.18 60)"];
 
