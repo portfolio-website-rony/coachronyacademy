@@ -72,7 +72,18 @@ function ResetPasswordPage() {
           </span>
           <span className="text-gradient">Set new password</span>
         </div>
-        {!ready ? (
+        {linkError ? (
+          <>
+            <h1 className="text-2xl font-bold">Link not valid</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {linkError}{" "}
+              <Link to="/admin/forgot-password" className="text-primary-glow hover:underline">
+                Request a new reset link
+              </Link>
+              .
+            </p>
+          </>
+        ) : !ready ? (
           <>
             <h1 className="text-2xl font-bold">Verifying link…</h1>
             <p className="mt-2 text-sm text-muted-foreground">
