@@ -315,10 +315,11 @@ function CourseEditor() {
               onChange={(v) => setCourse({ ...course, display_order: v })}
             />
           </Field>
-          <Field label="Promo video URL (YouTube)">
+          <Field label={fetchingDuration ? "Promo video URL — fetching duration…" : "Promo video URL (YouTube) — auto-fills duration"}>
             <TextInput
               value={course.promo_video_url ?? ""}
               onChange={(v) => setCourse({ ...course, promo_video_url: v })}
+              onBlur={(v) => autofillPromoDuration(v)}
             />
           </Field>
         </div>
