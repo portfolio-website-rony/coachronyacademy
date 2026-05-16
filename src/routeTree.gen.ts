@@ -14,6 +14,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
@@ -34,6 +35,7 @@ import { Route as CoursesSlugRouteImport } from './routes/courses.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminSignupRouteImport } from './routes/admin.signup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminForgotPasswordRouteImport } from './routes/admin.forgot-password'
 import { Route as StudentStudentRouteImport } from './routes/_student/student'
 import { Route as ClientClientRouteImport } from './routes/_client/client'
 import { Route as AdminAdminRouteImport } from './routes/_admin/admin'
@@ -98,6 +100,11 @@ const ShopRoute = ShopRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgramsRoute = ProgramsRouteImport.update({
@@ -195,6 +202,11 @@ const AdminSignupRoute = AdminSignupRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminForgotPasswordRoute = AdminForgotPasswordRouteImport.update({
+  id: '/admin/forgot-password',
+  path: '/admin/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudentStudentRoute = StudentStudentRouteImport.update({
@@ -418,6 +430,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
   '/signup': typeof SignupRoute
@@ -426,6 +439,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminAdminRouteWithChildren
   '/client': typeof ClientClientRouteWithChildren
   '/student': typeof StudentStudentRouteWithChildren
+  '/admin/forgot-password': typeof AdminForgotPasswordRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -482,12 +496,14 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/client': typeof ClientClientRouteWithChildren
+  '/admin/forgot-password': typeof AdminForgotPasswordRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -547,6 +563,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
   '/signup': typeof SignupRoute
@@ -555,6 +572,7 @@ export interface FileRoutesById {
   '/_admin/admin': typeof AdminAdminRouteWithChildren
   '/_client/client': typeof ClientClientRouteWithChildren
   '/_student/student': typeof StudentStudentRouteWithChildren
+  '/admin/forgot-password': typeof AdminForgotPasswordRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -613,6 +631,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/privacy'
     | '/programs'
+    | '/reset-password'
     | '/services'
     | '/shop'
     | '/signup'
@@ -621,6 +640,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/client'
     | '/student'
+    | '/admin/forgot-password'
     | '/admin/login'
     | '/admin/signup'
     | '/blog/$slug'
@@ -677,12 +697,14 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/privacy'
     | '/programs'
+    | '/reset-password'
     | '/services'
     | '/shop'
     | '/signup'
     | '/terms'
     | '/thank-you'
     | '/client'
+    | '/admin/forgot-password'
     | '/admin/login'
     | '/admin/signup'
     | '/blog/$slug'
@@ -741,6 +763,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/privacy'
     | '/programs'
+    | '/reset-password'
     | '/services'
     | '/shop'
     | '/signup'
@@ -749,6 +772,7 @@ export interface FileRouteTypes {
     | '/_admin/admin'
     | '/_client/client'
     | '/_student/student'
+    | '/admin/forgot-password'
     | '/admin/login'
     | '/admin/signup'
     | '/blog/$slug'
@@ -809,11 +833,13 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRoute
   PrivacyRoute: typeof PrivacyRoute
   ProgramsRoute: typeof ProgramsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   ShopRoute: typeof ShopRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   ThankYouRoute: typeof ThankYouRoute
+  AdminForgotPasswordRoute: typeof AdminForgotPasswordRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminSignupRoute: typeof AdminSignupRoute
   CoursesSlugRoute: typeof CoursesSlugRoute
@@ -856,6 +882,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/programs': {
@@ -996,6 +1029,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/forgot-password': {
+      id: '/admin/forgot-password'
+      path: '/admin/forgot-password'
+      fullPath: '/admin/forgot-password'
+      preLoaderRoute: typeof AdminForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_student/student': {
@@ -1454,11 +1494,13 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRoute,
   PrivacyRoute: PrivacyRoute,
   ProgramsRoute: ProgramsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   ShopRoute: ShopRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   ThankYouRoute: ThankYouRoute,
+  AdminForgotPasswordRoute: AdminForgotPasswordRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminSignupRoute: AdminSignupRoute,
   CoursesSlugRoute: CoursesSlugRoute,
