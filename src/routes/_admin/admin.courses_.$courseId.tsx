@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2, Save, ExternalLink } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, ExternalLink, Loader2 } from "lucide-react";
 import { ImageUploader } from "@/components/admin/ImageUploader";
+import { getYoutubeDuration } from "@/lib/admin/youtube-duration.functions";
 
 export const Route = createFileRoute("/_admin/admin/courses_/$courseId")({
   head: () => ({ meta: [{ title: "Edit Course — Admin" }] }),
@@ -69,6 +71,25 @@ function CourseEditor() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [faqs, setFaqs] = useState<Faq[]>([]);
   const [saving, setSaving] = useState(false);
+  const [fetchingDuration, setFetchingDuration] = useState(false);
+  const fetchYtDuration = useServerFn(getYoutubeDuration);
+
+  async function autofillPromoDuration(url: string) {
+    if (!url || !course) return;
+    setFetchingDuration(true);
+    try {
+      const { seconds } = await fetchYtDuration({ data: { url } });
+      if (seconds > 0) {
+        const mins = Math.max(1, Math.round(seconds / 60));
+        setCourse((c) => (c ? { ...c, duration_minutes: mins } : c));
+        toast.success(`Duration auto-filled: ${mins} min`);
+      }
+    } catch {
+      // silent — admin can fill manually
+    } finally {
+      setFetchingDuration(false);
+    }
+  }
 
   async function load() {
     const [{ data: c }, { data: m }, { data: f }] = await Promise.all([
@@ -294,10 +315,11 @@ function CourseEditor() {
               onChange={(v) => setCourse({ ...course, display_order: v })}
             />
           </Field>
-          <Field label="Promo video URL (YouTube)">
+          <Field label={fetchingDuration ? "Promo video URL — fetching duration…" : "Promo video URL (YouTube) — auto-fills duration"}>
             <TextInput
               value={course.promo_video_url ?? ""}
               onChange={(v) => setCourse({ ...course, promo_video_url: v })}
+              onBlur={(v) => autofillPromoDuration(v)}
             />
           </Field>
         </div>
@@ -607,10 +629,12 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function TextInput({
   value,
   onChange,
+  onBlur,
   type = "text",
 }: {
   value: string;
   onChange: (v: string) => void;
+  onBlur?: (v: string) => void;
   type?: string;
 }) {
   return (
@@ -618,6 +642,7 @@ function TextInput({
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur ? (e) => onBlur(e.target.value) : undefined}
       className="w-full rounded-xl border border-white/10 bg-background/40 px-3 py-2 text-sm outline-none focus:border-primary"
     />
   );
@@ -750,6 +775,25 @@ function LessonRow({
   onDelete: () => void;
 }) {
   const [l, setL] = useState(lesson);
+  const [fetchingDur, setFetchingDur] = useState(false);
+  const fetchYtDuration = useServerFn(getYoutubeDuration);
+
+  async function autofillLessonDuration(url: string) {
+    if (!url) return;
+    setFetchingDur(true);
+    try {
+      const { seconds } = await fetchYtDuration({ data: { url } });
+      if (seconds > 0) {
+        setL((prev) => ({ ...prev, duration_seconds: seconds }));
+        toast.success(`Lesson duration: ${Math.round(seconds / 60)} min`);
+      }
+    } catch {
+      // silent
+    } finally {
+      setFetchingDur(false);
+    }
+  }
+
   return (
     <div className="space-y-2 rounded-xl border border-white/10 bg-background/30 p-3">
       <div className="grid gap-2 sm:grid-cols-[1fr_1fr_120px_auto]">
@@ -759,12 +803,18 @@ function LessonRow({
           placeholder="Lesson title"
           className="rounded-lg border border-white/10 bg-background/40 px-2 py-1.5 text-sm"
         />
-        <input
-          value={l.youtube_url ?? ""}
-          onChange={(e) => setL({ ...l, youtube_url: e.target.value })}
-          placeholder="YouTube unlisted URL"
-          className="rounded-lg border border-white/10 bg-background/40 px-2 py-1.5 text-sm"
-        />
+        <div className="relative">
+          <input
+            value={l.youtube_url ?? ""}
+            onChange={(e) => setL({ ...l, youtube_url: e.target.value })}
+            onBlur={(e) => autofillLessonDuration(e.target.value)}
+            placeholder="YouTube unlisted URL"
+            className="w-full rounded-lg border border-white/10 bg-background/40 px-2 py-1.5 pr-7 text-sm"
+          />
+          {fetchingDur && (
+            <Loader2 className="absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin text-primary-glow" />
+          )}
+        </div>
         <input
           type="number"
           value={l.duration_seconds}
