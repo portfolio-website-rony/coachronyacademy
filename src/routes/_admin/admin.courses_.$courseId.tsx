@@ -164,13 +164,13 @@ function CourseEditor() {
     else toast.success("Course saved");
   }
 
-  async function addModule() {
-    const title = prompt("Module title");
-    if (!title) return;
+  async function addModule(title: string) {
+    if (!title.trim()) return;
     const { error } = await supabase
       .from("course_modules")
-      .insert({ course_id: courseId, title, display_order: modules.length });
+      .insert({ course_id: courseId, title: title.trim(), display_order: modules.length });
     if (error) return toast.error(error.message);
+    toast.success("Module added");
     void load();
   }
 
@@ -188,14 +188,24 @@ function CourseEditor() {
     void load();
   }
 
-  async function addLesson(moduleId: string) {
-    const title = prompt("Lesson title");
-    if (!title) return;
+  async function addLesson(
+    moduleId: string,
+    payload: { title: string; youtube_url: string | null; duration_seconds: number; is_preview: boolean },
+  ) {
+    if (!payload.title.trim()) return;
     const count = lessons.filter((l) => l.module_id === moduleId).length;
     const { error } = await supabase
       .from("course_lessons")
-      .insert({ module_id: moduleId, title, display_order: count });
+      .insert({
+        module_id: moduleId,
+        title: payload.title.trim(),
+        youtube_url: payload.youtube_url,
+        duration_seconds: payload.duration_seconds,
+        is_preview: payload.is_preview,
+        display_order: count,
+      });
     if (error) return toast.error(error.message);
+    toast.success("Lesson added");
     void load();
   }
 
