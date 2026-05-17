@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, BookOpen, Eye, EyeOff } from "lucide-react";
+import { Plus, BookOpen, Eye, EyeOff, Users } from "lucide-react";
 import { EmptyState } from "@/components/admin/EmptyState";
 
 export const Route = createFileRoute("/_admin/admin/courses")({
@@ -22,6 +22,7 @@ type Course = {
 
 function CoursesPage() {
   const [rows, setRows] = useState<Course[] | null>(null);
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
 
@@ -31,7 +32,21 @@ function CoursesPage() {
       .select("id,title,slug,published,level,category,display_order")
       .order("display_order")
       .order("created_at", { ascending: false });
-    setRows((data as Course[]) ?? []);
+    const list = (data as Course[]) ?? [];
+    setRows(list);
+    if (list.length) {
+      const { data: enr } = await supabase
+        .from("enrollments")
+        .select("course_id")
+        .in("course_id", list.map((c) => c.id));
+      const map: Record<string, number> = {};
+      ((enr as { course_id: string }[]) ?? []).forEach((e) => {
+        map[e.course_id] = (map[e.course_id] ?? 0) + 1;
+      });
+      setCounts(map);
+    } else {
+      setCounts({});
+    }
   }
   useEffect(() => {
     void load();
@@ -109,11 +124,12 @@ function CoursesPage() {
         <EmptyState icon={BookOpen} title="No courses yet" description="Create your first course to get started." />
       ) : (
         <div className="glass overflow-x-auto rounded-2xl">
-          <table className="w-full min-w-[640px] text-sm">
+          <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Level</th>
+                <th className="px-4 py-3">Students</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3"></th>
               </tr>
@@ -128,6 +144,16 @@ function CoursesPage() {
                     <div className="text-xs text-muted-foreground">{c.slug}</div>
                   </td>
                   <td className="px-4 py-3 capitalize">{c.level}</td>
+                  <td className="px-4 py-3">
+                    <Link
+                      to="/admin/courses/$courseId/students"
+                      params={{ courseId: c.id }}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium hover:bg-primary/20 hover:text-primary-glow"
+                    >
+                      <Users className="h-3 w-3" />
+                      {counts[c.id] ?? 0}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     <button
                       onClick={() => togglePublish(c)}
