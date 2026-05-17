@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Users, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle2, Search } from "lucide-react";
 import { EmptyState } from "@/components/admin/EmptyState";
 
 export const Route = createFileRoute("/_admin/admin/courses_/$courseId/students")({
