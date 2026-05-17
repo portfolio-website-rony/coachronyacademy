@@ -1,41 +1,32 @@
-## Goal
-Admin course editor-e modules ar lessons re-order korar feature add kora — up/down arrow buttons diye (simple, reliable). Drag-and-drop chaile pore add korbo, but starting with buttons karon code change kom + mobile-friendly + no extra dependency.
+## Show enrolled student counts per course (Admin)
 
-## Changes
+Add a "Students" column to **Admin → Courses** showing how many users have enrolled in each course, and let admins click the number to see the full list of enrolled students.
 
-### `src/routes/_admin/admin.courses_.$courseId.tsx`
+### Changes
 
-**1) Add `moveModule(index, dir: -1 | 1)` helper:**
-- Swap `display_order` between current module ar neighbor
-- Bulk update via 2 supabase calls (update both rows)
-- Re-fetch modules list (or local optimistic swap)
-- Toast "Reordered"
+**1. `src/routes/_admin/admin.courses.tsx`** — list page
+- After loading courses, fetch enrollment counts in one query:
+  `supabase.from("enrollments").select("course_id").in("course_id", ids)` → group by `course_id` in JS to build `{ [courseId]: count }`.
+- Add a new **Students** column in the table showing the count (e.g. `12`), styled as a chip.
+- Wrap the count in a `<Link to="/admin/courses/$courseId/students" params={{ courseId: c.id }}>` so admin can drill in.
 
-**2) Add `moveLesson(moduleId, index, dir: -1 | 1)` helper:**
-- Same pattern but scoped to lessons of that module (filter by module_id, sort by display_order)
-- Swap display_order between two lessons
-- Bulk update + refresh
+**2. New route `src/routes/_admin/admin.courses_.$courseId.students.tsx`** — enrolled students page
+- Header: course title + total count.
+- Fetch enrollments for the course joined with profile info:
+  ```
+  supabase
+    .from("enrollments")
+    .select("id,status,enrolled_at,completed_at,user_id,profile:profiles(display_name,avatar_url,phone)")
+    .eq("course_id", courseId)
+    .order("enrolled_at", { ascending: false });
+  ```
+- Render a table: Avatar + name, status badge (active/completed), enrolled date, completed date, phone (if any).
+- Empty state when zero enrollments.
+- Back link to `/admin/courses/{id}` (edit) and `/admin/courses` (list).
 
-**3) Module card UI — add up/down buttons:**
-- Beside the module title input, add two icon buttons (`ChevronUp`, `ChevronDown` from lucide-react)
-- Disable up button on first module, down on last
-- Click → call `moveModule`
+### Out of scope
+- Email column (not in `profiles`; would need admin auth API — can add later via a server fn if you want).
+- Manual enroll/unenroll from this page.
+- CSV export.
 
-**4) Lesson row UI — add up/down buttons:**
-- Similar two icon buttons at the start of each lesson row
-- Disable on first/last lesson within module
-- Click → call `moveLesson`
-
-**5) Defensive normalization (optional but small):**
-- Before swap, if any `display_order` values are duplicates/null, normalize them to 0..n-1 first to guarantee swap works
-
-### Why up/down buttons over drag-and-drop
-- No new dependency (`@dnd-kit/*` would add ~30KB)
-- Works on touch + keyboard accessible
-- Simpler code, fewer bugs
-- Can layer drag-and-drop on top later if needed
-
-## Out of scope
-- Drag-and-drop (can add later with @dnd-kit if requested)
-- Cross-module lesson move (lesson stays in its module)
-- DB schema change — `display_order` column already exists
+Want me to also add email (via a small server function using `supabaseAdmin`) on the students page?
