@@ -22,6 +22,7 @@ function CourseStudentsPage() {
   const { courseId } = Route.useParams();
   const [courseTitle, setCourseTitle] = useState<string>("");
   const [rows, setRows] = useState<Row[] | null>(null);
+  const [q, setQ] = useState("");
 
   useEffect(() => {
     void (async () => {
@@ -40,6 +41,13 @@ function CourseStudentsPage() {
 
   const total = rows?.length ?? 0;
   const completed = (rows ?? []).filter((r) => r.status === "completed" || r.completed_at).length;
+  const needle = q.trim().toLowerCase();
+  const filtered = (rows ?? []).filter((r) => {
+    if (!needle) return true;
+    const name = (r.profile?.display_name ?? "").toLowerCase();
+    const phone = (r.profile?.phone ?? "").toLowerCase();
+    return name.includes(needle) || phone.includes(needle);
+  });
 
   return (
     <div className="space-y-6">
