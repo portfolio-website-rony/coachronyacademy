@@ -124,11 +124,12 @@ function CoursesPage() {
         <EmptyState icon={BookOpen} title="No courses yet" description="Create your first course to get started." />
       ) : (
         <div className="glass overflow-x-auto rounded-2xl">
-          <table className="w-full min-w-[640px] text-sm">
+          <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Level</th>
+                <th className="px-4 py-3">Students</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3"></th>
               </tr>
@@ -143,6 +144,16 @@ function CoursesPage() {
                     <div className="text-xs text-muted-foreground">{c.slug}</div>
                   </td>
                   <td className="px-4 py-3 capitalize">{c.level}</td>
+                  <td className="px-4 py-3">
+                    <Link
+                      to="/admin/courses/$courseId/students"
+                      params={{ courseId: c.id }}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium hover:bg-primary/20 hover:text-primary-glow"
+                    >
+                      <Users className="h-3 w-3" />
+                      {counts[c.id] ?? 0}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     <button
                       onClick={() => togglePublish(c)}
