@@ -76,7 +76,20 @@ function CourseStudentsPage() {
       ) : rows.length === 0 ? (
         <EmptyState icon={Users} title="No enrollments yet" description="Students will appear here once they enroll." />
       ) : (
-        <div className="glass overflow-x-auto rounded-2xl">
+        <div className="space-y-3">
+          <div className="relative max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search by name or phone…"
+              className="w-full rounded-xl border border-white/10 bg-background/50 py-2 pl-9 pr-3 text-sm outline-none focus:border-primary"
+            />
+          </div>
+          {filtered.length === 0 ? (
+            <EmptyState icon={Search} title="No matches" description="Try a different name or phone." />
+          ) : (
+          <div className="glass overflow-x-auto rounded-2xl">
           <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
@@ -88,7 +101,7 @@ function CourseStudentsPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => {
+              {filtered.map((r) => {
                 const name = r.profile?.display_name ?? "Unnamed";
                 const initial = name.charAt(0).toUpperCase();
                 const done = r.status === "completed" || r.completed_at;
