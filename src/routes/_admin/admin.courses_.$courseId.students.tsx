@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Users, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle2, Search } from "lucide-react";
 import { EmptyState } from "@/components/admin/EmptyState";
 
 export const Route = createFileRoute("/_admin/admin/courses_/$courseId/students")({
@@ -22,6 +22,7 @@ function CourseStudentsPage() {
   const { courseId } = Route.useParams();
   const [courseTitle, setCourseTitle] = useState<string>("");
   const [rows, setRows] = useState<Row[] | null>(null);
+  const [q, setQ] = useState("");
 
   useEffect(() => {
     void (async () => {
@@ -40,6 +41,13 @@ function CourseStudentsPage() {
 
   const total = rows?.length ?? 0;
   const completed = (rows ?? []).filter((r) => r.status === "completed" || r.completed_at).length;
+  const needle = q.trim().toLowerCase();
+  const filtered = (rows ?? []).filter((r) => {
+    if (!needle) return true;
+    const name = (r.profile?.display_name ?? "").toLowerCase();
+    const phone = (r.profile?.phone ?? "").toLowerCase();
+    return name.includes(needle) || phone.includes(needle);
+  });
 
   return (
     <div className="space-y-6">
@@ -68,7 +76,20 @@ function CourseStudentsPage() {
       ) : rows.length === 0 ? (
         <EmptyState icon={Users} title="No enrollments yet" description="Students will appear here once they enroll." />
       ) : (
-        <div className="glass overflow-x-auto rounded-2xl">
+        <div className="space-y-3">
+          <div className="relative max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search by name or phone…"
+              className="w-full rounded-xl border border-white/10 bg-background/50 py-2 pl-9 pr-3 text-sm outline-none focus:border-primary"
+            />
+          </div>
+          {filtered.length === 0 ? (
+            <EmptyState icon={Search} title="No matches" description="Try a different name or phone." />
+          ) : (
+          <div className="glass overflow-x-auto rounded-2xl">
           <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
@@ -80,7 +101,7 @@ function CourseStudentsPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => {
+              {filtered.map((r) => {
                 const name = r.profile?.display_name ?? "Unnamed";
                 const initial = name.charAt(0).toUpperCase();
                 const done = r.status === "completed" || r.completed_at;
@@ -122,6 +143,8 @@ function CourseStudentsPage() {
               })}
             </tbody>
           </table>
+          </div>
+          )}
         </div>
       )}
     </div>
