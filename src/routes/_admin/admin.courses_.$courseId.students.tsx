@@ -143,6 +143,8 @@ function CourseStudentsPage() {
               })}
             </tbody>
           </table>
+          </div>
+          )}
         </div>
       )}
     </div>
