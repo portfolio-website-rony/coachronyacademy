@@ -22,6 +22,7 @@ type Course = {
 
 function CoursesPage() {
   const [rows, setRows] = useState<Course[] | null>(null);
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
 
@@ -31,7 +32,21 @@ function CoursesPage() {
       .select("id,title,slug,published,level,category,display_order")
       .order("display_order")
       .order("created_at", { ascending: false });
-    setRows((data as Course[]) ?? []);
+    const list = (data as Course[]) ?? [];
+    setRows(list);
+    if (list.length) {
+      const { data: enr } = await supabase
+        .from("enrollments")
+        .select("course_id")
+        .in("course_id", list.map((c) => c.id));
+      const map: Record<string, number> = {};
+      ((enr as { course_id: string }[]) ?? []).forEach((e) => {
+        map[e.course_id] = (map[e.course_id] ?? 0) + 1;
+      });
+      setCounts(map);
+    } else {
+      setCounts({});
+    }
   }
   useEffect(() => {
     void load();
