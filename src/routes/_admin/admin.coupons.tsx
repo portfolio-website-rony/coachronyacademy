@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_admin/admin/coupons")({
 type Coupon = {
   id: string;
   code: string;
-  kind: string; // 'percent' | 'fixed'
+  kind: string; // 'percent' | 'flat'
   value: number;
   course_id: string | null;
   active: boolean;
