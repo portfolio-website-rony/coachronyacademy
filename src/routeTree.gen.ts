@@ -67,6 +67,7 @@ import { Route as AdminAdminMeetingsRouteImport } from './routes/_admin/admin.me
 import { Route as AdminAdminLeadsRouteImport } from './routes/_admin/admin.leads'
 import { Route as AdminAdminFilesRouteImport } from './routes/_admin/admin.files'
 import { Route as AdminAdminCoursesRouteImport } from './routes/_admin/admin.courses'
+import { Route as AdminAdminCouponsRouteImport } from './routes/_admin/admin.coupons'
 import { Route as AdminAdminCommunityRouteImport } from './routes/_admin/admin.community'
 import { Route as AdminAdminCmsRouteImport } from './routes/_admin/admin.cms'
 import { Route as AdminAdminClientsRouteImport } from './routes/_admin/admin.clients'
@@ -368,6 +369,11 @@ const AdminAdminCoursesRoute = AdminAdminCoursesRouteImport.update({
   path: '/courses',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const AdminAdminCouponsRoute = AdminAdminCouponsRouteImport.update({
+  id: '/coupons',
+  path: '/coupons',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminCommunityRoute = AdminAdminCommunityRouteImport.update({
   id: '/community',
   path: '/community',
@@ -464,6 +470,7 @@ export interface FileRoutesByFullPath {
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
   '/admin/community': typeof AdminAdminCommunityRoute
+  '/admin/coupons': typeof AdminAdminCouponsRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
   '/admin/files': typeof AdminAdminFilesRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
@@ -530,6 +537,7 @@ export interface FileRoutesByTo {
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
   '/admin/community': typeof AdminAdminCommunityRoute
+  '/admin/coupons': typeof AdminAdminCouponsRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
   '/admin/files': typeof AdminAdminFilesRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
@@ -601,6 +609,7 @@ export interface FileRoutesById {
   '/_admin/admin/clients': typeof AdminAdminClientsRoute
   '/_admin/admin/cms': typeof AdminAdminCmsRoute
   '/_admin/admin/community': typeof AdminAdminCommunityRoute
+  '/_admin/admin/coupons': typeof AdminAdminCouponsRoute
   '/_admin/admin/courses': typeof AdminAdminCoursesRoute
   '/_admin/admin/files': typeof AdminAdminFilesRoute
   '/_admin/admin/leads': typeof AdminAdminLeadsRoute
@@ -671,6 +680,7 @@ export interface FileRouteTypes {
     | '/admin/clients'
     | '/admin/cms'
     | '/admin/community'
+    | '/admin/coupons'
     | '/admin/courses'
     | '/admin/files'
     | '/admin/leads'
@@ -737,6 +747,7 @@ export interface FileRouteTypes {
     | '/admin/clients'
     | '/admin/cms'
     | '/admin/community'
+    | '/admin/coupons'
     | '/admin/courses'
     | '/admin/files'
     | '/admin/leads'
@@ -807,6 +818,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/clients'
     | '/_admin/admin/cms'
     | '/_admin/admin/community'
+    | '/_admin/admin/coupons'
     | '/_admin/admin/courses'
     | '/_admin/admin/files'
     | '/_admin/admin/leads'
@@ -1281,6 +1293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminCoursesRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_admin/admin/coupons': {
+      id: '/_admin/admin/coupons'
+      path: '/coupons'
+      fullPath: '/admin/coupons'
+      preLoaderRoute: typeof AdminAdminCouponsRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/community': {
       id: '/_admin/admin/community'
       path: '/community'
@@ -1382,6 +1401,7 @@ interface AdminAdminRouteChildren {
   AdminAdminClientsRoute: typeof AdminAdminClientsRoute
   AdminAdminCmsRoute: typeof AdminAdminCmsRoute
   AdminAdminCommunityRoute: typeof AdminAdminCommunityRoute
+  AdminAdminCouponsRoute: typeof AdminAdminCouponsRoute
   AdminAdminCoursesRoute: typeof AdminAdminCoursesRoute
   AdminAdminFilesRoute: typeof AdminAdminFilesRoute
   AdminAdminLeadsRoute: typeof AdminAdminLeadsRoute
@@ -1400,6 +1420,7 @@ const AdminAdminRouteChildren: AdminAdminRouteChildren = {
   AdminAdminClientsRoute: AdminAdminClientsRoute,
   AdminAdminCmsRoute: AdminAdminCmsRoute,
   AdminAdminCommunityRoute: AdminAdminCommunityRoute,
+  AdminAdminCouponsRoute: AdminAdminCouponsRoute,
   AdminAdminCoursesRoute: AdminAdminCoursesRoute,
   AdminAdminFilesRoute: AdminAdminFilesRoute,
   AdminAdminLeadsRoute: AdminAdminLeadsRoute,
