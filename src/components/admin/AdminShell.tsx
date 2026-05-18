@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   FolderOpen,
   Activity,
+  Ticket,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -39,6 +40,7 @@ const NAV: Array<{
   { to: "/admin/students", label: "Students", icon: GraduationCap },
   { to: "/admin/community", label: "Community", icon: MessageSquare },
   { to: "/admin/payments", label: "Payments", icon: CreditCard },
+  { to: "/admin/coupons", label: "Coupons", icon: Ticket },
   { to: "/admin/users", label: "Users & Auth", icon: ShieldCheck },
   { to: "/admin/files", label: "Files", icon: FolderOpen },
   { to: "/admin/activity", label: "Activity Log", icon: Activity },
