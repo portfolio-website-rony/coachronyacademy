@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_admin/admin/coupons")({
 type Coupon = {
   id: string;
   code: string;
-  kind: string; // 'percent' | 'fixed'
+  kind: string; // 'percent' | 'flat'
   value: number;
   course_id: string | null;
   active: boolean;
@@ -31,7 +31,7 @@ function emptyForm() {
   return {
     id: "" as string | "",
     code: "",
-    kind: "percent" as "percent" | "fixed",
+    kind: "percent" as "percent" | "flat",
     value: "" as string,
     course_id: "" as string,
     expires_at: "" as string, // datetime-local
@@ -80,7 +80,7 @@ function CouponsPage() {
     setForm({
       id: c.id,
       code: c.code,
-      kind: (c.kind as "percent" | "fixed") ?? "percent",
+      kind: (c.kind as "percent" | "flat") ?? "percent",
       value: String(c.value ?? ""),
       course_id: c.course_id ?? "",
       expires_at: c.expires_at ? toLocalInput(c.expires_at) : "",
@@ -228,12 +228,12 @@ function CouponsPage() {
             <select
               value={form.kind}
               onChange={(e) =>
-                setForm((f) => ({ ...f, kind: e.target.value as "percent" | "fixed" }))
+                setForm((f) => ({ ...f, kind: e.target.value as "percent" | "flat" }))
               }
               className="glass w-full rounded-xl px-3 py-2 text-sm"
             >
               <option value="percent">Percent (%)</option>
-              <option value="fixed">Fixed amount (BDT)</option>
+              <option value="flat">Fixed amount (BDT)</option>
             </select>
           </div>
 
