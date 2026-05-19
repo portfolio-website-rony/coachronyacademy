@@ -102,14 +102,28 @@ function CheckoutPage() {
     method === "nagad" ? settings.nagad_type : null;
 
   async function applyCoupon() {
-    if (!code.trim()) return;
-    const { data, error } = await supabase.rpc("validate_coupon", { _code: code.trim(), _course_id: course!.id });
+    const trimmed = code.trim();
+    if (!trimmed) { toast.error("কুপন কোড লিখুন"); return; }
+    const { data, error } = await supabase.rpc("validate_coupon", {
+      _code: trimmed.toUpperCase(),
+      _course_id: course!.id,
+    });
     if (error) return toast.error(error.message);
     const row = (data as any[])?.[0] as CouponResult | undefined;
-    if (!row) { toast.error("Invalid coupon"); return; }
+    if (!row) { toast.error("কুপন কোডটি সঠিক নয়"); return; }
     setCoupon(row);
-    if (row.valid) toast.success("Coupon applied!");
-    else toast.error(`Coupon ${row.reason}`);
+    if (row.valid) {
+      toast.success("কুপন প্রয়োগ হয়েছে!");
+      return;
+    }
+    const reasonMap: Record<string, string> = {
+      not_found: "কুপন কোডটি সঠিক নয়। অনুগ্রহ করে আবার চেক করুন।",
+      inactive: "এই কুপনটি বর্তমানে নিষ্ক্রিয়।",
+      expired: "এই কুপনের মেয়াদ শেষ হয়ে গেছে।",
+      max_uses: "এই কুপনের ব্যবহারের সীমা পূর্ণ হয়ে গেছে।",
+      wrong_course: "এই কুপনটি এই কোর্সে ব্যবহার করা যাবে না।",
+    };
+    toast.error(reasonMap[row.reason] ?? `কুপন ব্যবহার করা যাচ্ছে না (${row.reason})`);
   }
 
   async function copy(text: string) {

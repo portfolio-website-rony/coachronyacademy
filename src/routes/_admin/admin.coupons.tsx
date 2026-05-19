@@ -100,19 +100,19 @@ function CouponsPage() {
     e.preventDefault();
     const code = form.code.trim().toUpperCase();
     if (!CODE_RE.test(code)) {
-      return toast.error("Code: 3–40 chars, A–Z, 0–9, _ or - only");
+      return toast.error("কোড ৩–৪০ অক্ষরের হতে হবে · শুধু A–Z, 0–9, _ বা - ব্যবহার করুন");
     }
     const value = Number(form.value);
-    if (!Number.isFinite(value) || value <= 0) return toast.error("Value must be positive");
-    if (form.kind === "percent" && value > 100) return toast.error("Percent ≤ 100");
+    if (!Number.isFinite(value) || value <= 0) return toast.error("ডিসকাউন্ট মান অবশ্যই ০ এর বেশি হতে হবে");
+    if (form.kind === "percent" && value > 100) return toast.error("পারসেন্ট ডিসকাউন্ট ১০০% এর বেশি হতে পারবে না");
 
     const expiresAt = form.expires_at ? new Date(form.expires_at) : null;
     if (expiresAt && expiresAt.getTime() < Date.now()) {
-      return toast.error("Expiry must be in the future");
+      return toast.error("মেয়াদ শেষের তারিখ ভবিষ্যতের হতে হবে");
     }
     const maxUses = form.max_uses ? Number(form.max_uses) : null;
     if (maxUses != null && (!Number.isInteger(maxUses) || maxUses <= 0)) {
-      return toast.error("Max uses must be a positive integer");
+      return toast.error("সর্বোচ্চ ব্যবহার সংখ্যা অবশ্যই ১ বা তার বেশি পূর্ণসংখ্যা হতে হবে");
     }
 
     const payload = {
@@ -130,8 +130,13 @@ function CouponsPage() {
       ? await supabase.from("coupons").update(payload).eq("id", form.id)
       : await supabase.from("coupons").insert(payload);
     setSaving(false);
-    if (res.error) return toast.error(res.error.message);
-    toast.success(form.id ? "Coupon updated" : "Coupon created");
+    if (res.error) {
+      const msg = res.error.message || "";
+      if (/duplicate key|unique/i.test(msg)) return toast.error(`এই কোডটি (${code}) আগে থেকেই আছে। অন্য কোড ব্যবহার করুন।`);
+      if (/check constraint|coupons_kind/i.test(msg)) return toast.error("ডিসকাউন্ট টাইপ সঠিক নয়।");
+      return toast.error(`সেভ করা যায়নি: ${msg}`);
+    }
+    toast.success(form.id ? "কুপন আপডেট হয়েছে" : "কুপন তৈরি হয়েছে");
     setShowForm(false);
     setForm(emptyForm());
     void load();
