@@ -13,7 +13,7 @@ export function WorkExperience() {
     >
       <div className="grid h-10 w-10 place-items-center overflow-hidden rounded-lg bg-white/5">
         {it.logo_url ? (
-          <img src={it.logo_url} alt={it.name} className="h-full w-full object-contain" loading="lazy" />
+          <img src={it.logo_url} alt={it.name} width={40} height={40} className="h-full w-full object-contain" loading="lazy" decoding="async" />
         ) : (
           <Briefcase className="h-5 w-5 text-primary-glow" />
         )}
