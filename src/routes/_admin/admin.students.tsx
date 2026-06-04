@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { GraduationCap, Trash2, Search, Mail, Phone, BookOpen, CheckCircle2 } from "lucide-react";
+import { GraduationCap, Trash2, Search, Mail, Phone, BookOpen, CheckCircle2, Download } from "lucide-react";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { toast } from "sonner";
 import { listAllStudents, revokeEnrollment, type StudentRow } from "@/lib/admin/students.functions";
@@ -47,6 +47,46 @@ function StudentsPage() {
   const totalStudents = rows?.length ?? 0;
   const totalEnrollments = (rows ?? []).reduce((acc, s) => acc + s.courses.length, 0);
 
+  function exportCsv() {
+    const data = filtered.length ? filtered : (rows ?? []);
+    if (!data.length) {
+      toast.error("কোনো ডেটা নেই");
+      return;
+    }
+    const esc = (v: unknown) => {
+      const s = v == null ? "" : String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const headers = [
+      "Name", "Email", "Phone", "Course", "Status", "Progress %",
+      "Enrolled At", "Completed At", "User ID", "Enrollment ID",
+    ];
+    const lines: string[] = [headers.join(",")];
+    for (const s of data) {
+      if (s.courses.length === 0) {
+        lines.push([s.name, s.email ?? "", s.phone ?? "", "", "", "", "", "", s.user_id, ""].map(esc).join(","));
+        continue;
+      }
+      for (const c of s.courses) {
+        lines.push([
+          s.name, s.email ?? "", s.phone ?? "",
+          c.title, c.status, c.progress,
+          c.enrolled_at ? new Date(c.enrolled_at).toISOString() : "",
+          c.completed_at ? new Date(c.completed_at).toISOString() : "",
+          s.user_id, c.enrollment_id,
+        ].map(esc).join(","));
+      }
+    }
+    const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `students-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV ডাউনলোড শুরু হয়েছে");
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -56,7 +96,14 @@ function StudentsPage() {
             সব স্টুডেন্ট, তাদের যোগাযোগের তথ্য এবং এনরোল করা কোর্সসমূহ এক জায়গায়।
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={exportCsv}
+            disabled={!rows?.length}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-semibold text-background shadow-glow transition hover:opacity-90 disabled:opacity-50"
+          >
+            <Download className="h-3.5 w-3.5" /> Download CSV
+          </button>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary-glow">
             <GraduationCap className="h-3.5 w-3.5" /> {totalStudents} students
           </span>
