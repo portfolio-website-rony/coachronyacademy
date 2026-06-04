@@ -1,126 +1,175 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { GraduationCap, Trash2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { GraduationCap, Trash2, Search, Mail, Phone, BookOpen, CheckCircle2 } from "lucide-react";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { toast } from "sonner";
+import { listAllStudents, revokeEnrollment, type StudentRow } from "@/lib/admin/students.functions";
 
 export const Route = createFileRoute("/_admin/admin/students")({
   head: () => ({ meta: [{ title: "Students — Admin" }] }),
   component: StudentsPage,
 });
 
-type Row = {
-  id: string;
-  user_id: string;
-  status: string;
-  enrolled_at: string;
-  course: { title: string } | null;
-  profile: { display_name: string | null } | null;
-  progress: number;
-};
-
 function StudentsPage() {
-  const [rows, setRows] = useState<Row[] | null>(null);
+  const fetchStudents = useServerFn(listAllStudents);
+  const revokeFn = useServerFn(revokeEnrollment);
+  const [q, setQ] = useState("");
 
-  async function load() {
-    const { data: enr } = await supabase
-      .from("enrollments")
-      .select("id,user_id,status,enrolled_at,course:courses(title)")
-      .order("enrolled_at", { ascending: false });
-    const enrollments = (enr ?? []) as any[];
-    if (enrollments.length === 0) {
-      setRows([]);
-      return;
-    }
-    const userIds = Array.from(new Set(enrollments.map((e) => e.user_id)));
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("id,display_name")
-      .in("id", userIds);
-    const pmap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+  const { data: rows, isLoading, refetch } = useQuery({
+    queryKey: ["admin", "students"],
+    queryFn: () => fetchStudents(),
+  });
 
-    // compute simple progress: completed lessons / total lessons in course
-    const enriched: Row[] = await Promise.all(
-      enrollments.map(async (e) => {
-        const [{ count: total }, { count: done }] = await Promise.all([
-          supabase
-            .from("course_lessons")
-            .select("id, course_modules!inner(course_id)", { count: "exact", head: true })
-            .eq("course_modules.course_id", e.course_id ?? ""),
-          supabase
-            .from("lesson_progress")
-            .select("id", { count: "exact", head: true })
-            .eq("enrollment_id", e.id)
-            .not("completed_at", "is", null),
-        ]);
-        return {
-          ...e,
-          profile: pmap.get(e.user_id) ?? null,
-          progress: total && total > 0 ? Math.round(((done ?? 0) / total) * 100) : 0,
-        };
-      })
-    );
-    setRows(enriched);
-  }
-  useEffect(() => {
-    void load();
-  }, []);
-
-  async function revoke(id: string) {
+  async function onRevoke(enrollmentId: string) {
     if (!confirm("Revoke this enrollment?")) return;
-    const { error } = await supabase.from("enrollments").delete().eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Revoked");
-    void load();
+    try {
+      await revokeFn({ data: { enrollmentId } });
+      toast.success("Enrollment revoked");
+      void refetch();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to revoke");
+    }
   }
+
+  const needle = q.trim().toLowerCase();
+  const filtered = (rows ?? []).filter((s: StudentRow) => {
+    if (!needle) return true;
+    return (
+      s.name.toLowerCase().includes(needle) ||
+      (s.email ?? "").toLowerCase().includes(needle) ||
+      (s.phone ?? "").toLowerCase().includes(needle) ||
+      s.courses.some((c) => c.title.toLowerCase().includes(needle))
+    );
+  });
+
+  const totalStudents = rows?.length ?? 0;
+  const totalEnrollments = (rows ?? []).reduce((acc, s) => acc + s.courses.length, 0);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold sm:text-3xl">Students</h1>
-        <p className="text-sm text-muted-foreground">All enrollments and their progress.</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold sm:text-3xl">Students</h1>
+          <p className="text-sm text-muted-foreground">
+            সব স্টুডেন্ট, তাদের যোগাযোগের তথ্য এবং এনরোল করা কোর্সসমূহ এক জায়গায়।
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary-glow">
+            <GraduationCap className="h-3.5 w-3.5" /> {totalStudents} students
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold">
+            <BookOpen className="h-3.5 w-3.5" /> {totalEnrollments} enrollments
+          </span>
+        </div>
       </div>
 
-      {rows === null ? (
+      <div className="relative max-w-md">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="নাম, ইমেইল, ফোন বা কোর্স দিয়ে সার্চ করুন…"
+          className="w-full rounded-xl border border-white/10 bg-background/50 py-2 pl-9 pr-3 text-sm outline-none focus:border-primary"
+        />
+      </div>
+
+      {isLoading ? (
         <div className="glass h-40 animate-pulse rounded-2xl" />
-      ) : rows.length === 0 ? (
+      ) : (rows ?? []).length === 0 ? (
         <EmptyState icon={GraduationCap} title="No students yet" description="Enrollments will appear here." />
+      ) : filtered.length === 0 ? (
+        <EmptyState icon={Search} title="No matches" description="অন্য কীওয়ার্ড দিয়ে চেষ্টা করুন।" />
       ) : (
-        <div className="glass overflow-x-auto rounded-2xl">
-          <table className="w-full min-w-[720px] text-sm">
-            <thead className="bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Student</th>
-                <th className="px-4 py-3">Course</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Progress</th>
-                <th className="px-4 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id} className="border-t border-white/5">
-                  <td className="px-4 py-3">{r.profile?.display_name ?? r.user_id.slice(0, 8)}</td>
-                  <td className="px-4 py-3">{r.course?.title ?? "—"}</td>
-                  <td className="px-4 py-3 capitalize">{r.status}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="h-2 w-24 overflow-hidden rounded-full bg-white/5">
-                        <div className="h-full bg-gradient-primary" style={{ width: `${r.progress}%` }} />
+        <div className="space-y-3">
+          {filtered.map((s) => {
+            const initial = s.name.charAt(0).toUpperCase();
+            const completed = s.courses.filter((c) => c.completed_at || c.status === "completed").length;
+            return (
+              <div key={s.user_id} className="glass rounded-2xl p-4 sm:p-5">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+                  {/* Student info */}
+                  <div className="flex items-start gap-3 lg:w-72 lg:shrink-0">
+                    {s.avatar_url ? (
+                      <img src={s.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover" />
+                    ) : (
+                      <div className="grid h-12 w-12 place-items-center rounded-full bg-gradient-primary text-base font-bold text-background">
+                        {initial}
                       </div>
-                      <span className="text-xs text-muted-foreground">{r.progress}%</span>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-semibold">{s.name}</div>
+                      {s.email && (
+                        <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Mail className="h-3 w-3 shrink-0" />
+                          <span className="truncate">{s.email}</span>
+                        </div>
+                      )}
+                      {s.phone && (
+                        <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Phone className="h-3 w-3 shrink-0" />
+                          <span className="truncate">{s.phone}</span>
+                        </div>
+                      )}
+                      <div className="mt-1.5 flex gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-[10px]">
+                          <BookOpen className="h-3 w-3" /> {s.courses.length}
+                        </span>
+                        {completed > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] text-primary-glow">
+                            <CheckCircle2 className="h-3 w-3" /> {completed} done
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <button onClick={() => revoke(r.id)} className="text-muted-foreground hover:text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+
+                  {/* Courses */}
+                  <div className="flex-1 space-y-2">
+                    {s.courses.map((c) => {
+                      const done = c.completed_at || c.status === "completed";
+                      return (
+                        <div
+                          key={c.enrollment_id}
+                          className="flex flex-wrap items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-sm font-medium">{c.title}</div>
+                            <div className="text-[10px] text-muted-foreground">
+                              Enrolled: {new Date(c.enrolled_at).toLocaleDateString()}
+                              {c.completed_at && ` · Completed: ${new Date(c.completed_at).toLocaleDateString()}`}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/5">
+                              <div className="h-full bg-gradient-primary" style={{ width: `${c.progress}%` }} />
+                            </div>
+                            <span className="w-8 text-right text-[10px] text-muted-foreground">{c.progress}%</span>
+                          </div>
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                              done ? "bg-primary/20 text-primary-glow" : "bg-white/5 text-muted-foreground"
+                            }`}
+                          >
+                            {done ? "Completed" : c.status}
+                          </span>
+                          <button
+                            onClick={() => onRevoke(c.enrollment_id)}
+                            className="text-muted-foreground hover:text-destructive"
+                            title="Revoke enrollment"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
