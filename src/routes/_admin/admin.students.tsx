@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { GraduationCap, Trash2, Search, Mail, Phone, BookOpen, CheckCircle2, Download } from "lucide-react";
+import { GraduationCap, Trash2, Search, Mail, Phone, BookOpen, CheckCircle2, Download, UserPlus, X, Loader2 } from "lucide-react";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { toast } from "sonner";
-import { listAllStudents, revokeEnrollment, type StudentRow } from "@/lib/admin/students.functions";
+import { listAllStudents, revokeEnrollment, listCoursesForEnroll, manualEnroll, type StudentRow } from "@/lib/admin/students.functions";
 
 export const Route = createFileRoute("/_admin/admin/students")({
   head: () => ({ meta: [{ title: "Students — Admin" }] }),
@@ -15,11 +15,20 @@ export const Route = createFileRoute("/_admin/admin/students")({
 function StudentsPage() {
   const fetchStudents = useServerFn(listAllStudents);
   const revokeFn = useServerFn(revokeEnrollment);
+  const fetchCourses = useServerFn(listCoursesForEnroll);
+  const enrollFn = useServerFn(manualEnroll);
   const [q, setQ] = useState("");
+  const [enrollOpen, setEnrollOpen] = useState(false);
 
   const { data: rows, isLoading, refetch } = useQuery({
     queryKey: ["admin", "students"],
     queryFn: () => fetchStudents(),
+  });
+
+  const { data: courses } = useQuery({
+    queryKey: ["admin", "courses-for-enroll"],
+    queryFn: () => fetchCourses(),
+    enabled: enrollOpen,
   });
 
   async function onRevoke(enrollmentId: string) {
@@ -32,6 +41,7 @@ function StudentsPage() {
       toast.error(e instanceof Error ? e.message : "Failed to revoke");
     }
   }
+
 
   const needle = q.trim().toLowerCase();
   const filtered = (rows ?? []).filter((s: StudentRow) => {
