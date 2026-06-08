@@ -236,6 +236,131 @@ function StudentsPage() {
           })}
         </div>
       )}
+
+      {enrollOpen && (
+        <ManualEnrollDialog
+          courses={courses ?? []}
+          onClose={() => setEnrollOpen(false)}
+          onEnroll={async (payload) => {
+            const res = await enrollFn({ data: payload });
+            if (res.alreadyEnrolled) toast.success("Already enrolled — status updated");
+            else toast.success("Student enrolled");
+            setEnrollOpen(false);
+            void refetch();
+          }}
+        />
+      )}
     </div>
   );
 }
+
+function ManualEnrollDialog({
+  courses,
+  onClose,
+  onEnroll,
+}: {
+  courses: { id: string; title: string; published: boolean }[];
+  onClose: () => void;
+  onEnroll: (p: { email: string; courseId: string; status: "active" | "completed" }) => Promise<void>;
+}) {
+  const [email, setEmail] = useState("");
+  const [courseId, setCourseId] = useState("");
+  const [status, setStatus] = useState<"active" | "completed">("active");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim() || !courseId) {
+      toast.error("Email এবং Course দুটোই দিন");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await onEnroll({ email: email.trim(), courseId, status });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to enroll");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
+      <form
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={submit}
+        className="glass w-full max-w-md space-y-4 rounded-2xl border border-white/10 p-6"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold">Manual Enroll</h2>
+          <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          স্টুডেন্টের registered email দিয়ে যেকোনো কোর্সে এনরোল করুন। স্টুডেন্টকে আগে অবশ্যই সাইন আপ করতে হবে।
+        </p>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold">Student Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="student@example.com"
+            className="w-full rounded-xl border border-white/10 bg-background/50 px-3 py-2 text-sm outline-none focus:border-primary"
+            required
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold">Course</label>
+          <select
+            value={courseId}
+            onChange={(e) => setCourseId(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-background/50 px-3 py-2 text-sm outline-none focus:border-primary"
+            required
+          >
+            <option value="">— Select course —</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.title} {c.published ? "" : "(draft)"}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold">Status</label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as "active" | "completed")}
+            className="w-full rounded-xl border border-white/10 bg-background/50 px-3 py-2 text-sm outline-none focus:border-primary"
+          >
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold hover:bg-white/10"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-semibold text-background shadow-glow transition hover:opacity-90 disabled:opacity-50"
+          >
+            {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
+            Enroll
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
