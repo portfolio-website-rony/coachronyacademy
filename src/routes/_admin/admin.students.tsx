@@ -108,9 +108,15 @@ function StudentsPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
+            onClick={() => setEnrollOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-semibold text-background shadow-glow transition hover:opacity-90"
+          >
+            <UserPlus className="h-3.5 w-3.5" /> Manual Enroll
+          </button>
+          <button
             onClick={exportCsv}
             disabled={!rows?.length}
-            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-semibold text-background shadow-glow transition hover:opacity-90 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold transition hover:bg-white/10 disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" /> Download CSV
           </button>
@@ -121,6 +127,7 @@ function StudentsPage() {
             <BookOpen className="h-3.5 w-3.5" /> {totalEnrollments} enrollments
           </span>
         </div>
+
       </div>
 
       <div className="relative max-w-md">
