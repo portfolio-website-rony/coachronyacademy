@@ -1,44 +1,31 @@
+## Manual Enrollment from Admin Panel
 
-# Admin Students পেজ — সব তথ্য এক জায়গায়
+Add ability for admin to manually enroll a user into a course by entering their email address.
 
-## লক্ষ্য
-`/admin/students` পেজে প্রতিটি স্টুডেন্টের নাম, ইমেইল, ফোন, এবং তার এনরোল করা সব কোর্স একসাথে দেখা যাবে। বর্তমানে প্রতিটি এনরোলমেন্ট আলাদা সারিতে দেখায় এবং ইমেইল নেই।
+### Where it goes
+On the **Admin → Students** page (`src/routes/_admin/admin.students.tsx`), add a new **"Manual Enroll"** button next to the existing "Download CSV" button. Clicking it opens a dialog with:
 
-## কী পরিবর্তন হবে
+- **Email** input (required) — the student's registered email
+- **Course** select (required) — dropdown of all published courses
+- **Status** select — defaults to `active` (options: active, completed)
+- **Enroll** button
 
-### 1. নতুন server function: `listAllStudents`
-ফাইল: `src/lib/admin/students.functions.ts` (নতুন)
-- `requireSupabaseAuth` + `assertAdmin` দিয়ে protect করা
-- `supabaseAdmin` ব্যবহার করে:
-  - সব `enrollments` (course সহ) আনা
-  - সংশ্লিষ্ট `profiles` (display_name, phone, avatar)
-  - `auth.admin.listUsers()` থেকে email
-  - প্রতি enrollment-এর progress (lesson_progress / total lessons)
-- প্রতি user-এর জন্য grouped output:
-  ```
-  { user_id, email, name, phone, avatar_url,
-    courses: [{ enrollment_id, title, status, progress, enrolled_at, completed_at }] }
-  ```
+### How it works
+1. New server function `manualEnroll` in `src/lib/admin/students.functions.ts`:
+   - Admin-gated (`requireSupabaseAuth` + `assertAdmin`)
+   - Input: `{ email, courseId, status }` (validated with Zod)
+   - Looks up the user by email via `supabaseAdmin.auth.admin.listUsers` (paginated search)
+   - If user not found → return clear error ("No user with this email. Ask them to sign up first.")
+   - If found → upsert into `enrollments` (unique on `user_id + course_id`) with chosen status
+   - Returns `{ ok, alreadyEnrolled }` so UI can show the right toast
+2. New server function `listCoursesForEnroll` — returns `id, title, slug` of all courses (admin needs to pick from any, not just published)
+3. On success → toast + refetch the students list (existing `useQuery`)
 
-### 2. `src/routes/_admin/admin.students.tsx` রিরাইট
-- ক্লায়েন্ট-সাইড supabase queries সরিয়ে নতুন server function ব্যবহার
-- লেআউট: প্রতি স্টুডেন্ট একটি কার্ড/সারি
-  - বাম পাশে: avatar + name + email + phone
-  - ডান পাশে: enrolled কোর্সের লিস্ট (badge সহ status + progress bar)
-  - কোর্স সংখ্যা, completed কোর্স সংখ্যা
-- উপরে সার্চ বার (name / email / phone / course title)
-- প্রতিটি কোর্স row-তে Revoke বাটন (আগের মতো)
+### Notes
+- Email validation uses the existing `safeEmail` schema from `src/lib/security/schemas.ts`
+- We do NOT create new users — admin must invite/the student must sign up first (keeps auth flow clean and avoids accidental account creation)
+- Existing `auto_enroll_on_payment` trigger is untouched; this is a separate manual path
 
-### 3. Sidebar/NAV অপরিবর্তিত
-"Students" লিঙ্ক আগে থেকেই `AdminShell` এ আছে — শুধু পেজের কন্টেন্ট উন্নত হবে।
-
-## টেকনিক্যাল ডিটেইল
-- Email শুধু server-side পাওয়া যায় (auth.admin), তাই অবশ্যই server function লাগবে — ক্লায়েন্ট থেকে সরাসরি query করা যাবে না।
-- Existing `listAllUsers` pattern (`src/lib/admin/users.functions.ts`) follow করব।
-- Progress calculation server-side aggregate করা হবে (N+1 এড়াতে একবারে fetch + group)।
-- Revoke action আগের `supabase.from("enrollments").delete()` রেখে দেব (RLS admin policy আছে), অথবা একই ফাইলে `revokeEnrollment` server fn যোগ করব।
-
-## কী পরিবর্তন হবে না
-- কোনো DB schema change নেই
-- অন্য কোনো admin পেজ touch করা হবে না
-- Coupon/checkout logic অপরিবর্তিত
+### Files touched
+- `src/lib/admin/students.functions.ts` — add `manualEnroll` + `listCoursesForEnroll`
+- `src/routes/_admin/admin.students.tsx` — add button, dialog, form, mutation

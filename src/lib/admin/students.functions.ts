@@ -121,3 +121,70 @@ export const revokeEnrollment = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const listCoursesForEnroll = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.userId);
+    const { data, error } = await supabaseAdmin
+      .from("courses")
+      .select("id,title,slug,published")
+      .order("title", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const manualEnroll = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      email: z.string().trim().toLowerCase().email().max(255),
+      courseId: z.string().uuid(),
+      status: z.enum(["active", "completed"]).default("active"),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    // Find user by email (paginate through auth users)
+    let foundId: string | null = null;
+    const perPage = 1000;
+    for (let page = 1; page <= 10; page++) {
+      const { data: list, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage });
+      if (error) throw new Error(error.message);
+      const match = list.users.find((u) => (u.email ?? "").toLowerCase() === data.email);
+      if (match) { foundId = match.id; break; }
+      if (list.users.length < perPage) break;
+    }
+    if (!foundId) {
+      throw new Error("No user found with this email. Ask them to sign up first.");
+    }
+
+    // Check existing
+    const { data: existing } = await supabaseAdmin
+      .from("enrollments")
+      .select("id,status")
+      .eq("user_id", foundId)
+      .eq("course_id", data.courseId)
+      .maybeSingle();
+
+    if (existing) {
+      if (existing.status !== data.status) {
+        const patch: { status: string; completed_at?: string | null } = { status: data.status };
+        if (data.status === "completed") patch.completed_at = new Date().toISOString();
+        const { error } = await supabaseAdmin.from("enrollments").update(patch).eq("id", existing.id);
+        if (error) throw new Error(error.message);
+      }
+      return { ok: true, alreadyEnrolled: true };
+    }
+
+    const { error: insErr } = await supabaseAdmin.from("enrollments").insert({
+      user_id: foundId,
+      course_id: data.courseId,
+      status: data.status,
+      completed_at: data.status === "completed" ? new Date().toISOString() : null,
+    });
+    if (insErr) throw new Error(insErr.message);
+    return { ok: true, alreadyEnrolled: false };
+  });
+

@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { GraduationCap, Trash2, Search, Mail, Phone, BookOpen, CheckCircle2, Download } from "lucide-react";
+import { GraduationCap, Trash2, Search, Mail, Phone, BookOpen, CheckCircle2, Download, UserPlus, X, Loader2 } from "lucide-react";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { toast } from "sonner";
-import { listAllStudents, revokeEnrollment, type StudentRow } from "@/lib/admin/students.functions";
+import { listAllStudents, revokeEnrollment, listCoursesForEnroll, manualEnroll, type StudentRow } from "@/lib/admin/students.functions";
 
 export const Route = createFileRoute("/_admin/admin/students")({
   head: () => ({ meta: [{ title: "Students — Admin" }] }),
@@ -15,11 +15,20 @@ export const Route = createFileRoute("/_admin/admin/students")({
 function StudentsPage() {
   const fetchStudents = useServerFn(listAllStudents);
   const revokeFn = useServerFn(revokeEnrollment);
+  const fetchCourses = useServerFn(listCoursesForEnroll);
+  const enrollFn = useServerFn(manualEnroll);
   const [q, setQ] = useState("");
+  const [enrollOpen, setEnrollOpen] = useState(false);
 
   const { data: rows, isLoading, refetch } = useQuery({
     queryKey: ["admin", "students"],
     queryFn: () => fetchStudents(),
+  });
+
+  const { data: courses } = useQuery({
+    queryKey: ["admin", "courses-for-enroll"],
+    queryFn: () => fetchCourses(),
+    enabled: enrollOpen,
   });
 
   async function onRevoke(enrollmentId: string) {
@@ -32,6 +41,7 @@ function StudentsPage() {
       toast.error(e instanceof Error ? e.message : "Failed to revoke");
     }
   }
+
 
   const needle = q.trim().toLowerCase();
   const filtered = (rows ?? []).filter((s: StudentRow) => {
@@ -98,9 +108,15 @@ function StudentsPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
+            onClick={() => setEnrollOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-semibold text-background shadow-glow transition hover:opacity-90"
+          >
+            <UserPlus className="h-3.5 w-3.5" /> Manual Enroll
+          </button>
+          <button
             onClick={exportCsv}
             disabled={!rows?.length}
-            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-semibold text-background shadow-glow transition hover:opacity-90 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold transition hover:bg-white/10 disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" /> Download CSV
           </button>
@@ -111,6 +127,7 @@ function StudentsPage() {
             <BookOpen className="h-3.5 w-3.5" /> {totalEnrollments} enrollments
           </span>
         </div>
+
       </div>
 
       <div className="relative max-w-md">
@@ -219,6 +236,131 @@ function StudentsPage() {
           })}
         </div>
       )}
+
+      {enrollOpen && (
+        <ManualEnrollDialog
+          courses={courses ?? []}
+          onClose={() => setEnrollOpen(false)}
+          onEnroll={async (payload) => {
+            const res = await enrollFn({ data: payload });
+            if (res.alreadyEnrolled) toast.success("Already enrolled — status updated");
+            else toast.success("Student enrolled");
+            setEnrollOpen(false);
+            void refetch();
+          }}
+        />
+      )}
     </div>
   );
 }
+
+function ManualEnrollDialog({
+  courses,
+  onClose,
+  onEnroll,
+}: {
+  courses: { id: string; title: string; published: boolean }[];
+  onClose: () => void;
+  onEnroll: (p: { email: string; courseId: string; status: "active" | "completed" }) => Promise<void>;
+}) {
+  const [email, setEmail] = useState("");
+  const [courseId, setCourseId] = useState("");
+  const [status, setStatus] = useState<"active" | "completed">("active");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim() || !courseId) {
+      toast.error("Email এবং Course দুটোই দিন");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await onEnroll({ email: email.trim(), courseId, status });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to enroll");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
+      <form
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={submit}
+        className="glass w-full max-w-md space-y-4 rounded-2xl border border-white/10 p-6"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold">Manual Enroll</h2>
+          <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          স্টুডেন্টের registered email দিয়ে যেকোনো কোর্সে এনরোল করুন। স্টুডেন্টকে আগে অবশ্যই সাইন আপ করতে হবে।
+        </p>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold">Student Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="student@example.com"
+            className="w-full rounded-xl border border-white/10 bg-background/50 px-3 py-2 text-sm outline-none focus:border-primary"
+            required
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold">Course</label>
+          <select
+            value={courseId}
+            onChange={(e) => setCourseId(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-background/50 px-3 py-2 text-sm outline-none focus:border-primary"
+            required
+          >
+            <option value="">— Select course —</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.title} {c.published ? "" : "(draft)"}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold">Status</label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as "active" | "completed")}
+            className="w-full rounded-xl border border-white/10 bg-background/50 px-3 py-2 text-sm outline-none focus:border-primary"
+          >
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold hover:bg-white/10"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-semibold text-background shadow-glow transition hover:opacity-90 disabled:opacity-50"
+          >
+            {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
+            Enroll
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
