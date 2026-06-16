@@ -25,7 +25,7 @@ function Privacy() {
         <h3 className="text-foreground">4. Cookies & analytics</h3>
         <p>Site usage analyze করতে cookies ও analytics tools ব্যবহার করি।</p>
         <h3 className="text-foreground">5. Contact</h3>
-        <p>প্রশ্ন থাকলে hello@coachrony.com-এ ইমেইল করুন।</p>
+        <p>প্রশ্ন থাকলে coachronyacademy@gmail.com-এ ইমেইল করুন।</p>
       </div>
     </Section>
   );

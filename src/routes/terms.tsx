@@ -25,7 +25,7 @@ function Terms() {
         <h3 className="text-foreground">4. Liability</h3>
         <p>Results vary. কোনো গ্যারান্টি দেওয়া হয় না।</p>
         <h3 className="text-foreground">5. Contact</h3>
-        <p>hello@coachrony.com</p>
+        <p>coachronyacademy@gmail.com</p>
       </div>
     </Section>
   );
