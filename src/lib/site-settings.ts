@@ -14,7 +14,7 @@ const DEFAULTS: ContactSettings = {
   whatsapp: "8801960254383",
   messenger: "https://m.me/coachronyacademy",
   facebook: "https://facebook.com/coachrony",
-  email: "hello@coachrony.com",
+  email: "coachronyacademy@gmail.com",
 };
 
 let cache: ContactSettings | null = null;
