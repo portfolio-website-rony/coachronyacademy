@@ -1,6 +1,6 @@
 import { MessageCircle, Send } from "lucide-react";
 
-const WHATSAPP = "https://wa.me/8801700000000?text=Hi%20CoachRony%2C%20I%27m%20interested%20in%20your%20programs.";
+const WHATSAPP = "https://wa.me/8801960254383?text=Hi%20CoachRony%2C%20I%27m%20interested%20in%20your%20programs.";
 const MESSENGER = "https://m.me/coachrony";
 
 export function FloatingActions() {
