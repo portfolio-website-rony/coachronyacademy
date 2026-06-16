@@ -14,7 +14,7 @@ export function Footer() {
               Products ও Online Business — সব এক জায়গায়।
             </p>
             <div className="mt-5 flex gap-3">
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="glass rounded-xl p-2 hover:text-primary"><Facebook className="h-4 w-4" /></a>
+              <a href="https://facebook.com/coachronyacademy" target="_blank" rel="noreferrer" className="glass rounded-xl p-2 hover:text-primary"><Facebook className="h-4 w-4" /></a>
               <a href="https://youtube.com" target="_blank" rel="noreferrer" className="glass rounded-xl p-2 hover:text-primary"><Youtube className="h-4 w-4" /></a>
               <a href="https://instagram.com" target="_blank" rel="noreferrer" className="glass rounded-xl p-2 hover:text-primary"><Instagram className="h-4 w-4" /></a>
               <a href="mailto:coachronyacademy@gmail.com" className="glass rounded-xl p-2 hover:text-primary"><Mail className="h-4 w-4" /></a>

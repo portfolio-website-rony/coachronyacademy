@@ -13,7 +13,7 @@ export type ContactSettings = {
 const DEFAULTS: ContactSettings = {
   whatsapp: "8801960254383",
   messenger: "https://m.me/coachronyacademy",
-  facebook: "https://facebook.com/coachrony",
+  facebook: "https://facebook.com/coachronyacademy",
   email: "coachronyacademy@gmail.com",
 };
 
