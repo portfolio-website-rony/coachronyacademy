@@ -1,31 +1,60 @@
-## Manual Enrollment from Admin Panel
+## Reality check
 
-Add ability for admin to manually enroll a user into a course by entering their email address.
+`coachrony.com` ekta **Vercel-hosted alada site** — ei Lovable project (`coachronyacademy.lovable.app`) er shathe kono code/deploy connection nei. Tomar list er 10 tar moddhe **ekta kajo** ami Lovable theke korte parbona:
 
-### Where it goes
-On the **Admin → Students** page (`src/routes/_admin/admin.students.tsx`), add a new **"Manual Enroll"** button next to the existing "Download CSV" button. Clicking it opens a dialog with:
+- Vercel project access nei → domain reconnect, deployment promote/create, env vars check, DNS verify — kichui Lovable tool diye hobe na
+- Code change kore o lab nei — Vercel e push na holey deploy hobe na, ar Lovable project Vercel er shathe linked na
 
-- **Email** input (required) — the student's registered email
-- **Course** select (required) — dropdown of all published courses
-- **Status** select — defaults to `active` (options: active, completed)
-- **Enroll** button
+Tai "fix kore dilam" bola dishonest hobe. Eta tomake nijeke korte hobe, ami shudhu **exact steps** dite pari.
 
-### How it works
-1. New server function `manualEnroll` in `src/lib/admin/students.functions.ts`:
-   - Admin-gated (`requireSupabaseAuth` + `assertAdmin`)
-   - Input: `{ email, courseId, status }` (validated with Zod)
-   - Looks up the user by email via `supabaseAdmin.auth.admin.listUsers` (paginated search)
-   - If user not found → return clear error ("No user with this email. Ask them to sign up first.")
-   - If found → upsert into `enrollments` (unique on `user_id + course_id`) with chosen status
-   - Returns `{ ok, alreadyEnrolled }` so UI can show the right toast
-2. New server function `listCoursesForEnroll` — returns `id, title, slug` of all courses (admin needs to pick from any, not just published)
-3. On success → toast + refetch the students list (existing `useQuery`)
+---
 
-### Notes
-- Email validation uses the existing `safeEmail` schema from `src/lib/security/schemas.ts`
-- We do NOT create new users — admin must invite/the student must sign up first (keeps auth flow clean and avoids accidental account creation)
-- Existing `auto_enroll_on_payment` trigger is untouched; this is a separate manual path
+## Option A: Vercel e nije fix koro (recommended jodi coachrony.com alada app hoy)
 
-### Files touched
-- `src/lib/admin/students.functions.ts` — add `manualEnroll` + `listCoursesForEnroll`
-- `src/routes/_admin/admin.students.tsx` — add button, dialog, form, mutation
+**Step 1 — Deployment recover koro**
+- vercel.com login → coachrony project open koro
+- **Deployments** tab → shobcheye recent "Ready" (green) status er deployment khojo
+- Pele: oi deployment er `⋯` menu → **Promote to Production**
+- Na pele: GitHub repo te ekta dummy commit push koro (README te space add), auto-deploy trigger hobe. Trigger na hole → Deployments tab → **Redeploy** button
+
+**Step 2 — Domain verify koro**
+- Settings → **Domains** → `coachrony.com` ar `www.coachrony.com` dutoi listed ache check koro
+- Status "Valid Configuration" hoye thakte hobe. Na thakle "Refresh" click koro
+- Jodi domain onno project e attached dekhay → oitar theke remove kore ei project e add koro
+
+**Step 3 — DNS verify koro (tomar domain registrar e — Namecheap/GoDaddy jekhane kinecho)**
+- A record: `@` → `76.76.21.21`
+- CNAME: `www` → `cname.vercel-dns.com`
+- propagation check: dnschecker.org
+
+**Step 4 — Environment variables**
+- Settings → **Environment Variables** → Production scope e shob required vars ache verify koro (Supabase URL, anon key, etc.)
+- Missing thakle add koro, tarpor redeploy lagbe
+
+**Step 5 — Verify**
+- `coachrony.com` ar `www.coachrony.com` dutoi browser e khulo (incognito), 404 chole jaowa uchit
+
+---
+
+## Option B: coachrony.com Lovable e niye aso (permanent fix, kintu site content replace hobe)
+
+Jodi coachrony.com **eii Lovable project er e production domain hoyar kotha thake**, tahole Vercel bypass kore Lovable e connect kore dao:
+
+1. Lovable: **Project Settings → Domains → Connect Domain** → `coachrony.com` enter koro
+2. Registrar e DNS update koro:
+   - A record `@` → `185.158.133.1`
+   - A record `www` → `185.158.133.1`
+   - TXT record `_lovable` → Lovable je value dibe
+3. Verify hote 5 min – 72 hr lagte pare, tarpor SSL auto-provision hobe
+4. Vercel project ta old hoye jabe — chaile delete koro
+
+**Warning:** Eta korle coachrony.com er **purono Vercel content gone hoye jabe**, ei Lovable project ja ache (coachronyacademy) seta dekhabe. Dutotai shame app hole tik ache, alada hole content harabe.
+
+---
+
+## Ami next ki korte pari
+
+- Tumi bolo **Option A** na **Option B** — A hole ami shudhu guide diye shesh, B hole ami custom domain setup flow chalu kore dibo (build mode lagbe)
+- Vercel theke je error/log paocho seta pathaile ami sheta analyze kore specific fix suggest korte pari
+
+Lovable project e code change er kono prayojon nei — eta purely deployment/DNS issue.
