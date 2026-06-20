@@ -1,60 +1,61 @@
-## Reality check
+# Cloudflare migration plan — সত্যি কথা প্রথমে
 
-`coachrony.com` ekta **Vercel-hosted alada site** — ei Lovable project (`coachronyacademy.lovable.app`) er shathe kono code/deploy connection nei. Tomar list er 10 tar moddhe **ekta kajo** ami Lovable theke korte parbona:
+## ⚠️ গুরুত্বপূর্ণ বাস্তবতা
 
-- Vercel project access nei → domain reconnect, deployment promote/create, env vars check, DNS verify — kichui Lovable tool diye hobe na
-- Code change kore o lab nei — Vercel e push na holey deploy hobe na, ar Lovable project Vercel er shathe linked na
+এই Lovable project থেকে **Lovable Cloud (Supabase) disconnect করা যায় না** — এটা platform-এর rule. তাই "এই project-টাই Cloudflare backend-এ চলবে" এটা সম্ভব না।
 
-Tai "fix kore dilam" bola dishonest hobe. Eta tomake nijeke korte hobe, ami shudhu **exact steps** dite pari.
-
----
-
-## Option A: Vercel e nije fix koro (recommended jodi coachrony.com alada app hoy)
-
-**Step 1 — Deployment recover koro**
-- vercel.com login → coachrony project open koro
-- **Deployments** tab → shobcheye recent "Ready" (green) status er deployment khojo
-- Pele: oi deployment er `⋯` menu → **Promote to Production**
-- Na pele: GitHub repo te ekta dummy commit push koro (README te space add), auto-deploy trigger hobe. Trigger na hole → Deployments tab → **Redeploy** button
-
-**Step 2 — Domain verify koro**
-- Settings → **Domains** → `coachrony.com` ar `www.coachrony.com` dutoi listed ache check koro
-- Status "Valid Configuration" hoye thakte hobe. Na thakle "Refresh" click koro
-- Jodi domain onno project e attached dekhay → oitar theke remove kore ei project e add koro
-
-**Step 3 — DNS verify koro (tomar domain registrar e — Namecheap/GoDaddy jekhane kinecho)**
-- A record: `@` → `76.76.21.21`
-- CNAME: `www` → `cname.vercel-dns.com`
-- propagation check: dnschecker.org
-
-**Step 4 — Environment variables**
-- Settings → **Environment Variables** → Production scope e shob required vars ache verify koro (Supabase URL, anon key, etc.)
-- Missing thakle add koro, tarpor redeploy lagbe
-
-**Step 5 — Verify**
-- `coachrony.com` ar `www.coachrony.com` dutoi browser e khulo (incognito), 404 chole jaowa uchit
+তোমার দুটো realistic path আছে। আমি দুটোই execute করতে পারি — তুমি বললে।
 
 ---
 
-## Option B: coachrony.com Lovable e niye aso (permanent fix, kintu site content replace hobe)
+## Path A — Domain + Hosting Cloudflare-এ, Backend Lovable Cloud-এ (Recommended)
 
-Jodi coachrony.com **eii Lovable project er e production domain hoyar kotha thake**, tahole Vercel bypass kore Lovable e connect kore dao:
+**কী হবে:**
+- `coachrony.com` Cloudflare DNS-এ থাকবে (তুমি যা চাইছিলে)
+- Frontend Lovable hosting থেকে serve হবে, Cloudflare proxy-র পেছনে
+- Backend (database, auth, payments, users, courses) Lovable Cloud-এ unchanged থাকবে
+- **কোনো data loss নেই**, কোনো user-কে password reset করতে হবে না
+- 1 দিনে সব live
 
-1. Lovable: **Project Settings → Domains → Connect Domain** → `coachrony.com` enter koro
-2. Registrar e DNS update koro:
-   - A record `@` → `185.158.133.1`
-   - A record `www` → `185.158.133.1`
-   - TXT record `_lovable` → Lovable je value dibe
-3. Verify hote 5 min – 72 hr lagte pare, tarpor SSL auto-provision hobe
-4. Vercel project ta old hoye jabe — chaile delete koro
+**Steps:**
+1. Lovable-এ `coachrony.com` connect (Settings → Domains → Connect Domain)
+2. Cloudflare DNS: A record `@` → `185.158.133.1`, A record `www` → `185.158.133.1`, TXT `_lovable` → Lovable-এর verification value
+3. Cloudflare-এ proxy mode (orange cloud) ON — Lovable connect dialog-এর "Advanced → uses Cloudflare proxy" check করতে হবে
+4. SSL auto-provision (5 min – 72 hr)
+5. Vercel deployment delete
 
-**Warning:** Eta korle coachrony.com er **purono Vercel content gone hoye jabe**, ei Lovable project ja ache (coachronyacademy) seta dekhabe. Dutotai shame app hole tik ache, alada hole content harabe.
+**সুবিধা:** Cloudflare CDN/DDoS/cache পাবে, কিন্তু backend reliable Lovable Cloud-এ। তোমার সব visitor data, enrollments, payments, leads — সব intact।
 
 ---
 
-## Ami next ki korte pari
+## Path B — সব data CSV export করে দেব, তুমি নিজে নতুন Cloudflare app বানাবে
 
-- Tumi bolo **Option A** na **Option B** — A hole ami shudhu guide diye shesh, B hole ami custom domain setup flow chalu kore dibo (build mode lagbe)
-- Vercel theke je error/log paocho seta pathaile ami sheta analyze kore specific fix suggest korte pari
+**কী হবে:**
+- আমি সব 36 tables-এর data CSV-তে export করে `/mnt/documents/coachrony-backup/` এ দেব:
+  - `profiles.csv`, `user_roles.csv`, `enrollments.csv`, `payments.csv`, `leads.csv`, `bookings.csv`, `courses.csv`, `course_modules.csv`, `course_lessons.csv`, `lesson_progress.csv`, `community_posts.csv`, `community_comments.csv`, `notifications.csv`, `cms_*` tables, ইত্যাদি
+  - সব storage files (cms-media, payment-screenshots) এর list + download URL
+  - Full database schema SQL dump
+- তুমি এই data নিয়ে আলাদা Cloudflare project (D1 + R2 + Workers + Cloudflare Access/Better-Auth) বানাবে — Lovable-এর বাইরে
+- এই Lovable project unchanged থাকবে (চাইলে পরে delete করতে পারবে)
 
-Lovable project e code change er kono prayojon nei — eta purely deployment/DNS issue.
+**গুরুত্বপূর্ণ limitation:**
+- User passwords export করা যায় না (Supabase Auth-এ encrypted) — সব user-কে Cloudflare-এ password reset/re-signup করতে হবে
+- Cloudflare D1 = SQLite, Postgres-এর enum/RLS/triggers নেই — সব logic rewrite লাগবে
+- এটা কয়েক সপ্তাহের development work, Lovable platform-এ possible না
+
+---
+
+## আমার সুপারিশ
+
+**Path A করো।** তুমি যে আসল problem solve করতে চাইছ (coachrony.com Cloudflare-এ + 404 fix), সেটা Path A-তে fully solved হয়, data loss ছাড়া, complexity ছাড়া। Cloudflare-এর সব benefit (CDN, DDoS, caching, analytics) পাবে।
+
+Path B শুধু যদি Lovable platform পুরোপুরি ছাড়তে চাও — তাহলে আমি data export টা পরিষ্কার ভাবে দিয়ে দেব, কিন্তু নতুন app build আমি এই project-এ করতে পারব না।
+
+---
+
+## এই plan approve করলে আমি কী করব
+
+- **Path A:** তোমাকে Cloudflare DNS configuration step-by-step দেব, Lovable Domain connect করব, Vercel cleanup guide দেব
+- **Path B:** সব tables `/mnt/documents/coachrony-backup/` এ CSV হিসেবে export করব, schema SQL ও storage file list সহ, একটা README দিয়ে কীভাবে Cloudflare-এ import করবে সেটা ব্যাখ্যা করব
+
+**তুমি কোনটা চাও — A, B, নাকি দুটোই (data export + Path A)?**
