@@ -1,10 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-async function assertAdmin(userId: string) {
-  const { data, error } = await supabaseAdmin
+async function assertAdmin(supabase: any, userId: string) {
+  const { data, error } = await supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
@@ -37,36 +36,38 @@ export type StudentRow = {
 export const listAllStudents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<StudentRow[]> => {
-    await assertAdmin(context.userId);
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
 
-    const { data: enrollments, error: enrErr } = await supabaseAdmin
+    const { data: enrollments, error: enrErr } = await supabase
       .from("enrollments")
       .select("id,user_id,course_id,status,enrolled_at,completed_at,course:courses(id,title)")
       .order("enrolled_at", { ascending: false });
     if (enrErr) throw new Error(enrErr.message);
     if (!enrollments || enrollments.length === 0) return [];
 
-    const userIds = Array.from(new Set(enrollments.map((e) => e.user_id)));
-    const courseIds = Array.from(new Set(enrollments.map((e) => e.course_id).filter(Boolean) as string[]));
+    const userIds = Array.from(new Set(enrollments.map((e: any) => e.user_id)));
+    const courseIds = Array.from(new Set(enrollments.map((e: any) => e.course_id).filter(Boolean) as string[]));
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const [{ data: profiles }, { data: lessons }, { data: progress }, authRes] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id,display_name,phone,avatar_url,created_at").in("id", userIds),
-      supabaseAdmin
+      supabase.from("profiles").select("id,display_name,phone,avatar_url,created_at").in("id", userIds),
+      supabase
         .from("course_lessons")
         .select("id, course_modules!inner(course_id)")
         .in("course_modules.course_id", courseIds.length ? courseIds : ["00000000-0000-0000-0000-000000000000"]),
-      supabaseAdmin
+      supabase
         .from("lesson_progress")
         .select("enrollment_id, completed_at")
-        .in("enrollment_id", enrollments.map((e) => e.id))
+        .in("enrollment_id", enrollments.map((e: any) => e.id))
         .not("completed_at", "is", null),
       supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
     ]);
 
-    const pmap = new Map((profiles ?? []).map((p) => [p.id, p]));
-    const emailMap = new Map((authRes.data?.users ?? []).map((u) => [u.id, u.email ?? null]));
+    const pmap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    const emailMap = new Map((authRes.data?.users ?? []).map((u: any) => [u.id, u.email ?? null]));
 
-    // Lessons per course
     const lessonsPerCourse = new Map<string, number>();
     (lessons ?? []).forEach((l: any) => {
       const cid = l.course_modules?.course_id;
@@ -74,20 +75,19 @@ export const listAllStudents = createServerFn({ method: "GET" })
       lessonsPerCourse.set(cid, (lessonsPerCourse.get(cid) ?? 0) + 1);
     });
 
-    // Completed lessons per enrollment
     const donePerEnrollment = new Map<string, number>();
     (progress ?? []).forEach((p: any) => {
       donePerEnrollment.set(p.enrollment_id, (donePerEnrollment.get(p.enrollment_id) ?? 0) + 1);
     });
 
     const byUser = new Map<string, StudentRow>();
-    for (const e of enrollments) {
-      const profile = pmap.get(e.user_id);
+    for (const e of enrollments as any[]) {
+      const profile: any = pmap.get(e.user_id);
       let row = byUser.get(e.user_id);
       if (!row) {
         row = {
           user_id: e.user_id,
-          email: emailMap.get(e.user_id) ?? null,
+          email: (emailMap.get(e.user_id) as string | null) ?? null,
           name: profile?.display_name ?? "Unnamed",
           phone: profile?.phone ?? null,
           avatar_url: profile?.avatar_url ?? null,
@@ -116,8 +116,9 @@ export const revokeEnrollment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ enrollmentId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
-    const { error } = await supabaseAdmin.from("enrollments").delete().eq("id", data.enrollmentId);
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+    const { error } = await supabase.from("enrollments").delete().eq("id", data.enrollmentId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -125,8 +126,9 @@ export const revokeEnrollment = createServerFn({ method: "POST" })
 export const listCoursesForEnroll = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
-    const { data, error } = await supabaseAdmin
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+    const { data, error } = await supabase
       .from("courses")
       .select("id,title,slug,published")
       .order("title", { ascending: true });
@@ -144,9 +146,11 @@ export const manualEnroll = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
 
-    // Find user by email (paginate through auth users)
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     let foundId: string | null = null;
     const perPage = 1000;
     for (let page = 1; page <= 10; page++) {
@@ -160,8 +164,7 @@ export const manualEnroll = createServerFn({ method: "POST" })
       throw new Error("No user found with this email. Ask them to sign up first.");
     }
 
-    // Check existing
-    const { data: existing } = await supabaseAdmin
+    const { data: existing } = await supabase
       .from("enrollments")
       .select("id,status")
       .eq("user_id", foundId)
@@ -172,13 +175,13 @@ export const manualEnroll = createServerFn({ method: "POST" })
       if (existing.status !== data.status) {
         const patch: { status: string; completed_at?: string | null } = { status: data.status };
         if (data.status === "completed") patch.completed_at = new Date().toISOString();
-        const { error } = await supabaseAdmin.from("enrollments").update(patch).eq("id", existing.id);
+        const { error } = await supabase.from("enrollments").update(patch).eq("id", existing.id);
         if (error) throw new Error(error.message);
       }
       return { ok: true, alreadyEnrolled: true };
     }
 
-    const { error: insErr } = await supabaseAdmin.from("enrollments").insert({
+    const { error: insErr } = await supabase.from("enrollments").insert({
       user_id: foundId,
       course_id: data.courseId,
       status: data.status,
@@ -187,4 +190,3 @@ export const manualEnroll = createServerFn({ method: "POST" })
     if (insErr) throw new Error(insErr.message);
     return { ok: true, alreadyEnrolled: false };
   });
-
