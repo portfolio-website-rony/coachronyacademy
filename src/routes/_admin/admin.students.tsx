@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GraduationCap, Trash2, Search, Mail, Phone, BookOpen, CheckCircle2, Download, UserPlus, X, Loader2 } from "lucide-react";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { toast } from "sonner";
@@ -17,26 +16,52 @@ function StudentsPage() {
   const revokeFn = useServerFn(revokeEnrollment);
   const fetchCourses = useServerFn(listCoursesForEnroll);
   const enrollFn = useServerFn(manualEnroll);
+  type CourseOption = { id: string; title: string; published: boolean };
+  const [rows, setRows] = useState<StudentRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState<CourseOption[]>([]);
+  const [coursesLoaded, setCoursesLoaded] = useState(false);
   const [q, setQ] = useState("");
   const [enrollOpen, setEnrollOpen] = useState(false);
 
-  const { data: rows, isLoading, refetch } = useQuery({
-    queryKey: ["admin", "students"],
-    queryFn: () => fetchStudents(),
-  });
+  useEffect(() => {
+    void loadStudents();
+  }, []);
 
-  const { data: courses } = useQuery({
-    queryKey: ["admin", "courses-for-enroll"],
-    queryFn: () => fetchCourses(),
-    enabled: enrollOpen,
-  });
+  useEffect(() => {
+    if (!enrollOpen || coursesLoaded) return;
+    void loadCourses();
+  }, [enrollOpen, coursesLoaded]);
+
+  async function loadStudents() {
+    setLoading(true);
+    try {
+      const data = await fetchStudents();
+      setRows(data);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Students data load করা যায়নি");
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function loadCourses() {
+    try {
+      const data = await fetchCourses();
+      setCourses(data as CourseOption[]);
+      setCoursesLoaded(true);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Course list load করা যায়নি");
+    }
+  }
 
   async function onRevoke(enrollmentId: string) {
     if (!confirm("Revoke this enrollment?")) return;
     try {
       await revokeFn({ data: { enrollmentId } });
       toast.success("Enrollment revoked");
-      void refetch();
+      void loadStudents();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to revoke");
     }
@@ -44,7 +69,7 @@ function StudentsPage() {
 
 
   const needle = q.trim().toLowerCase();
-  const filtered = (rows ?? []).filter((s: StudentRow) => {
+  const filtered = rows.filter((s: StudentRow) => {
     if (!needle) return true;
     return (
       s.name.toLowerCase().includes(needle) ||
@@ -54,11 +79,11 @@ function StudentsPage() {
     );
   });
 
-  const totalStudents = rows?.length ?? 0;
-  const totalEnrollments = (rows ?? []).reduce((acc, s) => acc + s.courses.length, 0);
+  const totalStudents = rows.length;
+  const totalEnrollments = rows.reduce((acc, s) => acc + s.courses.length, 0);
 
   function exportCsv() {
-    const data = filtered.length ? filtered : (rows ?? []);
+    const data = filtered.length ? filtered : rows;
     if (!data.length) {
       toast.error("কোনো ডেটা নেই");
       return;
@@ -115,7 +140,7 @@ function StudentsPage() {
           </button>
           <button
             onClick={exportCsv}
-            disabled={!rows?.length}
+            disabled={!rows.length}
             className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold transition hover:bg-white/10 disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" /> Download CSV
@@ -140,9 +165,9 @@ function StudentsPage() {
         />
       </div>
 
-      {isLoading ? (
+      {loading ? (
         <div className="glass h-40 animate-pulse rounded-2xl" />
-      ) : (rows ?? []).length === 0 ? (
+      ) : rows.length === 0 ? (
         <EmptyState icon={GraduationCap} title="No students yet" description="Enrollments will appear here." />
       ) : filtered.length === 0 ? (
         <EmptyState icon={Search} title="No matches" description="অন্য কীওয়ার্ড দিয়ে চেষ্টা করুন।" />
@@ -239,14 +264,14 @@ function StudentsPage() {
 
       {enrollOpen && (
         <ManualEnrollDialog
-          courses={courses ?? []}
+          courses={courses}
           onClose={() => setEnrollOpen(false)}
           onEnroll={async (payload) => {
             const res = await enrollFn({ data: payload });
             if (res.alreadyEnrolled) toast.success("Already enrolled — status updated");
             else toast.success("Student enrolled");
             setEnrollOpen(false);
-            void refetch();
+            void loadStudents();
           }}
         />
       )}
