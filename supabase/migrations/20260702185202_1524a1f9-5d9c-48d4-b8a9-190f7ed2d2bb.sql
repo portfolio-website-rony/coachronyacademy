@@ -1,0 +1,1 @@
+CREATE POLICY "Admins insert enrollments" ON public.enrollments FOR INSERT TO authenticated WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
