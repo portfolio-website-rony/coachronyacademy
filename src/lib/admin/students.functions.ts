@@ -1,17 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: admin only");
-}
+import { assertAdmin } from "@/lib/admin/assert-admin.server";
+import { safeEmail, safeUuid } from "@/lib/security/schemas";
 
 export type StudentCourse = {
   enrollment_id: string;
@@ -114,7 +105,7 @@ export const listAllStudents = createServerFn({ method: "GET" })
 
 export const revokeEnrollment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ enrollmentId: z.string().uuid() }).parse(input))
+  .inputValidator((input) => z.object({ enrollmentId: safeUuid }).parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
@@ -140,8 +131,8 @@ export const manualEnroll = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z.object({
-      email: z.string().trim().toLowerCase().email().max(255),
-      courseId: z.string().uuid(),
+      email: safeEmail,
+      courseId: safeUuid,
       status: z.enum(["active", "completed"]).default("active"),
     }).parse(input),
   )
