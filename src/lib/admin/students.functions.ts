@@ -131,7 +131,7 @@ export const manualEnroll = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z.object({
-      email: z.string().trim().toLowerCase().email().max(255),
+      email: safeEmail,
       courseId: safeUuid,
       status: z.enum(["active", "completed"]).default("active"),
     }).parse(input),
