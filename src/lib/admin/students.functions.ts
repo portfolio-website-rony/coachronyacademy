@@ -105,7 +105,7 @@ export const listAllStudents = createServerFn({ method: "GET" })
 
 export const revokeEnrollment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ enrollmentId: z.string().uuid() }).parse(input))
+  .inputValidator((input) => z.object({ enrollmentId: safeUuid }).parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
