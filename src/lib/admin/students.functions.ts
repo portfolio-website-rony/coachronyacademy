@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin/assert-admin.server";
+import { safeEmail, safeUuid } from "@/lib/security/schemas";
 
 export type StudentCourse = {
   enrollment_id: string;
@@ -131,7 +132,7 @@ export const manualEnroll = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z.object({
       email: z.string().trim().toLowerCase().email().max(255),
-      courseId: z.string().uuid(),
+      courseId: safeUuid,
       status: z.enum(["active", "completed"]).default("active"),
     }).parse(input),
   )
