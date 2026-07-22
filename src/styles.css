@@ -302,3 +302,12 @@
   -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
   mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
 }
+
+/* Hide the "Edit with Lovable" published badge via CSS */
+#lovable-badge,
+a[href*="lovable.dev"][target="_blank"][aria-label*="Lovable" i],
+a[href*="lovable.dev?utm"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
