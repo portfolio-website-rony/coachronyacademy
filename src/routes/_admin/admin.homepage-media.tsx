@@ -30,6 +30,7 @@ function HomepageMediaPage() {
   const [m, setM] = useState<Media>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
   useEffect(() => {
     void supabase
