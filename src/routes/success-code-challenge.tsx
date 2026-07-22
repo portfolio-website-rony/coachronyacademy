@@ -26,11 +26,12 @@ export const Route = createFileRoute("/success-code-challenge")({
   component: ChallengePage,
 });
 
+// Brand palette — Coachrony Academy (orange primary + ink accent + warm gold)
 const t = {
-  bg: "#07231A", bgDeep: "#04140F",
-  emerald: "#0B3D2E", emeraldSoft: "#0F5238",
-  gold: "#D4AF37", goldSoft: "#E9C86A",
-  cream: "#F6EFDD", white: "#FFFFFF",
+  bg: "#1C110A", bgDeep: "#0E0805",
+  emerald: "#7A3B12", emeraldSoft: "#A85220", // legacy keys retained; now brand-orange deep tones
+  gold: "#F2A24B", goldSoft: "#F7C27E",
+  cream: "#FBEFDC", white: "#FFFFFF",
 };
 
 const serif = "'Playfair Display', 'Hind Siliguri', serif";
