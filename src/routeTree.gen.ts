@@ -68,6 +68,7 @@ import { Route as AdminAdminSettingsRouteImport } from './routes/_admin/admin.se
 import { Route as AdminAdminPaymentsRouteImport } from './routes/_admin/admin.payments'
 import { Route as AdminAdminMeetingsRouteImport } from './routes/_admin/admin.meetings'
 import { Route as AdminAdminLeadsRouteImport } from './routes/_admin/admin.leads'
+import { Route as AdminAdminHomepageMediaRouteImport } from './routes/_admin/admin.homepage-media'
 import { Route as AdminAdminFilesRouteImport } from './routes/_admin/admin.files'
 import { Route as AdminAdminCoursesRouteImport } from './routes/_admin/admin.courses'
 import { Route as AdminAdminCouponsRouteImport } from './routes/_admin/admin.coupons'
@@ -377,6 +378,11 @@ const AdminAdminLeadsRoute = AdminAdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const AdminAdminHomepageMediaRoute = AdminAdminHomepageMediaRouteImport.update({
+  id: '/homepage-media',
+  path: '/homepage-media',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminFilesRoute = AdminAdminFilesRouteImport.update({
   id: '/files',
   path: '/files',
@@ -494,6 +500,7 @@ export interface FileRoutesByFullPath {
   '/admin/coupons': typeof AdminAdminCouponsRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
   '/admin/files': typeof AdminAdminFilesRoute
+  '/admin/homepage-media': typeof AdminAdminHomepageMediaRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
@@ -564,6 +571,7 @@ export interface FileRoutesByTo {
   '/admin/coupons': typeof AdminAdminCouponsRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
   '/admin/files': typeof AdminAdminFilesRoute
+  '/admin/homepage-media': typeof AdminAdminHomepageMediaRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
   '/admin/meetings': typeof AdminAdminMeetingsRoute
   '/admin/payments': typeof AdminAdminPaymentsRoute
@@ -639,6 +647,7 @@ export interface FileRoutesById {
   '/_admin/admin/coupons': typeof AdminAdminCouponsRoute
   '/_admin/admin/courses': typeof AdminAdminCoursesRoute
   '/_admin/admin/files': typeof AdminAdminFilesRoute
+  '/_admin/admin/homepage-media': typeof AdminAdminHomepageMediaRoute
   '/_admin/admin/leads': typeof AdminAdminLeadsRoute
   '/_admin/admin/meetings': typeof AdminAdminMeetingsRoute
   '/_admin/admin/payments': typeof AdminAdminPaymentsRoute
@@ -713,6 +722,7 @@ export interface FileRouteTypes {
     | '/admin/coupons'
     | '/admin/courses'
     | '/admin/files'
+    | '/admin/homepage-media'
     | '/admin/leads'
     | '/admin/meetings'
     | '/admin/payments'
@@ -783,6 +793,7 @@ export interface FileRouteTypes {
     | '/admin/coupons'
     | '/admin/courses'
     | '/admin/files'
+    | '/admin/homepage-media'
     | '/admin/leads'
     | '/admin/meetings'
     | '/admin/payments'
@@ -857,6 +868,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/coupons'
     | '/_admin/admin/courses'
     | '/_admin/admin/files'
+    | '/_admin/admin/homepage-media'
     | '/_admin/admin/leads'
     | '/_admin/admin/meetings'
     | '/_admin/admin/payments'
@@ -1339,6 +1351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminLeadsRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_admin/admin/homepage-media': {
+      id: '/_admin/admin/homepage-media'
+      path: '/homepage-media'
+      fullPath: '/admin/homepage-media'
+      preLoaderRoute: typeof AdminAdminHomepageMediaRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/files': {
       id: '/_admin/admin/files'
       path: '/files'
@@ -1464,6 +1483,7 @@ interface AdminAdminRouteChildren {
   AdminAdminCouponsRoute: typeof AdminAdminCouponsRoute
   AdminAdminCoursesRoute: typeof AdminAdminCoursesRoute
   AdminAdminFilesRoute: typeof AdminAdminFilesRoute
+  AdminAdminHomepageMediaRoute: typeof AdminAdminHomepageMediaRoute
   AdminAdminLeadsRoute: typeof AdminAdminLeadsRoute
   AdminAdminMeetingsRoute: typeof AdminAdminMeetingsRoute
   AdminAdminPaymentsRoute: typeof AdminAdminPaymentsRoute
@@ -1483,6 +1503,7 @@ const AdminAdminRouteChildren: AdminAdminRouteChildren = {
   AdminAdminCouponsRoute: AdminAdminCouponsRoute,
   AdminAdminCoursesRoute: AdminAdminCoursesRoute,
   AdminAdminFilesRoute: AdminAdminFilesRoute,
+  AdminAdminHomepageMediaRoute: AdminAdminHomepageMediaRoute,
   AdminAdminLeadsRoute: AdminAdminLeadsRoute,
   AdminAdminMeetingsRoute: AdminAdminMeetingsRoute,
   AdminAdminPaymentsRoute: AdminAdminPaymentsRoute,

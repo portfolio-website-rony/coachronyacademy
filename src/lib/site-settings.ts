@@ -67,3 +67,35 @@ export function useWorkExperience(): WorkExperienceItem[] {
   }, []);
   return items;
 }
+
+export type HomepageMedia = {
+  hero_video_url?: string | null;
+  hero_image_url?: string | null;
+  banner_image_url?: string | null;
+  banner_link_url?: string | null;
+  banner_caption?: string | null;
+};
+
+let hmCache: HomepageMedia | null = null;
+
+export function useHomepageMedia(): HomepageMedia {
+  const [m, setM] = useState<HomepageMedia>(hmCache ?? {});
+  useEffect(() => {
+    let mounted = true;
+    void supabase
+      .from("cms_site_settings")
+      .select("value")
+      .eq("key", "homepage_media")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!mounted) return;
+        const v = (data?.value as HomepageMedia | null) ?? {};
+        hmCache = v;
+        setM(v);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+  return m;
+}
