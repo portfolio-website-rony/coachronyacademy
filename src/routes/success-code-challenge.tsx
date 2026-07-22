@@ -1186,7 +1186,7 @@ function Enrollment() {
     <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
       <Heading eyebrow="Enrollment" title="আপনার Investment" />
       <GlassCard className="text-center">
-        <div className="text-5xl font-black sm:text-6xl" style={{ color: t.gold }}>৳৪৯৯</div>
+        <div className="text-5xl font-black sm:text-6xl" style={{ color: t.gold }}>৳299</div>
         <p className="mt-3 text-sm" style={{ color: `${t.cream}aa` }}>Launch pricing — সব Bonus Included</p>
         <div className="mt-8 grid gap-3 text-left sm:grid-cols-5">
           {steps.map((s, i) => (
