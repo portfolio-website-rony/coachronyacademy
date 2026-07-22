@@ -226,7 +226,7 @@ function Hero() {
             }}
           >
             <div
-              className="relative aspect-[4/5] w-full overflow-hidden rounded-[calc(2rem-4px)]"
+              className="relative aspect-video w-full overflow-hidden rounded-[calc(2rem-4px)]"
               style={{
                 background: `linear-gradient(180deg, ${theme.emeraldSoft}, ${theme.emerald})`,
               }}
