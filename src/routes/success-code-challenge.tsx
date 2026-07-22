@@ -119,6 +119,7 @@ function ChallengePage() {
       <Transformation />
       <Bonus />
       <Community />
+      <Membership />
       <Enrollment />
       <FAQ />
       <FinalCTA />
@@ -467,6 +468,151 @@ function Community() {
           ))}
         </ul>
       </GlassCard>
+    </section>
+  );
+}
+
+function Membership() {
+  const includes = [
+    "30-Day Challenge Roadmap",
+    "Daily Action Tasks",
+    "Weekly Live Coaching",
+    "Private WhatsApp Community",
+    "AI Resources & Templates",
+    "Accountability System",
+    "Monthly New Content & Updates",
+  ];
+  const steps = [
+    {
+      n: "প্রথম ধাপ",
+      title: "আজই মাত্র ৳২৯৯ দিয়ে Membership শুরু করুন",
+      items: ["Challenge Dashboard", "WhatsApp Group Access", "Day 1 Mission", "সকল Resources"],
+    },
+    {
+      n: "দ্বিতীয় ধাপ",
+      title: "প্রথম ৩০ দিনের Challenge সম্পন্ন করুন",
+      items: ["Daily Guidance", "Community Support", "Weekly Live Session"],
+    },
+    {
+      n: "তৃতীয় ধাপ",
+      title: "চাইলে পরবর্তী মাসেও Membership চালিয়ে যান",
+      items: ["নতুন Challenge", "নতুন Live Session", "Advanced Training", "নতুন AI Resources", "Community Support", "মাসিক Growth Plan"],
+    },
+  ];
+  const nextMonth = [
+    "নতুন Challenge",
+    "নতুন Live Session",
+    "Advanced Training",
+    "নতুন AI Resources",
+    "Community Support",
+    "মাসিক Growth Plan",
+  ];
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <Heading
+        eyebrow="💳 Membership & Pricing"
+        title={<>শুধু একটি Course নয় — একটি <span style={{ color: t.gold }}>30-Day Guided Challenge Membership</span></>}
+        subtitle="আপনার Enrollment-এর মাধ্যমে আপনি শুধু ভিডিও পাবেন না, বরং একটি সম্পূর্ণ Guided Learning System-এ যুক্ত হবেন।"
+      />
+
+      {/* What you get */}
+      <GlassCard className="mb-10">
+        <div className="text-center text-sm font-bold uppercase tracking-widest" style={{ color: t.gold }}>
+          আপনি পাবেন
+        </div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {includes.map((x) => (
+            <div key={x} className="flex items-center gap-3 rounded-2xl px-4 py-3"
+              style={{ background: `${t.emeraldSoft}66`, border: `1px solid ${t.gold}33` }}>
+              <CheckCircle2 className="h-5 w-5 shrink-0" style={{ color: t.gold }} />
+              <span className="text-sm font-bold" style={{ color: t.white }}>{x}</span>
+            </div>
+          ))}
+        </div>
+      </GlassCard>
+
+      {/* How it works */}
+      <div className="mb-10">
+        <div className="mb-6 text-center text-2xl font-black" style={{ color: t.white }}>
+          🎯 কীভাবে এটি কাজ করবে?
+        </div>
+        <div className="grid gap-4 lg:grid-cols-3">
+          {steps.map((s, i) => (
+            <GlassCard key={s.n}>
+              <div className="flex items-center gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-full text-sm font-black"
+                  style={{ color: t.emerald, background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})` }}>
+                  {i + 1}
+                </div>
+                <div className="text-xs font-bold uppercase tracking-widest" style={{ color: t.gold }}>{s.n}</div>
+              </div>
+              <div className="mt-4 text-base font-bold leading-snug" style={{ color: t.white }}>{s.title}</div>
+              <ul className="mt-4 space-y-2">
+                {s.items.map((x) => (
+                  <li key={x} className="flex items-start gap-2 text-sm" style={{ color: t.cream }}>
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" style={{ color: t.goldSoft }} /> {x}
+                  </li>
+                ))}
+              </ul>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+
+      {/* Launch Offer */}
+      <GlassCard className="mb-10 text-center">
+        <GoldPill><Flame className="h-3.5 w-3.5" /> 🚀 Launch Offer</GoldPill>
+        <div className="mt-6 grid gap-6 sm:grid-cols-2">
+          <div className="rounded-3xl p-6"
+            style={{ background: `linear-gradient(135deg, ${t.goldSoft}22, ${t.gold}11)`, border: `1px solid ${t.gold}55` }}>
+            <div className="text-sm font-bold uppercase tracking-widest" style={{ color: t.goldSoft }}>প্রথম মাস</div>
+            <div className="mt-2 text-5xl font-black sm:text-6xl" style={{ color: t.gold }}>৳২৯৯</div>
+            <div className="mt-2 text-sm" style={{ color: `${t.cream}cc` }}>আজই Join করুন</div>
+          </div>
+          <div className="rounded-3xl p-6"
+            style={{ background: `${t.emeraldSoft}55`, border: `1px solid ${t.gold}33` }}>
+            <div className="text-sm font-bold uppercase tracking-widest" style={{ color: t.gold }}>তারপর Monthly</div>
+            <div className="mt-2 text-5xl font-black sm:text-6xl" style={{ color: t.white }}>
+              ৳৯৯৯<span className="text-lg font-bold" style={{ color: `${t.cream}aa` }}> / মাস</span>
+            </div>
+            <div className="mt-2 text-sm" style={{ color: `${t.cream}cc` }}>Advanced Training + Community</div>
+          </div>
+        </div>
+      </GlassCard>
+
+      {/* Why + No commitment */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard>
+          <div className="flex items-center gap-3">
+            <Heart className="h-6 w-6" style={{ color: t.gold }} />
+            <div className="text-lg font-black" style={{ color: t.white }}>কেন Membership?</div>
+          </div>
+          <p className="mt-3 text-sm" style={{ color: t.cream }}>
+            কারণ বাস্তব পরিবর্তন একদিনে হয় না। ধারাবাহিক শেখা, নিয়মিত অনুশীলন এবং একটি সক্রিয় Community-এর মাধ্যমেই দীর্ঘমেয়াদী উন্নতি সম্ভব।
+          </p>
+        </GlassCard>
+        <GlassCard>
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-6 w-6" style={{ color: t.gold }} />
+            <div className="text-lg font-black" style={{ color: t.white }}>🔒 No Long-Term Commitment</div>
+          </div>
+          <p className="mt-3 text-sm" style={{ color: t.cream }}>
+            আপনি আপনার Membership যেকোনো সময় বন্ধ করতে পারবেন। কোনো দীর্ঘমেয়াদী বাধ্যবাধকতা নেই।
+          </p>
+        </GlassCard>
+      </div>
+
+      <div className="mt-10 text-center">
+        <p className="text-xl font-black" style={{ color: t.white }}>
+          🎯 আজই আপনার 30-Day Success Journey শুরু করুন
+        </p>
+        <p className="mt-2 text-sm" style={{ color: `${t.cream}cc` }}>মাত্র ৳২৯৯ দিয়ে এখনই Enrollment করুন</p>
+        <div className="mt-6">
+          <GoldButton><Flame className="h-5 w-5" /> Start Membership — ৳২৯৯</GoldButton>
+        </div>
+      </div>
+      {/* nextMonth kept for reference */}
+      <div className="sr-only">{nextMonth.join(", ")}</div>
     </section>
   );
 }
