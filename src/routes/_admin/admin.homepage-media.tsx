@@ -68,13 +68,100 @@ function HomepageMediaPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 p-4 sm:p-6">
-      <header>
-        <h1 className="font-display text-2xl font-bold">Homepage Media</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Hero video/image এবং banner এখান থেকে update করুন। Save করার সাথে সাথে live site-এ show হবে
-          (Publish লাগবে না)।
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold">Homepage Media</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Hero video/image এবং banner এখান থেকে update করুন। Save করার সাথে সাথে live site-এ show হবে
+            (Publish লাগবে না)।
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowPreview((v) => !v)}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-background/40 px-3 py-2 text-xs font-medium hover:bg-white/5"
+        >
+          {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+          {showPreview ? "Hide" : "Show"} live preview
+        </button>
       </header>
+
+      {showPreview ? (
+        <section className="overflow-hidden rounded-2xl border border-primary/30 bg-background/40 shadow-neon-purple">
+          <div className="flex items-center justify-between border-b border-white/10 bg-background/60 px-4 py-2">
+            <div className="flex items-center gap-2 text-xs font-medium text-primary-glow">
+              <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-primary-glow" />
+              Live preview — unsaved changes shown below
+            </div>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              As visitors will see
+            </span>
+          </div>
+
+          <div className="space-y-4 p-4">
+            {/* Hero preview */}
+            <div>
+              <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Hero
+              </div>
+              <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-[oklch(0.15_0.08_270)] to-[oklch(0.08_0.05_290)]">
+                {m.hero_video_url ? (
+                  <video
+                    key={m.hero_video_url}
+                    src={m.hero_video_url}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="h-full w-full object-cover"
+                  />
+                ) : m.hero_image_url ? (
+                  <img
+                    src={m.hero_image_url}
+                    alt="Hero preview"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">
+                    Default animated orbit will show (no video/image set)
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Banner preview */}
+            <div>
+              <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Banner
+              </div>
+              {m.banner_image_url ? (
+                <div className="overflow-hidden rounded-xl border border-white/10">
+                  <img
+                    src={m.banner_image_url}
+                    alt={m.banner_caption ?? "Banner preview"}
+                    className="h-auto w-full object-cover"
+                  />
+                  {m.banner_caption ? (
+                    <p className="border-t border-white/10 bg-background/60 px-3 py-2 text-center text-xs text-muted-foreground">
+                      {m.banner_caption}
+                    </p>
+                  ) : null}
+                  {m.banner_link_url ? (
+                    <p className="border-t border-white/10 bg-background/40 px-3 py-1.5 text-center text-[10px] text-primary-glow">
+                      → Clicks link to: {m.banner_link_url}
+                    </p>
+                  ) : null}
+                </div>
+              ) : (
+                <div className="grid h-24 place-items-center rounded-xl border border-dashed border-white/10 text-xs text-muted-foreground">
+                  No banner set (section will be hidden)
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
 
       {/* HERO */}
       <section className="rounded-2xl border border-white/10 bg-background/40 p-5">
