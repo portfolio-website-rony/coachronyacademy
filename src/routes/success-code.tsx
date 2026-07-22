@@ -229,27 +229,13 @@ function Hero() {
                 background: `linear-gradient(180deg, ${theme.emeraldSoft}, ${theme.emerald})`,
               }}
             >
-              {/* Placeholder portrait */}
-              <div className="absolute inset-0 grid place-items-center">
-                <div className="text-center">
-                  <div
-                    className="mx-auto grid h-40 w-40 place-items-center rounded-full text-6xl font-black"
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.goldSoft}, ${theme.gold})`,
-                      color: theme.emerald,
-                      boxShadow: `0 20px 60px -10px ${theme.gold}aa`,
-                    }}
-                  >
-                    CR
-                  </div>
-                  <div className="mt-6 font-display text-2xl font-black" style={{ color: theme.white }}>
-                    Coach Rony
-                  </div>
-                  <div className="mt-1 text-sm" style={{ color: `${theme.cream}cc` }}>
-                    Success & Skill Mentor
-                  </div>
-                </div>
-              </div>
+              <img
+                src={heroImage.url}
+                alt="The Success Code — Coach Rony"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="eager"
+              />
+
 
               {/* corner badges */}
               <div className="absolute left-4 top-4">
