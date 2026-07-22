@@ -548,6 +548,323 @@ function EverythingYouGet() {
   );
 }
 
+/* ---------- 8.5 30-Day Success Challenge ---------- */
+function Challenge30Days() {
+  const weeks = [
+    {
+      tag: "WEEK 1",
+      title: "Foundation",
+      goal: "Mindset, Discipline এবং Daily Habit তৈরি করা।",
+      daily: [
+        "৩০ মিনিট কুরআন/ইসলামিক Reflection",
+        "৩০ মিনিট Mindset Learning",
+        "১ ঘণ্টা Skill Learning",
+        "Daily Journal",
+        "Daily Action Report",
+      ],
+      outcome: ["Clear Goal", "Daily Routine", "Strong Mindset"],
+      icon: <Heart className="h-5 w-5" />,
+    },
+    {
+      tag: "WEEK 2",
+      title: "Skill Building",
+      goal: "একটি Marketable Skill শেখা।",
+      daily: ["Skill Practice", "AI দিয়ে Learning", "Mini Project", "Feedback"],
+      outcome: ["Basic Skill Ready", "First Project"],
+      icon: <Brain className="h-5 w-5" />,
+    },
+    {
+      tag: "WEEK 3",
+      title: "Build & Brand",
+      goal: "Portfolio ও Personal Brand শুরু।",
+      daily: [
+        "Portfolio Update",
+        "LinkedIn/Facebook Profile",
+        "১টি Content Publish",
+        "AI দিয়ে Design",
+      ],
+      outcome: ["Portfolio Ready", "Online Presence"],
+      icon: <Rocket className="h-5 w-5" />,
+    },
+    {
+      tag: "WEEK 4",
+      title: "Client & Income",
+      goal: "Income-এর জন্য প্রস্তুত হওয়া।",
+      daily: [
+        "Client Research",
+        "Proposal Practice",
+        "Outreach",
+        "Interview Practice",
+        "Weekly Review",
+      ],
+      outcome: ["Client Strategy", "Income Roadmap", "Next 90-Day Plan"],
+      icon: <Wallet className="h-5 w-5" />,
+    },
+  ];
+
+  const dailySystem = [
+    { icon: <BookOpen className="h-5 w-5" />, label: "Learn", time: "১ ঘণ্টা" },
+    { icon: <Target className="h-5 w-5" />, label: "Practice", time: "১ ঘণ্টা" },
+    { icon: <Rocket className="h-5 w-5" />, label: "Build", time: "১ ঘণ্টা" },
+    { icon: <Zap className="h-5 w-5" />, label: "Improve", time: "১ ঘণ্টা" },
+  ];
+
+  const checkin = [
+    "আজ কী শিখলাম?",
+    "আজ কী তৈরি করলাম?",
+    "আজ কী Action নিলাম?",
+    "আগামীকাল কী করব?",
+  ];
+
+  const rules = [
+    "প্রতিদিন অন্তত ১টি Task Complete",
+    "কোনো Excuse নয়",
+    "Daily Check-in",
+    "ধারাবাহিকতা বজায় রাখা",
+    "Group Support",
+  ];
+
+  const rewards = [
+    "30-Day Completion Certificate",
+    "Portfolio Review Session",
+    "AI Productivity Templates",
+    "Exclusive Bonus Resources",
+  ];
+
+  const finalOutcome = [
+    { icon: "🤲", text: "Faith-based Success Mindset" },
+    { icon: "💪", text: "Strong Confidence" },
+    { icon: "🧠", text: "Marketable Skill" },
+    { icon: "📂", text: "Portfolio" },
+    { icon: "🌐", text: "Personal Brand Foundation" },
+    { icon: "🤝", text: "Client Acquisition Plan" },
+    { icon: "💰", text: "Income Roadmap" },
+    { icon: "📅", text: "90-Day Growth Plan" },
+  ];
+
+  const badges = [
+    { icon: "🥉", label: "7-Day Streak" },
+    { icon: "🥈", label: "14-Day Consistency" },
+    { icon: "🥇", label: "30-Day Finisher" },
+    { icon: "👑", label: "Top Performer" },
+  ];
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+      <SectionHeading
+        eyebrow="30-Day Challenge"
+        title={
+          <>
+            THE <span style={{ color: theme.gold }}>SUCCESS CODE™</span> Challenge
+          </>
+        }
+        subtitle={<><strong>৩০ দিন। কোনো Excuse নয়। শুধু Action।</strong><br />Faith • Confidence • Skill • Action • Income</>}
+      />
+
+      {/* Weekly roadmap */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {weeks.map((w, i) => (
+          <motion.div
+            key={w.tag}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, delay: i * 0.08 }}
+          >
+            <GlassCard className="h-full">
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-xl"
+                  style={{ background: `${theme.gold}22`, color: theme.gold, border: `1px solid ${theme.gold}55` }}
+                >
+                  {w.icon}
+                </div>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-widest" style={{ color: theme.gold }}>
+                    📅 {w.tag}
+                  </div>
+                  <div className="text-xl font-black" style={{ color: theme.white }}>{w.title}</div>
+                </div>
+              </div>
+              <p className="mt-4 text-sm" style={{ color: `${theme.cream}cc` }}>
+                <span style={{ color: theme.gold }}>লক্ষ্য:</span> {w.goal}
+              </p>
+              <div className="mt-5">
+                <div className="mb-2 text-xs font-bold uppercase tracking-widest" style={{ color: `${theme.cream}99` }}>
+                  প্রতিদিনের কাজ
+                </div>
+                <ul className="space-y-2">
+                  {w.daily.map((d) => (
+                    <li key={d} className="flex items-start gap-2 text-sm" style={{ color: theme.white }}>
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" style={{ color: theme.gold }} />
+                      <span>{d}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-5 rounded-2xl p-4" style={{ background: `${theme.gold}0f`, border: `1px solid ${theme.gold}33` }}>
+                <div className="mb-2 text-xs font-bold uppercase tracking-widest" style={{ color: theme.gold }}>
+                  সপ্তাহ শেষে
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {w.outcome.map((o) => (
+                    <span
+                      key={o}
+                      className="rounded-full px-3 py-1 text-xs font-semibold"
+                      style={{ background: `${theme.gold}18`, color: theme.cream, border: `1px solid ${theme.gold}44` }}
+                    >
+                      ✓ {o}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Daily Success System */}
+      <div className="mt-10">
+        <GlassCard>
+          <div className="text-center">
+            <GoldPill>🎯 Daily Success System</GoldPill>
+            <h3 className="mt-4 text-2xl font-black sm:text-3xl" style={{ color: theme.white }}>
+              প্রতিদিন <span style={{ color: theme.gold }}>৪ ঘণ্টা</span> — ৪টি Focus Block
+            </h3>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {dailySystem.map((d) => (
+              <div
+                key={d.label}
+                className="rounded-2xl p-5 text-center"
+                style={{ background: `${theme.gold}0d`, border: `1px solid ${theme.gold}33` }}
+              >
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: `${theme.gold}22`, color: theme.gold }}>
+                  {d.icon}
+                </div>
+                <div className="mt-3 text-lg font-black" style={{ color: theme.white }}>{d.label}</div>
+                <div className="text-xs uppercase tracking-widest" style={{ color: theme.gold }}>{d.time}</div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Daily Check-in + Rules */}
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <GlassCard>
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5" style={{ color: theme.gold }} />
+            <h3 className="text-xl font-black" style={{ color: theme.white }}>📝 Daily Check-in</h3>
+          </div>
+          <p className="mt-2 text-sm" style={{ color: `${theme.cream}aa` }}>প্রতিদিন গ্রুপে লিখুন:</p>
+          <ul className="mt-4 space-y-2">
+            {checkin.map((c) => (
+              <li key={c} className="flex items-start gap-2 text-sm" style={{ color: theme.white }}>
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" style={{ color: theme.gold }} />
+                <span>{c}</span>
+              </li>
+            ))}
+          </ul>
+        </GlassCard>
+
+        <GlassCard>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5" style={{ color: theme.gold }} />
+            <h3 className="text-xl font-black" style={{ color: theme.white }}>🏆 Challenge Rules</h3>
+          </div>
+          <ul className="mt-4 space-y-2">
+            {rules.map((r) => (
+              <li key={r} className="flex items-start gap-2 text-sm" style={{ color: theme.white }}>
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" style={{ color: theme.gold }} />
+                <span>{r}</span>
+              </li>
+            ))}
+          </ul>
+        </GlassCard>
+      </div>
+
+      {/* Rewards */}
+      <div className="mt-8">
+        <GlassCard>
+          <div className="text-center">
+            <GoldPill>🎁 Completion Rewards</GoldPill>
+            <h3 className="mt-4 text-2xl font-black" style={{ color: theme.white }}>Challenge Complete করলে পাবেন</h3>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {rewards.map((r) => (
+              <div
+                key={r}
+                className="rounded-2xl p-4 text-center"
+                style={{ background: `${theme.gold}0d`, border: `1px solid ${theme.gold}33` }}
+              >
+                <Gift className="mx-auto h-6 w-6" style={{ color: theme.gold }} />
+                <div className="mt-2 text-sm font-bold" style={{ color: theme.white }}>{r}</div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Gamification badges */}
+      <div className="mt-8">
+        <GlassCard>
+          <div className="text-center">
+            <GoldPill>Gamified Progress</GoldPill>
+            <h3 className="mt-4 text-2xl font-black" style={{ color: theme.white }}>
+              Earn Your <span style={{ color: theme.gold }}>Badges</span>
+            </h3>
+            <p className="mt-2 text-sm" style={{ color: `${theme.cream}aa` }}>
+              Top 10 Participants পাবেন Bonus Mentorship 👑
+            </p>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {badges.map((b) => (
+              <div
+                key={b.label}
+                className="rounded-2xl p-5 text-center"
+                style={{ background: `${theme.gold}0d`, border: `1px solid ${theme.gold}44` }}
+              >
+                <div className="text-4xl">{b.icon}</div>
+                <div className="mt-2 text-sm font-bold" style={{ color: theme.white }}>{b.label}</div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Final Outcome */}
+      <div className="mt-8">
+        <GlassCard>
+          <div className="text-center">
+            <GoldPill>🎯 Final Outcome</GoldPill>
+            <h3 className="mt-4 text-2xl font-black sm:text-3xl" style={{ color: theme.white }}>
+              ৩০ দিনের শেষে আপনার থাকবে
+            </h3>
+          </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {finalOutcome.map((o) => (
+              <div
+                key={o.text}
+                className="flex items-center gap-3 rounded-2xl p-4"
+                style={{ background: `${theme.gold}0d`, border: `1px solid ${theme.gold}33` }}
+              >
+                <div className="text-2xl">{o.icon}</div>
+                <div className="text-sm font-semibold" style={{ color: theme.white }}>{o.text}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <GoldButton>
+              <Flame className="h-5 w-5" /> Join the Challenge
+            </GoldButton>
+          </div>
+        </GlassCard>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- 9. Bonuses ---------- */
 function Bonuses() {
   const items = [
