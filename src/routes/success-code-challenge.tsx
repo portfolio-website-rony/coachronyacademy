@@ -119,6 +119,7 @@ function ChallengePage() {
       <Transformation />
       <Bonus />
       <Community />
+      <Membership />
       <Enrollment />
       <FAQ />
       <FinalCTA />
