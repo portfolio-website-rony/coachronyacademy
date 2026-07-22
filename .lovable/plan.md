@@ -1,61 +1,32 @@
-# Cloudflare migration plan — সত্যি কথা প্রথমে
+Screenshot-এ দেখা যাচ্ছে hero image container ফাঁকা — শুধু alt text "The Success Code 30-Day Challenge" corner-এ দেখাচ্ছে, image load fail করেছে। আগের check-এ CDN থেকে HTTP 200 এসেছিল এবং Playwright-এও image render হয়েছিল, তাই এটা user-এর browser-specific issue হতে পারে (cache/service worker/ad blocker), অথবা preview vs published host-এ path resolution-এর সমস্যা।
 
-## ⚠️ গুরুত্বপূর্ণ বাস্তবতা
+## Diagnosis Plan
 
-এই Lovable project থেকে **Lovable Cloud (Supabase) disconnect করা যায় না** — এটা platform-এর rule. তাই "এই project-টাই Cloudflare backend-এ চলবে" এটা সম্ভব না।
+**Step 1 — Confirm exactly কোন URL fail করছে**
+User-কে জিজ্ঞেস করব:
+- কোন URL থেকে দেখছেন (preview `lovable.app` / published `coachronyacademy.lovable.app` / অন্য)
+- Browser DevTools → Network tab-এ `success-code-hero.jpg` request-এর status code কী
 
-তোমার দুটো realistic path আছে। আমি দুটোই execute করতে পারি — তুমি বললে।
+**Step 2 — Reproduce করার চেষ্টা**
+- Preview এবং published দুই host-এই আবার Playwright দিয়ে image load verify করব
+- Response headers-এ `Content-Disposition: attachment` আছে কিনা check করব (থাকলে browser image render করবে না, download করবে)
+- Cache header এবং CORS check
 
----
+**Step 3 — Root cause অনুযায়ী fix**
+সম্ভাব্য fix গুলো:
+- যদি `Content-Disposition: attachment` return করে → asset re-upload with correct content-type, বা `<img>` না ব্যবহার করে CSS `background-image` ব্যবহার
+- যদি user-এর browser cache → hard refresh instruction যথেষ্ট (কোন code change লাগবে না)
+- যদি path resolution issue → absolute URL ব্যবহার করব pointer JSON থেকে
+- যদি এড blocker `/__l5e/` block করছে → asset URL prefix change করা possible না, তাই alternate path-এ (যেমন `/public/`) copy করব
 
-## Path A — Domain + Hosting Cloudflare-এ, Backend Lovable Cloud-এ (Recommended)
+**Step 4 — Verify**
+তিনটা page (`/success-code`, `/success-code-v2`, `/success-code-challenge`) fresh browser session-এ open করে confirm করব image visible।
 
-**কী হবে:**
-- `coachrony.com` Cloudflare DNS-এ থাকবে (তুমি যা চাইছিলে)
-- Frontend Lovable hosting থেকে serve হবে, Cloudflare proxy-র পেছনে
-- Backend (database, auth, payments, users, courses) Lovable Cloud-এ unchanged থাকবে
-- **কোনো data loss নেই**, কোনো user-কে password reset করতে হবে না
-- 1 দিনে সব live
+## Question for you
 
-**Steps:**
-1. Lovable-এ `coachrony.com` connect (Settings → Domains → Connect Domain)
-2. Cloudflare DNS: A record `@` → `185.158.133.1`, A record `www` → `185.158.133.1`, TXT `_lovable` → Lovable-এর verification value
-3. Cloudflare-এ proxy mode (orange cloud) ON — Lovable connect dialog-এর "Advanced → uses Cloudflare proxy" check করতে হবে
-4. SSL auto-provision (5 min – 72 hr)
-5. Vercel deployment delete
+প্লিজ একটু বলুন:
+1. কোন URL-এ দেখছেন — preview link নাকি `coachronyacademy.lovable.app`?
+2. একই browser-এ **Ctrl+Shift+R** (hard refresh) দিয়ে reload করলে image আসে কি?
+3. Browser DevTools (F12) → **Network** tab খুলে page reload দিয়ে `hero.jpg` filter করুন — status code কী দেখায় (200 / 403 / blocked)?
 
-**সুবিধা:** Cloudflare CDN/DDoS/cache পাবে, কিন্তু backend reliable Lovable Cloud-এ। তোমার সব visitor data, enrollments, payments, leads — সব intact।
-
----
-
-## Path B — সব data CSV export করে দেব, তুমি নিজে নতুন Cloudflare app বানাবে
-
-**কী হবে:**
-- আমি সব 36 tables-এর data CSV-তে export করে `/mnt/documents/coachrony-backup/` এ দেব:
-  - `profiles.csv`, `user_roles.csv`, `enrollments.csv`, `payments.csv`, `leads.csv`, `bookings.csv`, `courses.csv`, `course_modules.csv`, `course_lessons.csv`, `lesson_progress.csv`, `community_posts.csv`, `community_comments.csv`, `notifications.csv`, `cms_*` tables, ইত্যাদি
-  - সব storage files (cms-media, payment-screenshots) এর list + download URL
-  - Full database schema SQL dump
-- তুমি এই data নিয়ে আলাদা Cloudflare project (D1 + R2 + Workers + Cloudflare Access/Better-Auth) বানাবে — Lovable-এর বাইরে
-- এই Lovable project unchanged থাকবে (চাইলে পরে delete করতে পারবে)
-
-**গুরুত্বপূর্ণ limitation:**
-- User passwords export করা যায় না (Supabase Auth-এ encrypted) — সব user-কে Cloudflare-এ password reset/re-signup করতে হবে
-- Cloudflare D1 = SQLite, Postgres-এর enum/RLS/triggers নেই — সব logic rewrite লাগবে
-- এটা কয়েক সপ্তাহের development work, Lovable platform-এ possible না
-
----
-
-## আমার সুপারিশ
-
-**Path A করো।** তুমি যে আসল problem solve করতে চাইছ (coachrony.com Cloudflare-এ + 404 fix), সেটা Path A-তে fully solved হয়, data loss ছাড়া, complexity ছাড়া। Cloudflare-এর সব benefit (CDN, DDoS, caching, analytics) পাবে।
-
-Path B শুধু যদি Lovable platform পুরোপুরি ছাড়তে চাও — তাহলে আমি data export টা পরিষ্কার ভাবে দিয়ে দেব, কিন্তু নতুন app build আমি এই project-এ করতে পারব না।
-
----
-
-## এই plan approve করলে আমি কী করব
-
-- **Path A:** তোমাকে Cloudflare DNS configuration step-by-step দেব, Lovable Domain connect করব, Vercel cleanup guide দেব
-- **Path B:** সব tables `/mnt/documents/coachrony-backup/` এ CSV হিসেবে export করব, schema SQL ও storage file list সহ, একটা README দিয়ে কীভাবে Cloudflare-এ import করবে সেটা ব্যাখ্যা করব
-
-**তুমি কোনটা চাও — A, B, নাকি দুটোই (data export + Path A)?**
+এই তথ্য পেলে exact কারণ ধরে সরাসরি fix করে দেব।
