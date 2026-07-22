@@ -47,7 +47,28 @@ export function SpaceHero() {
           className="relative flex w-full items-center justify-center"
         >
           <div className="w-full max-w-[600px]">
-            <OrbitSystem />
+            {hasVideo ? (
+              <div className="relative aspect-video w-full overflow-hidden rounded-2xl glass-strong shadow-neon-purple">
+                <video
+                  src={media.hero_video_url!}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : hasImage ? (
+              <div className="relative aspect-video w-full overflow-hidden rounded-2xl glass-strong shadow-neon-purple">
+                <img
+                  src={media.hero_image_url!}
+                  alt="Homepage hero"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : (
+              <OrbitSystem />
+            )}
           </div>
 
           {/* floating glass code chips */}
