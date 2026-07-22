@@ -35,6 +35,12 @@ export const PROGRAMS = [
     icon: Code2,
   },
   {
+    tag: "Challenge", title: "30-Day Success Challenge",
+    desc: "Faith + Skills + Action — 30 দিনে transformation। Membership-based guided challenge।",
+    price: "৳ 299", cta: "Join Challenge", href: "/success-code-challenge",
+    icon: Rocket,
+  },
+  {
     tag: "Mentorship", title: "1:1 AI Business Mentorship",
     desc: "Personal roadmap, weekly calls, full access।",
     price: "৳ 24,999", cta: "Book Discovery", href: "/book",
