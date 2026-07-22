@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SuccessCodeV2RouteImport } from './routes/success-code-v2'
+import { Route as SuccessCodeChallengeRouteImport } from './routes/success-code-challenge'
 import { Route as SuccessCodeRouteImport } from './routes/success-code'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -95,6 +96,11 @@ const TermsRoute = TermsRouteImport.update({
 const SuccessCodeV2Route = SuccessCodeV2RouteImport.update({
   id: '/success-code-v2',
   path: '/success-code-v2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuccessCodeChallengeRoute = SuccessCodeChallengeRouteImport.update({
+  id: '/success-code-challenge',
+  path: '/success-code-challenge',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuccessCodeRoute = SuccessCodeRouteImport.update({
@@ -467,6 +473,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/success-code': typeof SuccessCodeRoute
+  '/success-code-challenge': typeof SuccessCodeChallengeRoute
   '/success-code-v2': typeof SuccessCodeV2Route
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
@@ -538,6 +545,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/success-code': typeof SuccessCodeRoute
+  '/success-code-challenge': typeof SuccessCodeChallengeRoute
   '/success-code-v2': typeof SuccessCodeV2Route
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
@@ -610,6 +618,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/success-code': typeof SuccessCodeRoute
+  '/success-code-challenge': typeof SuccessCodeChallengeRoute
   '/success-code-v2': typeof SuccessCodeV2Route
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
@@ -683,6 +692,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/success-code'
+    | '/success-code-challenge'
     | '/success-code-v2'
     | '/terms'
     | '/thank-you'
@@ -754,6 +764,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/success-code'
+    | '/success-code-challenge'
     | '/success-code-v2'
     | '/terms'
     | '/thank-you'
@@ -825,6 +836,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/success-code'
+    | '/success-code-challenge'
     | '/success-code-v2'
     | '/terms'
     | '/thank-you'
@@ -900,6 +912,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuccessCodeRoute: typeof SuccessCodeRoute
+  SuccessCodeChallengeRoute: typeof SuccessCodeChallengeRoute
   SuccessCodeV2Route: typeof SuccessCodeV2Route
   TermsRoute: typeof TermsRoute
   ThankYouRoute: typeof ThankYouRoute
@@ -932,6 +945,13 @@ declare module '@tanstack/react-router' {
       path: '/success-code-v2'
       fullPath: '/success-code-v2'
       preLoaderRoute: typeof SuccessCodeV2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/success-code-challenge': {
+      id: '/success-code-challenge'
+      path: '/success-code-challenge'
+      fullPath: '/success-code-challenge'
+      preLoaderRoute: typeof SuccessCodeChallengeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/success-code': {
@@ -1616,6 +1636,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuccessCodeRoute: SuccessCodeRoute,
+  SuccessCodeChallengeRoute: SuccessCodeChallengeRoute,
   SuccessCodeV2Route: SuccessCodeV2Route,
   TermsRoute: TermsRoute,
   ThankYouRoute: ThankYouRoute,
