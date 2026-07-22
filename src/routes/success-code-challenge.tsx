@@ -575,32 +575,91 @@ function WhoFor() {
 }
 
 function Transformation() {
-  const before = ["Confused", "Fear", "No Portfolio", "No Direction"];
-  const after = ["Clear Direction", "Better Confidence", "Portfolio Ready", "Daily Action Habit", "Income Roadmap"];
+  const rows: { before: string; after: string; beforeEmoji: string; afterEmoji: string }[] = [
+    { before: "Confused", after: "Confident", beforeEmoji: "😕", afterEmoji: "😎" },
+    { before: "No Skill", after: "Skill Ready", beforeEmoji: "🫤", afterEmoji: "🚀" },
+    { before: "No Portfolio", after: "Portfolio Ready", beforeEmoji: "📭", afterEmoji: "📁" },
+    { before: "No Direction", after: "Clear Roadmap", beforeEmoji: "🧭", afterEmoji: "🗺️" },
+    { before: "No Income Plan", after: "Income Roadmap", beforeEmoji: "💸", afterEmoji: "💰" },
+  ];
   return (
-    <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
-      <Heading eyebrow="Your Transformation" title={<>আজ vs <span style={{ color: t.gold }}>৩০ দিন পরে</span></>} />
-      <div className="grid gap-6 lg:grid-cols-2">
-        <GlassCard>
-          <div className="text-xl font-black" style={{ color: "#ff6b6b" }}>😟 আজ</div>
-          <ul className="mt-4 space-y-2">
-            {before.map((x) => (
-              <li key={x} className="flex items-center gap-2 text-base font-bold" style={{ color: t.cream }}>
-                <XCircle className="h-4 w-4" style={{ color: "#ff6b6b" }} /> {x}
-              </li>
-            ))}
-          </ul>
-        </GlassCard>
-        <GlassCard>
-          <div className="text-xl font-black" style={{ color: t.goldSoft }}>😎 ৩০ দিন পরে</div>
-          <ul className="mt-4 space-y-2">
-            {after.map((x) => (
-              <li key={x} className="flex items-center gap-2 text-base font-bold" style={{ color: t.white }}>
-                <CheckCircle2 className="h-4 w-4" style={{ color: t.gold }} /> {x}
-              </li>
-            ))}
-          </ul>
-        </GlassCard>
+    <section className="relative mx-auto max-w-5xl px-4 py-20 sm:px-6">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-1/3 -z-10 mx-auto h-64 max-w-3xl rounded-full opacity-40 blur-3xl"
+        style={{ background: `radial-gradient(circle, ${t.gold}22, transparent 70%)` }}
+      />
+      <Heading
+        eyebrow="30-Day Transformation"
+        title={
+          <>
+            <span style={{ fontFamily: serif, fontStyle: "italic" }}>আজ</span>
+            <span className="mx-3 inline-block align-middle" style={{ color: t.gold }}>→</span>
+            <span style={{ color: t.gold }}>৩০ দিন পরে</span>
+          </>
+        }
+      />
+      <div className="space-y-4">
+        {rows.map((r, i) => (
+          <motion.div
+            key={r.before}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5, delay: i * 0.08 }}
+            className="group relative overflow-hidden rounded-2xl border p-5 sm:p-6 transition-all duration-500 hover:-translate-y-0.5"
+            style={{
+              background: `linear-gradient(135deg, ${t.emerald}cc, ${t.bgDeep})`,
+              borderColor: `${t.gold}33`,
+            }}
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-1/2 w-px opacity-40"
+              style={{ background: `linear-gradient(to bottom, transparent, ${t.gold}66, transparent)` }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              style={{ background: `radial-gradient(600px circle at var(--x,50%) var(--y,50%), ${t.gold}22, transparent 40%)` }}
+            />
+            <div className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-8">
+              <div className="text-right">
+                <div
+                  className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+                  style={{ color: `${t.cream}80`, fontFamily: serif, fontStyle: "italic", letterSpacing: "0.15em" }}
+                >
+                  আজ
+                </div>
+                <div className="mt-1 flex items-center justify-end gap-2 text-lg font-black sm:text-2xl" style={{ color: t.cream }}>
+                  <span>{r.before}</span>
+                  <span className="text-xl sm:text-2xl">{r.beforeEmoji}</span>
+                </div>
+              </div>
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border sm:h-12 sm:w-12"
+                style={{
+                  borderColor: `${t.gold}55`,
+                  background: `radial-gradient(circle, ${t.gold}22, transparent 70%)`,
+                }}
+              >
+                <ArrowRight className="h-5 w-5 transition-transform duration-500 group-hover:translate-x-1 sm:h-6 sm:w-6" style={{ color: t.gold }} />
+              </div>
+              <div className="text-left">
+                <div
+                  className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+                  style={{ color: `${t.goldSoft}b0`, fontFamily: serif, fontStyle: "italic", letterSpacing: "0.15em" }}
+                >
+                  ৩০ দিন পরে
+                </div>
+                <div className="mt-1 flex items-center gap-2 text-lg font-black sm:text-2xl" style={{ color: t.gold }}>
+                  <span>{r.after}</span>
+                  <span className="text-xl sm:text-2xl">{r.afterEmoji}</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
