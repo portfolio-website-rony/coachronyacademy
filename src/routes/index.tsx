@@ -6,7 +6,7 @@ import { SERVICES, PROGRAMS, PORTFOLIO, TESTIMONIALS, STATS, SKILLS } from "@/li
 import { SpaceHero } from "@/components/site/hero/SpaceHero";
 import { CountUp } from "@/components/site/CountUp";
 import { WorkExperience } from "@/components/site/WorkExperience";
-import { useContactSettings } from "@/lib/site-settings";
+import { useContactSettings, useHomepageMedia } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -14,11 +14,44 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const contact = useContactSettings();
+  const media = useHomepageMedia();
   const waHref = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent("Hi CoachRony, I'm interested in your programs.")}`;
   const telHref = `tel:+${contact.whatsapp}`;
   return (
     <>
       <SpaceHero />
+
+      {media.banner_image_url ? (
+        <Section className="!py-8">
+          {media.banner_link_url ? (
+            <a
+              href={media.banner_link_url}
+              target={media.banner_link_url.startsWith("http") ? "_blank" : undefined}
+              rel="noopener noreferrer"
+              className="block overflow-hidden rounded-2xl border border-white/10 shadow-neon-purple transition hover:-translate-y-0.5"
+            >
+              <img
+                src={media.banner_image_url}
+                alt={media.banner_caption ?? "Homepage banner"}
+                className="h-auto w-full object-cover"
+                loading="lazy"
+              />
+            </a>
+          ) : (
+            <div className="overflow-hidden rounded-2xl border border-white/10 shadow-neon-purple">
+              <img
+                src={media.banner_image_url}
+                alt={media.banner_caption ?? "Homepage banner"}
+                className="h-auto w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          )}
+          {media.banner_caption ? (
+            <p className="mt-3 text-center text-sm text-muted-foreground">{media.banner_caption}</p>
+          ) : null}
+        </Section>
+      ) : null}
 
       {/* STATS */}
       <Section className="!py-12">
