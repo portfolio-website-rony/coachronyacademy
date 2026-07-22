@@ -141,6 +141,7 @@ function SuccessCodePage() {
       <Transformation />
       <SuccessFormula />
       <EverythingYouGet />
+      <Challenge30Days />
       <Bonuses />
       <Offer />
       <FAQ />
