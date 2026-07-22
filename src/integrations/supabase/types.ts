@@ -14,39 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      _export_auth_users: {
-        Row: {
-          created_at: string | null
-          email: string | null
-          email_confirmed_at: string | null
-          id: string | null
-          last_sign_in_at: string | null
-          phone: string | null
-          raw_app_meta_data: Json | null
-          raw_user_meta_data: Json | null
-        }
-        Insert: {
-          created_at?: string | null
-          email?: string | null
-          email_confirmed_at?: string | null
-          id?: string | null
-          last_sign_in_at?: string | null
-          phone?: string | null
-          raw_app_meta_data?: Json | null
-          raw_user_meta_data?: Json | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string | null
-          email_confirmed_at?: string | null
-          id?: string | null
-          last_sign_in_at?: string | null
-          phone?: string | null
-          raw_app_meta_data?: Json | null
-          raw_user_meta_data?: Json | null
-        }
-        Relationships: []
-      }
       activity_log: {
         Row: {
           action: string

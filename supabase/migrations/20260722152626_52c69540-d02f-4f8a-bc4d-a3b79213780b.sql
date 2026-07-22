@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS public._export_auth_users;
