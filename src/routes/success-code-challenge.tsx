@@ -720,148 +720,459 @@ function Community() {
 
 function Membership() {
   const includes = [
-    "30-Day Challenge Roadmap",
-    "Daily Action Tasks",
-    "Weekly Live Coaching",
-    "Private WhatsApp Community",
-    "AI Resources & Templates",
-    "Accountability System",
-    "Monthly New Content & Updates",
+    { icon: Calendar, label: "30-Day Challenge Roadmap", sub: "প্রতিদিনের clear task" },
+    { icon: Target, label: "Daily Action Tasks", sub: "১৫–৩০ মিনিটের mission" },
+    { icon: Users, label: "Weekly Live Coaching", sub: "সরাসরি guidance + Q&A" },
+    { icon: MessageCircle, label: "Private WhatsApp Community", sub: "24/7 support network" },
+    { icon: Brain, label: "AI Resources & Templates", sub: "Prompt vault + tools" },
+    { icon: ShieldCheck, label: "Accountability System", sub: "Streak + check-ins" },
+    { icon: Sparkles, label: "Monthly New Content", sub: "নতুন challenge প্রতি মাসে" },
+    { icon: TrendingUp, label: "Progress Dashboard", sub: "Track your growth" },
   ];
   const steps = [
     {
       n: "প্রথম ধাপ",
-      title: "আজই মাত্র ৳২৯৯ দিয়ে Membership শুরু করুন",
+      title: "মাত্র ৳২৯৯ দিয়ে Membership শুরু করুন",
+      sub: "Instant access — এখনই সব unlock",
       items: ["Challenge Dashboard", "WhatsApp Group Access", "Day 1 Mission", "সকল Resources"],
     },
     {
       n: "দ্বিতীয় ধাপ",
-      title: "প্রথম ৩০ দিনের Challenge সম্পন্ন করুন",
-      items: ["Daily Guidance", "Community Support", "Weekly Live Session"],
+      title: "৩০ দিনের Challenge complete করুন",
+      sub: "Daily guidance-এ real transformation",
+      items: ["Daily Guidance", "Community Support", "Weekly Live Session", "Habit Tracker"],
     },
     {
       n: "তৃতীয় ধাপ",
-      title: "চাইলে পরবর্তী মাসেও Membership চালিয়ে যান",
-      items: ["নতুন Challenge", "নতুন Live Session", "Advanced Training", "নতুন AI Resources", "Community Support", "মাসিক Growth Plan"],
+      title: "চাইলে পরবর্তী মাসেও চালিয়ে যান",
+      sub: "Advanced level — deeper growth",
+      items: ["নতুন Challenge", "Advanced Training", "নতুন AI Resources", "মাসিক Growth Plan"],
     },
   ];
-  const nextMonth = [
-    "নতুন Challenge",
-    "নতুন Live Session",
-    "Advanced Training",
-    "নতুন AI Resources",
-    "Community Support",
-    "মাসিক Growth Plan",
+  const valueStack = [
+    { item: "30-Day Guided Roadmap", value: "৳৩,০০০" },
+    { item: "Weekly Live Coaching (৪টি)", value: "৳৫,০০০" },
+    { item: "Private WhatsApp Community", value: "৳২,০০০" },
+    { item: "AI Prompt Vault + Templates", value: "৳২,৫০০" },
+    { item: "Accountability System", value: "৳১,৫০০" },
+    { item: "Progress Dashboard + Certificate", value: "৳১,০০০" },
   ];
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+    <section id="membership" className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-28">
+      {/* Ambient background */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 opacity-60"
+        style={{
+          background: `radial-gradient(600px circle at 20% 20%, ${t.gold}18, transparent 60%), radial-gradient(600px circle at 80% 80%, ${t.emeraldSoft}55, transparent 60%)`,
+        }}
+      />
+
       <Heading
         eyebrow="💳 Membership & Pricing"
-        title={<>শুধু একটি Course নয় — একটি <span style={{ color: t.gold }}>30-Day Guided Challenge Membership</span></>}
+        title={
+          <>
+            শুধু একটি Course নয় — একটি{" "}
+            <span style={{ color: t.gold, fontFamily: serif, fontStyle: "italic" }}>
+              Guided Challenge Membership
+            </span>
+          </>
+        }
         subtitle="আপনার Enrollment-এর মাধ্যমে আপনি শুধু ভিডিও পাবেন না, বরং একটি সম্পূর্ণ Guided Learning System-এ যুক্ত হবেন।"
       />
 
-      {/* What you get */}
-      <GlassCard className="mb-10">
-        <div className="text-center text-sm font-bold uppercase tracking-widest" style={{ color: t.gold }}>
-          আপনি পাবেন
-        </div>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {includes.map((x) => (
-            <div key={x} className="flex items-center gap-3 rounded-2xl px-4 py-3"
-              style={{ background: `${t.emeraldSoft}66`, border: `1px solid ${t.gold}33` }}>
-              <CheckCircle2 className="h-5 w-5 shrink-0" style={{ color: t.gold }} />
-              <span className="text-sm font-bold" style={{ color: t.white }}>{x}</span>
+      {/* PRODUCT SHOWCASE — Featured hero card */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.7 }}
+        className="relative mb-16 overflow-hidden rounded-[2rem] border p-8 sm:p-12"
+        style={{
+          background: `linear-gradient(135deg, ${t.emerald}f0, ${t.bgDeep})`,
+          borderColor: `${t.gold}55`,
+          boxShadow: `0 30px 80px -20px ${t.gold}33, inset 0 1px 0 ${t.gold}22`,
+        }}
+      >
+        {/* Corner gold accents */}
+        {(["tl", "tr", "bl", "br"] as const).map((corner) => (
+          <div
+            key={corner}
+            aria-hidden
+            className="pointer-events-none absolute h-10 w-10"
+            style={{
+              top: corner.startsWith("t") ? 12 : undefined,
+              bottom: corner.startsWith("b") ? 12 : undefined,
+              left: corner.endsWith("l") ? 12 : undefined,
+              right: corner.endsWith("r") ? 12 : undefined,
+              borderTop: corner.startsWith("t") ? `2px solid ${t.gold}` : undefined,
+              borderBottom: corner.startsWith("b") ? `2px solid ${t.gold}` : undefined,
+              borderLeft: corner.endsWith("l") ? `2px solid ${t.gold}` : undefined,
+              borderRight: corner.endsWith("r") ? `2px solid ${t.gold}` : undefined,
+              opacity: 0.6,
+            }}
+          />
+        ))}
+
+        <div className="grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:items-center">
+          <div>
+            <GoldPill pulse>
+              <Flame className="h-3.5 w-3.5" /> LIMITED LAUNCH OFFER
+            </GoldPill>
+            <h3
+              className="mt-5 text-3xl font-black leading-tight sm:text-4xl md:text-5xl"
+              style={{ color: t.white }}
+            >
+              THE SUCCESS CODE™
+              <br />
+              <span
+                style={{
+                  fontFamily: serif,
+                  fontStyle: "italic",
+                  background: `linear-gradient(135deg, ${t.cream}, ${t.gold})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                30-Day Membership
+              </span>
+            </h3>
+            <p className="mt-4 text-base leading-relaxed sm:text-lg" style={{ color: `${t.cream}dd` }}>
+              Daily action + Weekly live + Community + AI toolkit — একটি সম্পূর্ণ ecosystem, যা আপনাকে ৩০ দিনে
+              real result-এ নিয়ে যাবে।
+            </p>
+
+            {/* Trust row */}
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs font-semibold" style={{ color: `${t.cream}bb` }}>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4" style={{ color: t.gold }} /> Secure Payment</span>
+              <span className="flex items-center gap-1.5"><Zap className="h-4 w-4" style={{ color: t.gold }} /> Instant Access</span>
+              <span className="flex items-center gap-1.5"><Users className="h-4 w-4" style={{ color: t.gold }} /> 500+ Members</span>
+              <span className="flex items-center gap-1.5"><Award className="h-4 w-4" style={{ color: t.gold }} /> Certificate</span>
             </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <GoldButton href="#register"><Flame className="h-5 w-5" /> Start ৳২৯৯ Today</GoldButton>
+              <GhostButton href="#value-stack">See Full Value</GhostButton>
+            </div>
+          </div>
+
+          {/* Pricing card */}
+          <div className="relative">
+            <div
+              className="relative overflow-hidden rounded-3xl p-8"
+              style={{
+                background: `linear-gradient(160deg, ${t.gold}18, ${t.emeraldSoft}66)`,
+                border: `1.5px solid ${t.gold}88`,
+                boxShadow: `0 20px 60px -15px ${t.gold}55`,
+              }}
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-40 blur-3xl"
+                style={{ background: t.gold }}
+              />
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: t.gold }}>
+                  Launch Price
+                </div>
+                <div
+                  className="rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest"
+                  style={{ background: t.gold, color: t.emerald }}
+                >
+                  Save 70%
+                </div>
+              </div>
+              <div className="mt-4 flex items-baseline gap-3">
+                <span
+                  className="text-6xl font-black sm:text-7xl"
+                  style={{
+                    background: `linear-gradient(135deg, ${t.cream}, ${t.gold})`,
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  ৳২৯৯
+                </span>
+                <span className="text-lg font-bold line-through" style={{ color: `${t.cream}66` }}>
+                  ৳৯৯৯
+                </span>
+              </div>
+              <div className="mt-1 text-sm font-semibold" style={{ color: `${t.cream}cc` }}>
+                প্রথম মাস • এরপর ৳৯৯৯/মাস
+              </div>
+
+              <div className="my-6 h-px" style={{ background: `linear-gradient(to right, transparent, ${t.gold}55, transparent)` }} />
+
+              <ul className="space-y-2.5">
+                {["Instant Dashboard Access", "WhatsApp Community Invite", "Day 1 Mission Unlocked", "All Templates & Resources"].map((x) => (
+                  <li key={x} className="flex items-center gap-2.5 text-sm font-semibold" style={{ color: t.cream }}>
+                    <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: t.gold }} /> {x}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-6 rounded-xl p-3 text-center text-[11px] font-bold uppercase tracking-widest" style={{ background: `${t.bgDeep}aa`, color: t.goldSoft, border: `1px solid ${t.gold}33` }}>
+                🔒 No Long-Term Commitment — Cancel Anytime
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* WHAT YOU GET — Feature grid with icons */}
+      <div className="mb-16">
+        <div className="mb-8 text-center">
+          <div className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: t.gold, fontFamily: serif, fontStyle: "italic" }}>
+            Everything Included
+          </div>
+          <h3 className="mt-2 text-2xl font-black sm:text-3xl" style={{ color: t.white }}>
+            ৮টি Premium Product একসাথে
+          </h3>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {includes.map((x, i) => (
+            <motion.div
+              key={x.label}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+              className="group relative overflow-hidden rounded-2xl border p-5 transition-all duration-500 hover:-translate-y-1"
+              style={{
+                background: `linear-gradient(160deg, ${t.emerald}aa, ${t.bgDeep})`,
+                borderColor: `${t.gold}33`,
+              }}
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-40"
+                style={{ background: t.gold }}
+              />
+              <div
+                className="grid h-12 w-12 place-items-center rounded-xl"
+                style={{ background: `linear-gradient(135deg, ${t.gold}, ${t.goldSoft})`, boxShadow: `0 8px 24px -8px ${t.gold}88` }}
+              >
+                <x.icon className="h-6 w-6" style={{ color: t.emerald }} />
+              </div>
+              <div className="mt-4 text-base font-black" style={{ color: t.white }}>{x.label}</div>
+              <div className="mt-1 text-xs" style={{ color: `${t.cream}aa` }}>{x.sub}</div>
+            </motion.div>
           ))}
         </div>
-      </GlassCard>
+      </div>
 
-      {/* How it works */}
-      <div className="mb-10">
-        <div className="mb-6 text-center text-2xl font-black" style={{ color: t.white }}>
-          🎯 কীভাবে এটি কাজ করবে?
+      {/* HOW IT WORKS — Vertical timeline */}
+      <div className="mb-16">
+        <div className="mb-8 text-center">
+          <div className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: t.gold, fontFamily: serif, fontStyle: "italic" }}>
+            How It Works
+          </div>
+          <h3 className="mt-2 text-2xl font-black sm:text-3xl" style={{ color: t.white }}>
+            🎯 কীভাবে এটি কাজ করবে?
+          </h3>
         </div>
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-5 lg:grid-cols-3">
           {steps.map((s, i) => (
-            <GlassCard key={s.n}>
+            <motion.div
+              key={s.n}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="relative overflow-hidden rounded-2xl border p-6"
+              style={{
+                background: `linear-gradient(160deg, ${t.emerald}cc, ${t.bgDeep})`,
+                borderColor: `${t.gold}44`,
+              }}
+            >
+              <div
+                aria-hidden
+                className="absolute right-4 top-4 text-6xl font-black opacity-10"
+                style={{ color: t.gold, fontFamily: serif }}
+              >
+                0{i + 1}
+              </div>
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-full text-sm font-black"
-                  style={{ color: t.emerald, background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})` }}>
+                <div
+                  className="grid h-11 w-11 place-items-center rounded-full text-base font-black"
+                  style={{
+                    color: t.emerald,
+                    background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
+                    boxShadow: `0 6px 20px -6px ${t.gold}aa`,
+                  }}
+                >
                   {i + 1}
                 </div>
-                <div className="text-xs font-bold uppercase tracking-widest" style={{ color: t.gold }}>{s.n}</div>
+                <div className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: t.gold }}>
+                  {s.n}
+                </div>
               </div>
-              <div className="mt-4 text-base font-bold leading-snug" style={{ color: t.white }}>{s.title}</div>
-              <ul className="mt-4 space-y-2">
+              <div className="mt-4 text-lg font-black leading-snug" style={{ color: t.white }}>
+                {s.title}
+              </div>
+              <div className="mt-1 text-xs italic" style={{ color: `${t.cream}99`, fontFamily: serif }}>
+                {s.sub}
+              </div>
+              <div className="my-4 h-px" style={{ background: `linear-gradient(to right, ${t.gold}44, transparent)` }} />
+              <ul className="space-y-2">
                 {s.items.map((x) => (
-                  <li key={x} className="flex items-start gap-2 text-sm" style={{ color: t.cream }}>
+                  <li key={x} className="flex items-start gap-2 text-sm font-semibold" style={{ color: t.cream }}>
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" style={{ color: t.goldSoft }} /> {x}
                   </li>
                 ))}
               </ul>
-            </GlassCard>
+            </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Launch Offer */}
-      <GlassCard className="mb-10 text-center">
-        <GoldPill><Flame className="h-3.5 w-3.5" /> 🚀 Launch Offer</GoldPill>
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <div className="rounded-3xl p-6"
-            style={{ background: `linear-gradient(135deg, ${t.goldSoft}22, ${t.gold}11)`, border: `1px solid ${t.gold}55` }}>
-            <div className="text-sm font-bold uppercase tracking-widest" style={{ color: t.goldSoft }}>প্রথম মাস</div>
-            <div className="mt-2 text-5xl font-black sm:text-6xl" style={{ color: t.gold }}>৳২৯৯</div>
-            <div className="mt-2 text-sm" style={{ color: `${t.cream}cc` }}>আজই Join করুন</div>
+      {/* VALUE STACK */}
+      <motion.div
+        id="value-stack"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+        className="mb-16 overflow-hidden rounded-3xl border"
+        style={{
+          background: `linear-gradient(160deg, ${t.bgDeep}, ${t.emerald}aa)`,
+          borderColor: `${t.gold}55`,
+        }}
+      >
+        <div className="grid gap-0 lg:grid-cols-[1.4fr_1fr]">
+          <div className="p-8 sm:p-10">
+            <GoldPill><Trophy className="h-3.5 w-3.5" /> TOTAL VALUE</GoldPill>
+            <h3 className="mt-4 text-2xl font-black sm:text-3xl" style={{ color: t.white }}>
+              আপনি পাচ্ছেন ৳১৫,০০০+ Value
+            </h3>
+            <p className="mt-2 text-sm" style={{ color: `${t.cream}cc` }}>
+              মাত্র ৳২৯৯-এ। এটাই Launch Offer-এর আসল সৌন্দর্য।
+            </p>
+            <ul className="mt-6 space-y-2.5">
+              {valueStack.map((v) => (
+                <li
+                  key={v.item}
+                  className="flex items-center justify-between rounded-xl px-4 py-3"
+                  style={{ background: `${t.emeraldSoft}55`, border: `1px solid ${t.gold}22` }}
+                >
+                  <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: t.cream }}>
+                    <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: t.gold }} /> {v.item}
+                  </span>
+                  <span className="text-sm font-black" style={{ color: t.goldSoft }}>{v.value}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="rounded-3xl p-6"
-            style={{ background: `${t.emeraldSoft}55`, border: `1px solid ${t.gold}33` }}>
-            <div className="text-sm font-bold uppercase tracking-widest" style={{ color: t.gold }}>তারপর Monthly</div>
-            <div className="mt-2 text-5xl font-black sm:text-6xl" style={{ color: t.white }}>
-              ৳৯৯৯<span className="text-lg font-bold" style={{ color: `${t.cream}aa` }}> / মাস</span>
+          <div
+            className="relative flex flex-col items-center justify-center gap-4 p-8 sm:p-10"
+            style={{ background: `linear-gradient(160deg, ${t.gold}22, ${t.emeraldSoft}88)` }}
+          >
+            <div className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: `${t.cream}aa` }}>Total Value</div>
+            <div className="text-3xl font-black line-through" style={{ color: `${t.cream}66` }}>৳১৫,০০০</div>
+            <div className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: t.gold }}>Your Price Today</div>
+            <div
+              className="text-6xl font-black sm:text-7xl"
+              style={{
+                background: `linear-gradient(135deg, ${t.cream}, ${t.gold})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              ৳২৯৯
             </div>
-            <div className="mt-2 text-sm" style={{ color: `${t.cream}cc` }}>Advanced Training + Community</div>
+            <div className="text-xs font-semibold" style={{ color: `${t.cream}bb` }}>প্রথম মাস • Cancel Anytime</div>
+            <div className="mt-2">
+              <GoldButton><Rocket className="h-5 w-5" /> Claim Offer</GoldButton>
+            </div>
           </div>
         </div>
-      </GlassCard>
+      </motion.div>
 
-      {/* Why + No commitment */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <GlassCard>
-          <div className="flex items-center gap-3">
-            <Heart className="h-6 w-6" style={{ color: t.gold }} />
-            <div className="text-lg font-black" style={{ color: t.white }}>কেন Membership?</div>
+      {/* WHY MEMBERSHIP + NO COMMITMENT */}
+      <div className="mb-12 grid gap-5 lg:grid-cols-2">
+        <div
+          className="relative overflow-hidden rounded-2xl border p-6 sm:p-8"
+          style={{ background: `linear-gradient(135deg, ${t.emerald}cc, ${t.bgDeep})`, borderColor: `${t.gold}44` }}
+        >
+          <Heart className="h-8 w-8" style={{ color: t.gold }} />
+          <div className="mt-4 text-xl font-black" style={{ color: t.white, fontFamily: serif }}>
+            কেন Membership?
           </div>
-          <p className="mt-3 text-sm" style={{ color: t.cream }}>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: t.cream }}>
             কারণ বাস্তব পরিবর্তন একদিনে হয় না। ধারাবাহিক শেখা, নিয়মিত অনুশীলন এবং একটি সক্রিয় Community-এর মাধ্যমেই দীর্ঘমেয়াদী উন্নতি সম্ভব।
           </p>
-        </GlassCard>
-        <GlassCard>
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="h-6 w-6" style={{ color: t.gold }} />
-            <div className="text-lg font-black" style={{ color: t.white }}>🔒 No Long-Term Commitment</div>
+        </div>
+        <div
+          className="relative overflow-hidden rounded-2xl border p-6 sm:p-8"
+          style={{ background: `linear-gradient(135deg, ${t.emerald}cc, ${t.bgDeep})`, borderColor: `${t.gold}44` }}
+        >
+          <ShieldCheck className="h-8 w-8" style={{ color: t.gold }} />
+          <div className="mt-4 text-xl font-black" style={{ color: t.white, fontFamily: serif }}>
+            🔒 No Long-Term Commitment
           </div>
-          <p className="mt-3 text-sm" style={{ color: t.cream }}>
-            আপনি আপনার Membership যেকোনো সময় বন্ধ করতে পারবেন। কোনো দীর্ঘমেয়াদী বাধ্যবাধকতা নেই।
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: t.cream }}>
+            আপনি আপনার Membership যেকোনো সময় বন্ধ করতে পারবেন। কোনো দীর্ঘমেয়াদী বাধ্যবাধকতা নেই — শুধু value নেওয়া পর্যন্ত থাকুন।
           </p>
-        </GlassCard>
-      </div>
-
-      <div className="mt-10 text-center">
-        <p className="text-xl font-black" style={{ color: t.white }}>
-          🎯 আজই আপনার 30-Day Success Journey শুরু করুন
-        </p>
-        <p className="mt-2 text-sm" style={{ color: `${t.cream}cc` }}>মাত্র ৳২৯৯ দিয়ে এখনই Enrollment করুন</p>
-        <div className="mt-6">
-          <GoldButton><Flame className="h-5 w-5" /> Start Membership — ৳২৯৯</GoldButton>
         </div>
       </div>
-      {/* nextMonth kept for reference */}
-      <div className="sr-only">{nextMonth.join(", ")}</div>
+
+      {/* FINAL CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden rounded-3xl border p-8 text-center sm:p-12"
+        style={{
+          background: `linear-gradient(135deg, ${t.emerald}, ${t.bgDeep})`,
+          borderColor: `${t.gold}66`,
+          boxShadow: `0 30px 80px -20px ${t.gold}44`,
+        }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-30"
+          style={{ background: `radial-gradient(circle at 50% 0%, ${t.gold}55, transparent 60%)` }}
+        />
+        <div className="relative">
+          <GoldPill pulse><Flame className="h-3.5 w-3.5" /> Doors Open Now</GoldPill>
+          <h3
+            className="mx-auto mt-5 max-w-2xl text-2xl font-black leading-tight sm:text-4xl"
+            style={{ color: t.white }}
+          >
+            🎯 আজই আপনার{" "}
+            <span
+              style={{
+                fontFamily: serif,
+                fontStyle: "italic",
+                background: `linear-gradient(135deg, ${t.cream}, ${t.gold})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              30-Day Success Journey
+            </span>{" "}
+            শুরু করুন
+          </h3>
+          <p className="mx-auto mt-4 max-w-xl text-base" style={{ color: `${t.cream}dd` }}>
+            মাত্র ৳২৯৯ দিয়ে এখনই Enrollment করুন — আজ থেকেই আপনার Dashboard, WhatsApp Community, এবং Day 1 Mission unlock হয়ে যাবে।
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <GoldButton><Flame className="h-5 w-5" /> Start Membership — ৳২৯৯</GoldButton>
+            <GhostButton>Talk to Us First</GhostButton>
+          </div>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-semibold" style={{ color: `${t.cream}99` }}>
+            <span className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" style={{ color: t.gold }} /> Secure Checkout</span>
+            <span className="flex items-center gap-1.5"><Zap className="h-3.5 w-3.5" style={{ color: t.gold }} /> Instant Access</span>
+            <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" style={{ color: t.gold }} /> Cancel Anytime</span>
+          </div>
+        </div>
+      </motion.div>
     </section>
   );
 }
+
+
 
 function Enrollment() {
   const steps = [
