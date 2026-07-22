@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SuccessCodeV2RouteImport } from './routes/success-code-v2'
 import { Route as SuccessCodeRouteImport } from './routes/success-code'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -89,6 +90,11 @@ const ThankYouRoute = ThankYouRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuccessCodeV2Route = SuccessCodeV2RouteImport.update({
+  id: '/success-code-v2',
+  path: '/success-code-v2',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuccessCodeRoute = SuccessCodeRouteImport.update({
@@ -461,6 +467,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/success-code': typeof SuccessCodeRoute
+  '/success-code-v2': typeof SuccessCodeV2Route
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/admin': typeof AdminAdminRouteWithChildren
@@ -531,6 +538,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/success-code': typeof SuccessCodeRoute
+  '/success-code-v2': typeof SuccessCodeV2Route
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/client': typeof ClientClientRouteWithChildren
@@ -602,6 +610,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/success-code': typeof SuccessCodeRoute
+  '/success-code-v2': typeof SuccessCodeV2Route
   '/terms': typeof TermsRoute
   '/thank-you': typeof ThankYouRoute
   '/_admin/admin': typeof AdminAdminRouteWithChildren
@@ -674,6 +683,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/success-code'
+    | '/success-code-v2'
     | '/terms'
     | '/thank-you'
     | '/admin'
@@ -744,6 +754,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/success-code'
+    | '/success-code-v2'
     | '/terms'
     | '/thank-you'
     | '/client'
@@ -814,6 +825,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/success-code'
+    | '/success-code-v2'
     | '/terms'
     | '/thank-you'
     | '/_admin/admin'
@@ -888,6 +900,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuccessCodeRoute: typeof SuccessCodeRoute
+  SuccessCodeV2Route: typeof SuccessCodeV2Route
   TermsRoute: typeof TermsRoute
   ThankYouRoute: typeof ThankYouRoute
   AdminForgotPasswordRoute: typeof AdminForgotPasswordRoute
@@ -912,6 +925,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/success-code-v2': {
+      id: '/success-code-v2'
+      path: '/success-code-v2'
+      fullPath: '/success-code-v2'
+      preLoaderRoute: typeof SuccessCodeV2RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/success-code': {
@@ -1596,6 +1616,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuccessCodeRoute: SuccessCodeRoute,
+  SuccessCodeV2Route: SuccessCodeV2Route,
   TermsRoute: TermsRoute,
   ThankYouRoute: ThankYouRoute,
   AdminForgotPasswordRoute: AdminForgotPasswordRoute,
