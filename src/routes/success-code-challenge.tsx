@@ -239,7 +239,7 @@ function Hero() {
             className="mt-6 text-4xl font-black leading-[1.05] sm:text-5xl md:text-6xl"
             style={{ color: t.white }}
           >
-            🚀 ৩০ দিনে নিজের{" "}
+            ৩০ দিনে নিজের{" "}
             <span
               className="inline-block"
               style={{
