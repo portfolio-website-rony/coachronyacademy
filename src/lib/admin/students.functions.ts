@@ -150,7 +150,8 @@ export const manualEnroll = createServerFn({ method: "POST" })
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
 
-    const { data: foundId, error: lookupErr } = await supabase.rpc("get_user_id_by_email", { _email: data.email });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: foundId, error: lookupErr } = await supabaseAdmin.rpc("get_user_id_by_email", { _email: data.email });
     if (lookupErr) throw new Error(lookupErr.message);
     if (!foundId) {
       throw new Error("No user found with this email. Ask them to sign up first.");
