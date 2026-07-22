@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Eye, EyeOff } from "lucide-react";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 
 export const Route = createFileRoute("/_admin/admin/homepage-media")({
