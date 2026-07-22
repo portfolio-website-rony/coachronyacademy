@@ -10,7 +10,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { safeName, safeEmail, safePhone } from "@/lib/security/schemas";
-import heroImage from "@/assets/success-code-hero.jpg.asset.json";
+const heroImage = { url: "https://gxyejjexnntgkjianybj.supabase.co/storage/v1/object/public/cms-media/landing%2Fsuccess-code-hero.jpg" };
 
 export const Route = createFileRoute("/success-code-challenge")({
   head: () => ({
