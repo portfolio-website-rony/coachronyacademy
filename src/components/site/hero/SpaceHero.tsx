@@ -7,8 +7,12 @@ import { MouseSpotlight } from "./MouseSpotlight";
 
 import { FloatingStat } from "./FloatingStat";
 import { OrbitSystem } from "./OrbitSystem";
+import { useHomepageMedia } from "@/lib/site-settings";
 
 export function SpaceHero() {
+  const media = useHomepageMedia();
+  const hasVideo = !!media.hero_video_url;
+  const hasImage = !hasVideo && !!media.hero_image_url;
   return (
     <section className="relative min-h-[100vh] w-full overflow-hidden bg-gradient-space">
       {/* layered background */}
