@@ -230,18 +230,32 @@ function Hero() {
     <section className="relative mx-auto max-w-7xl px-4 pt-20 pb-16 sm:px-6 sm:pt-28">
       <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-          <GoldPill><Calendar className="h-3.5 w-3.5" /> 30-Day Challenge</GoldPill>
-          <h1 className="mt-6 text-4xl font-black leading-[1.1] sm:text-5xl md:text-6xl" style={{ color: t.white }}>
+          <GoldPill pulse>
+            <Calendar className="h-3.5 w-3.5" /> Limited Enrollment · 30-Day Challenge
+          </GoldPill>
+          <h1
+            className="mt-6 text-4xl font-black leading-[1.05] sm:text-5xl md:text-6xl"
+            style={{ color: t.white }}
+          >
             🚀 ৩০ দিনে নিজের{" "}
-            <span style={{
-              background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
-              WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent",
-            }}>
+            <span
+              className="inline-block"
+              style={{
+                background: `linear-gradient(135deg, ${t.cream} 0%, ${t.goldSoft} 45%, ${t.gold} 100%)`,
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                filter: `drop-shadow(0 4px 24px ${t.gold}55)`,
+              }}
+            >
               Skill, Confidence ও Income
             </span>{" "}
             Journey শুরু করুন
           </h1>
-          <p className="mt-4 text-xl font-bold" style={{ color: t.goldSoft }}>
+          <p
+            className="mt-5 text-lg font-bold tracking-wide sm:text-xl"
+            style={{ color: t.goldSoft, fontFamily: serif, fontStyle: "italic" }}
+          >
             THE SUCCESS CODE™ 30-Day Challenge
           </p>
           <p className="mt-4 text-base italic" style={{ color: `${t.cream}cc` }}>
@@ -251,7 +265,7 @@ function Hero() {
             আপনি যদি শুধু Course কিনে রেখে না দিয়ে, প্রতিদিন একটি পরিষ্কার System Follow করে বাস্তব Progress করতে চান, তাহলে এই Challenge আপনার জন্য।
           </p>
 
-          <ul className="mt-6 grid gap-3">
+          <ul className="mt-7 grid gap-3 sm:grid-cols-2">
             {[
               "Daily Action Plan",
               "Faith-Based Success Mindset",
@@ -261,24 +275,99 @@ function Hero() {
               "Income Preparation Strategy",
             ].map((x) => (
               <li key={x} className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" style={{ color: t.gold }} />
+                <span
+                  className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md"
+                  style={{
+                    background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
+                    boxShadow: `0 0 12px ${t.gold}55`,
+                  }}
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" style={{ color: t.emerald }} />
+                </span>
                 <span style={{ color: t.cream }}>{x}</span>
               </li>
             ))}
           </ul>
 
-          <p className="mt-6 text-lg font-bold" style={{ color: t.white }}>
+          <p className="mt-7 text-lg font-bold" style={{ color: t.white }}>
             🎯 আজই শুরু করুন আপনার নতুন Journey।
           </p>
-          <div className="mt-5">
-            <GoldButton><Flame className="h-5 w-5" /> Join the 30-Day Challenge</GoldButton>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <GoldButton>
+              <Flame className="h-5 w-5" /> Join the 30-Day Challenge
+            </GoldButton>
+            <GhostButton href="#membership-details">বিস্তারিত দেখুন</GhostButton>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.15 }}>
-          <div className="relative overflow-hidden rounded-3xl aspect-video"
-            style={{ border: `1px solid ${t.gold}44`, boxShadow: `0 30px 80px -30px ${t.gold}55` }}>
-            <img src={heroImage.url} alt="The Success Code 30-Day Challenge" className="h-full w-full object-cover" />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="relative"
+        >
+          {/* gilded frame */}
+          <div
+            className="absolute -inset-2 rounded-[2rem] opacity-70 blur-2xl"
+            style={{
+              background: `linear-gradient(135deg, ${t.gold}55, transparent 40%, ${t.emeraldSoft}55)`,
+            }}
+          />
+          <div
+            className="relative overflow-hidden rounded-3xl aspect-video"
+            style={{
+              border: `1.5px solid ${t.gold}66`,
+              boxShadow: `0 30px 80px -30px ${t.gold}77, inset 0 1px 0 rgba(255,255,255,0.08)`,
+            }}
+          >
+            <img
+              src={heroImage.url}
+              alt="The Success Code 30-Day Challenge"
+              className="h-full w-full object-cover"
+            />
+            {/* corner gold accents */}
+            <div
+              className="pointer-events-none absolute left-3 top-3 h-6 w-6 border-l-2 border-t-2"
+              style={{ borderColor: t.gold }}
+            />
+            <div
+              className="pointer-events-none absolute right-3 top-3 h-6 w-6 border-r-2 border-t-2"
+              style={{ borderColor: t.gold }}
+            />
+            <div
+              className="pointer-events-none absolute left-3 bottom-3 h-6 w-6 border-l-2 border-b-2"
+              style={{ borderColor: t.gold }}
+            />
+            <div
+              className="pointer-events-none absolute right-3 bottom-3 h-6 w-6 border-r-2 border-b-2"
+              style={{ borderColor: t.gold }}
+            />
+          </div>
+          {/* floating stats badge */}
+          <div
+            className="absolute -bottom-6 -left-4 rounded-2xl px-5 py-3 backdrop-blur-md"
+            style={{
+              background: `${t.bgDeep}dd`,
+              border: `1px solid ${t.gold}55`,
+              boxShadow: `0 20px 40px -20px ${t.gold}55`,
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="grid h-10 w-10 place-items-center rounded-xl"
+                style={{ background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})` }}
+              >
+                <Trophy className="h-5 w-5" style={{ color: t.emerald }} />
+              </div>
+              <div>
+                <div className="text-xs uppercase tracking-widest" style={{ color: t.goldSoft }}>
+                  Guided System
+                </div>
+                <div className="text-sm font-black" style={{ color: t.white }}>
+                  ৪ Weeks · ২–৩ ঘণ্টা/দিন
+                </div>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
