@@ -26,12 +26,13 @@ export const Route = createFileRoute("/success-code-challenge")({
   component: ChallengePage,
 });
 
-// Brand palette — Coachrony Academy (orange primary + ink accent + warm gold)
+// Brand palette — Coachrony Academy (black + white + red)
+// Legacy keys retained (emerald/gold/cream) so all downstream references remap without churn.
 const t = {
-  bg: "#1C110A", bgDeep: "#0E0805",
-  emerald: "#7A3B12", emeraldSoft: "#A85220", // legacy keys retained; now brand-orange deep tones
-  gold: "#F2A24B", goldSoft: "#F7C27E",
-  cream: "#FBEFDC", white: "#FFFFFF",
+  bg: "#0B0B0B", bgDeep: "#000000",
+  emerald: "#4A0710", emeraldSoft: "#8B0A15", // deep crimson tones for gradient beds
+  gold: "#EF2B2D", goldSoft: "#FF6A6C",       // brand red + soft red highlight
+  cream: "#FFFFFF", white: "#FFFFFF",
 };
 
 const serif = "'Playfair Display', 'Hind Siliguri', serif";
