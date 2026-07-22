@@ -33,28 +33,72 @@ const t = {
   cream: "#F6EFDD", white: "#FFFFFF",
 };
 
-function GlassCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+const serif = "'Playfair Display', 'Hind Siliguri', serif";
+
+function GlassCard({
+  children,
+  className = "",
+  featured = false,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  featured?: boolean;
+}) {
+  if (featured) {
+    return (
+      <div
+        className={`group relative overflow-hidden rounded-3xl p-6 sm:p-8 transition-transform duration-500 lg:scale-[1.03] ${className}`}
+        style={{
+          background: `linear-gradient(180deg, ${t.emeraldSoft}cc, ${t.bgDeep})`,
+          border: `1.5px solid ${t.gold}55`,
+          boxShadow: `0 30px 70px -20px rgba(0,0,0,0.55), 0 0 0 1px ${t.gold}22 inset, 0 0 60px -20px ${t.gold}55`,
+        }}
+      >
+        <div
+          className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-60 blur-3xl"
+          style={{ background: `${t.gold}33` }}
+        />
+        <div className="relative">{children}</div>
+      </div>
+    );
+  }
   return (
     <div
-      className={`rounded-3xl p-6 sm:p-8 ${className}`}
+      className={`group relative overflow-hidden rounded-3xl p-6 sm:p-8 transition-all duration-500 hover:-translate-y-0.5 ${className}`}
       style={{
-        background: "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))",
-        border: `1px solid ${t.gold}33`,
+        background: "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015))",
+        border: `1px solid ${t.gold}2e`,
         backdropFilter: "blur(14px)",
         boxShadow: "0 10px 40px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
       }}
     >
-      {children}
+      <div
+        className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-60"
+        style={{ background: `${t.gold}33` }}
+      />
+      <div className="relative">{children}</div>
     </div>
   );
 }
 
-function GoldPill({ children }: { children: React.ReactNode }) {
+function GoldPill({ children, pulse = false }: { children: React.ReactNode; pulse?: boolean }) {
   return (
     <span
-      className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em]"
-      style={{ color: t.gold, background: `${t.gold}14`, border: `1px solid ${t.gold}55` }}
+      className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] backdrop-blur-md"
+      style={{
+        color: t.goldSoft,
+        background: `${t.emerald}80`,
+        border: `1px solid ${t.gold}55`,
+        fontFamily: serif,
+        fontStyle: "italic",
+      }}
     >
+      {pulse && (
+        <span
+          className="h-1.5 w-1.5 rounded-full animate-pulse"
+          style={{ background: t.gold, boxShadow: `0 0 8px ${t.gold}` }}
+        />
+      )}
       {children}
     </span>
   );
@@ -64,34 +108,70 @@ function GoldButton({ children, href = "#register" }: { children: React.ReactNod
   return (
     <a
       href={href}
-      className="group inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-base font-black transition hover:scale-[1.02] sm:text-lg"
+      className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl px-9 py-4 text-base font-black transition-all duration-300 hover:-translate-y-0.5 sm:text-lg"
       style={{
         color: t.emerald,
-        background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
-        boxShadow: `0 12px 40px -12px ${t.gold}99, inset 0 1px 0 rgba(255,255,255,0.4)`,
+        background: `linear-gradient(135deg, ${t.cream} 0%, ${t.goldSoft} 40%, ${t.gold} 60%, ${t.goldSoft} 100%)`,
+        boxShadow: `0 0 30px ${t.gold}55, 0 20px 50px -20px ${t.gold}88, inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.15)`,
       }}
     >
-      {children}
-      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+      <span
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+      />
+      <span className="relative flex items-center gap-2">
+        {children}
+        <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+      </span>
     </a>
   );
 }
 
-function Heading({ eyebrow, title, subtitle }: { eyebrow?: string; title: React.ReactNode; subtitle?: React.ReactNode }) {
+function GhostButton({ children, href = "#register" }: { children: React.ReactNode; href?: string }) {
+  return (
+    <a
+      href={href}
+      className="inline-flex items-center justify-center gap-2 rounded-xl px-9 py-4 text-base font-bold backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 sm:text-lg"
+      style={{
+        color: t.cream,
+        background: "rgba(255,255,255,0.04)",
+        border: `1.5px solid ${t.gold}44`,
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
+function Heading({
+  eyebrow,
+  title,
+  subtitle,
+}: {
+  eyebrow?: string;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.6 }}
-      className="mx-auto mb-12 max-w-3xl text-center"
+      className="mx-auto mb-14 max-w-3xl text-center"
     >
       {eyebrow && <GoldPill>{eyebrow}</GoldPill>}
-      <h2 className="mt-5 text-3xl font-black leading-tight sm:text-4xl md:text-5xl" style={{ color: t.white }}>
+      <h2
+        className="mt-5 text-3xl font-black leading-tight sm:text-4xl md:text-5xl"
+        style={{ color: t.white }}
+      >
         {title}
       </h2>
+      <div
+        className="mx-auto mt-5 h-px w-24"
+        style={{ background: `linear-gradient(90deg, transparent, ${t.gold}, transparent)` }}
+      />
       {subtitle && (
-        <p className="mt-4 text-base sm:text-lg" style={{ color: `${t.cream}cc` }}>
+        <p className="mt-5 text-base sm:text-lg" style={{ color: `${t.cream}cc` }}>
           {subtitle}
         </p>
       )}
@@ -102,27 +182,45 @@ function Heading({ eyebrow, title, subtitle }: { eyebrow?: string; title: React.
 function ChallengePage() {
   return (
     <div
-      className="relative min-h-screen"
+      className="relative min-h-screen overflow-hidden"
       style={{
         background: `radial-gradient(1200px 600px at 80% -10%, ${t.emeraldSoft}66, transparent 60%), radial-gradient(900px 500px at 10% 20%, ${t.gold}18, transparent 60%), linear-gradient(180deg, ${t.bg}, ${t.bgDeep})`,
         color: t.cream,
         fontFamily: "'Poppins','Hind Siliguri',system-ui,sans-serif",
       }}
     >
-      <Hero />
-      <WhyFail />
-      <WhyDifferent />
-      <Roadmap />
-      <WhatYouGet />
-      <DailySystem />
-      <WhoFor />
-      <Transformation />
-      <Bonus />
-      <Community />
-      <Membership />
-      <Enrollment />
-      <FAQ />
-      <FinalCTA />
+      {/* Ambient decorative orbs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40">
+        <div
+          className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-[140px]"
+          style={{ background: `${t.emeraldSoft}` }}
+        />
+        <div
+          className="absolute top-1/3 -right-40 h-[420px] w-[420px] rounded-full blur-[130px]"
+          style={{ background: `${t.gold}33` }}
+        />
+        <div
+          className="absolute bottom-0 left-1/4 h-[360px] w-[360px] rounded-full blur-[130px]"
+          style={{ background: `${t.emerald}66` }}
+        />
+      </div>
+
+      <div className="relative">
+        <Hero />
+        <WhyFail />
+        <WhyDifferent />
+        <Roadmap />
+        <WhatYouGet />
+        <DailySystem />
+        <WhoFor />
+        <Transformation />
+        <Bonus />
+        <Community />
+        <Membership />
+        <Enrollment />
+        <FAQ />
+        <FinalCTA />
+      </div>
     </div>
   );
 }
@@ -132,18 +230,32 @@ function Hero() {
     <section className="relative mx-auto max-w-7xl px-4 pt-20 pb-16 sm:px-6 sm:pt-28">
       <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-          <GoldPill><Calendar className="h-3.5 w-3.5" /> 30-Day Challenge</GoldPill>
-          <h1 className="mt-6 text-4xl font-black leading-[1.1] sm:text-5xl md:text-6xl" style={{ color: t.white }}>
+          <GoldPill pulse>
+            <Calendar className="h-3.5 w-3.5" /> Limited Enrollment · 30-Day Challenge
+          </GoldPill>
+          <h1
+            className="mt-6 text-4xl font-black leading-[1.05] sm:text-5xl md:text-6xl"
+            style={{ color: t.white }}
+          >
             🚀 ৩০ দিনে নিজের{" "}
-            <span style={{
-              background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
-              WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent",
-            }}>
+            <span
+              className="inline-block"
+              style={{
+                background: `linear-gradient(135deg, ${t.cream} 0%, ${t.goldSoft} 45%, ${t.gold} 100%)`,
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                filter: `drop-shadow(0 4px 24px ${t.gold}55)`,
+              }}
+            >
               Skill, Confidence ও Income
             </span>{" "}
             Journey শুরু করুন
           </h1>
-          <p className="mt-4 text-xl font-bold" style={{ color: t.goldSoft }}>
+          <p
+            className="mt-5 text-lg font-bold tracking-wide sm:text-xl"
+            style={{ color: t.goldSoft, fontFamily: serif, fontStyle: "italic" }}
+          >
             THE SUCCESS CODE™ 30-Day Challenge
           </p>
           <p className="mt-4 text-base italic" style={{ color: `${t.cream}cc` }}>
@@ -153,7 +265,7 @@ function Hero() {
             আপনি যদি শুধু Course কিনে রেখে না দিয়ে, প্রতিদিন একটি পরিষ্কার System Follow করে বাস্তব Progress করতে চান, তাহলে এই Challenge আপনার জন্য।
           </p>
 
-          <ul className="mt-6 grid gap-3">
+          <ul className="mt-7 grid gap-3 sm:grid-cols-2">
             {[
               "Daily Action Plan",
               "Faith-Based Success Mindset",
@@ -163,24 +275,99 @@ function Hero() {
               "Income Preparation Strategy",
             ].map((x) => (
               <li key={x} className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" style={{ color: t.gold }} />
+                <span
+                  className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md"
+                  style={{
+                    background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
+                    boxShadow: `0 0 12px ${t.gold}55`,
+                  }}
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" style={{ color: t.emerald }} />
+                </span>
                 <span style={{ color: t.cream }}>{x}</span>
               </li>
             ))}
           </ul>
 
-          <p className="mt-6 text-lg font-bold" style={{ color: t.white }}>
+          <p className="mt-7 text-lg font-bold" style={{ color: t.white }}>
             🎯 আজই শুরু করুন আপনার নতুন Journey।
           </p>
-          <div className="mt-5">
-            <GoldButton><Flame className="h-5 w-5" /> Join the 30-Day Challenge</GoldButton>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <GoldButton>
+              <Flame className="h-5 w-5" /> Join the 30-Day Challenge
+            </GoldButton>
+            <GhostButton href="#membership-details">বিস্তারিত দেখুন</GhostButton>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.15 }}>
-          <div className="relative overflow-hidden rounded-3xl aspect-video"
-            style={{ border: `1px solid ${t.gold}44`, boxShadow: `0 30px 80px -30px ${t.gold}55` }}>
-            <img src={heroImage.url} alt="The Success Code 30-Day Challenge" className="h-full w-full object-cover" />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="relative"
+        >
+          {/* gilded frame */}
+          <div
+            className="absolute -inset-2 rounded-[2rem] opacity-70 blur-2xl"
+            style={{
+              background: `linear-gradient(135deg, ${t.gold}55, transparent 40%, ${t.emeraldSoft}55)`,
+            }}
+          />
+          <div
+            className="relative overflow-hidden rounded-3xl aspect-video"
+            style={{
+              border: `1.5px solid ${t.gold}66`,
+              boxShadow: `0 30px 80px -30px ${t.gold}77, inset 0 1px 0 rgba(255,255,255,0.08)`,
+            }}
+          >
+            <img
+              src={heroImage.url}
+              alt="The Success Code 30-Day Challenge"
+              className="h-full w-full object-cover"
+            />
+            {/* corner gold accents */}
+            <div
+              className="pointer-events-none absolute left-3 top-3 h-6 w-6 border-l-2 border-t-2"
+              style={{ borderColor: t.gold }}
+            />
+            <div
+              className="pointer-events-none absolute right-3 top-3 h-6 w-6 border-r-2 border-t-2"
+              style={{ borderColor: t.gold }}
+            />
+            <div
+              className="pointer-events-none absolute left-3 bottom-3 h-6 w-6 border-l-2 border-b-2"
+              style={{ borderColor: t.gold }}
+            />
+            <div
+              className="pointer-events-none absolute right-3 bottom-3 h-6 w-6 border-r-2 border-b-2"
+              style={{ borderColor: t.gold }}
+            />
+          </div>
+          {/* floating stats badge */}
+          <div
+            className="absolute -bottom-6 -left-4 rounded-2xl px-5 py-3 backdrop-blur-md"
+            style={{
+              background: `${t.bgDeep}dd`,
+              border: `1px solid ${t.gold}55`,
+              boxShadow: `0 20px 40px -20px ${t.gold}55`,
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="grid h-10 w-10 place-items-center rounded-xl"
+                style={{ background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})` }}
+              >
+                <Trophy className="h-5 w-5" style={{ color: t.emerald }} />
+              </div>
+              <div>
+                <div className="text-xs uppercase tracking-widest" style={{ color: t.goldSoft }}>
+                  Guided System
+                </div>
+                <div className="text-sm font-black" style={{ color: t.white }}>
+                  ৪ Weeks · ২–৩ ঘণ্টা/দিন
+                </div>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
