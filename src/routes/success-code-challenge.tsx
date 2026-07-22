@@ -33,28 +33,72 @@ const t = {
   cream: "#F6EFDD", white: "#FFFFFF",
 };
 
-function GlassCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+const serif = "'Playfair Display', 'Hind Siliguri', serif";
+
+function GlassCard({
+  children,
+  className = "",
+  featured = false,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  featured?: boolean;
+}) {
+  if (featured) {
+    return (
+      <div
+        className={`group relative overflow-hidden rounded-3xl p-6 sm:p-8 transition-transform duration-500 lg:scale-[1.03] ${className}`}
+        style={{
+          background: `linear-gradient(180deg, ${t.emeraldSoft}cc, ${t.bgDeep})`,
+          border: `1.5px solid ${t.gold}55`,
+          boxShadow: `0 30px 70px -20px rgba(0,0,0,0.55), 0 0 0 1px ${t.gold}22 inset, 0 0 60px -20px ${t.gold}55`,
+        }}
+      >
+        <div
+          className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-60 blur-3xl"
+          style={{ background: `${t.gold}33` }}
+        />
+        <div className="relative">{children}</div>
+      </div>
+    );
+  }
   return (
     <div
-      className={`rounded-3xl p-6 sm:p-8 ${className}`}
+      className={`group relative overflow-hidden rounded-3xl p-6 sm:p-8 transition-all duration-500 hover:-translate-y-0.5 ${className}`}
       style={{
-        background: "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))",
-        border: `1px solid ${t.gold}33`,
+        background: "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015))",
+        border: `1px solid ${t.gold}2e`,
         backdropFilter: "blur(14px)",
         boxShadow: "0 10px 40px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
       }}
     >
-      {children}
+      <div
+        className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-60"
+        style={{ background: `${t.gold}33` }}
+      />
+      <div className="relative">{children}</div>
     </div>
   );
 }
 
-function GoldPill({ children }: { children: React.ReactNode }) {
+function GoldPill({ children, pulse = false }: { children: React.ReactNode; pulse?: boolean }) {
   return (
     <span
-      className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em]"
-      style={{ color: t.gold, background: `${t.gold}14`, border: `1px solid ${t.gold}55` }}
+      className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] backdrop-blur-md"
+      style={{
+        color: t.goldSoft,
+        background: `${t.emerald}80`,
+        border: `1px solid ${t.gold}55`,
+        fontFamily: serif,
+        fontStyle: "italic",
+      }}
     >
+      {pulse && (
+        <span
+          className="h-1.5 w-1.5 rounded-full animate-pulse"
+          style={{ background: t.gold, boxShadow: `0 0 8px ${t.gold}` }}
+        />
+      )}
       {children}
     </span>
   );
@@ -64,34 +108,70 @@ function GoldButton({ children, href = "#register" }: { children: React.ReactNod
   return (
     <a
       href={href}
-      className="group inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-base font-black transition hover:scale-[1.02] sm:text-lg"
+      className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl px-9 py-4 text-base font-black transition-all duration-300 hover:-translate-y-0.5 sm:text-lg"
       style={{
         color: t.emerald,
-        background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
-        boxShadow: `0 12px 40px -12px ${t.gold}99, inset 0 1px 0 rgba(255,255,255,0.4)`,
+        background: `linear-gradient(135deg, ${t.cream} 0%, ${t.goldSoft} 40%, ${t.gold} 60%, ${t.goldSoft} 100%)`,
+        boxShadow: `0 0 30px ${t.gold}55, 0 20px 50px -20px ${t.gold}88, inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.15)`,
       }}
     >
-      {children}
-      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+      <span
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+      />
+      <span className="relative flex items-center gap-2">
+        {children}
+        <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+      </span>
     </a>
   );
 }
 
-function Heading({ eyebrow, title, subtitle }: { eyebrow?: string; title: React.ReactNode; subtitle?: React.ReactNode }) {
+function GhostButton({ children, href = "#register" }: { children: React.ReactNode; href?: string }) {
+  return (
+    <a
+      href={href}
+      className="inline-flex items-center justify-center gap-2 rounded-xl px-9 py-4 text-base font-bold backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 sm:text-lg"
+      style={{
+        color: t.cream,
+        background: "rgba(255,255,255,0.04)",
+        border: `1.5px solid ${t.gold}44`,
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
+function Heading({
+  eyebrow,
+  title,
+  subtitle,
+}: {
+  eyebrow?: string;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.6 }}
-      className="mx-auto mb-12 max-w-3xl text-center"
+      className="mx-auto mb-14 max-w-3xl text-center"
     >
       {eyebrow && <GoldPill>{eyebrow}</GoldPill>}
-      <h2 className="mt-5 text-3xl font-black leading-tight sm:text-4xl md:text-5xl" style={{ color: t.white }}>
+      <h2
+        className="mt-5 text-3xl font-black leading-tight sm:text-4xl md:text-5xl"
+        style={{ color: t.white }}
+      >
         {title}
       </h2>
+      <div
+        className="mx-auto mt-5 h-px w-24"
+        style={{ background: `linear-gradient(90deg, transparent, ${t.gold}, transparent)` }}
+      />
       {subtitle && (
-        <p className="mt-4 text-base sm:text-lg" style={{ color: `${t.cream}cc` }}>
+        <p className="mt-5 text-base sm:text-lg" style={{ color: `${t.cream}cc` }}>
           {subtitle}
         </p>
       )}
@@ -102,27 +182,45 @@ function Heading({ eyebrow, title, subtitle }: { eyebrow?: string; title: React.
 function ChallengePage() {
   return (
     <div
-      className="relative min-h-screen"
+      className="relative min-h-screen overflow-hidden"
       style={{
         background: `radial-gradient(1200px 600px at 80% -10%, ${t.emeraldSoft}66, transparent 60%), radial-gradient(900px 500px at 10% 20%, ${t.gold}18, transparent 60%), linear-gradient(180deg, ${t.bg}, ${t.bgDeep})`,
         color: t.cream,
         fontFamily: "'Poppins','Hind Siliguri',system-ui,sans-serif",
       }}
     >
-      <Hero />
-      <WhyFail />
-      <WhyDifferent />
-      <Roadmap />
-      <WhatYouGet />
-      <DailySystem />
-      <WhoFor />
-      <Transformation />
-      <Bonus />
-      <Community />
-      <Membership />
-      <Enrollment />
-      <FAQ />
-      <FinalCTA />
+      {/* Ambient decorative orbs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40">
+        <div
+          className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-[140px]"
+          style={{ background: `${t.emeraldSoft}` }}
+        />
+        <div
+          className="absolute top-1/3 -right-40 h-[420px] w-[420px] rounded-full blur-[130px]"
+          style={{ background: `${t.gold}33` }}
+        />
+        <div
+          className="absolute bottom-0 left-1/4 h-[360px] w-[360px] rounded-full blur-[130px]"
+          style={{ background: `${t.emerald}66` }}
+        />
+      </div>
+
+      <div className="relative">
+        <Hero />
+        <WhyFail />
+        <WhyDifferent />
+        <Roadmap />
+        <WhatYouGet />
+        <DailySystem />
+        <WhoFor />
+        <Transformation />
+        <Bonus />
+        <Community />
+        <Membership />
+        <Enrollment />
+        <FAQ />
+        <FinalCTA />
+      </div>
     </div>
   );
 }
