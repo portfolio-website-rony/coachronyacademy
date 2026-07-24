@@ -853,7 +853,7 @@ function Membership() {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <GoldButton href="#register"><Flame className="h-5 w-5" /> Start ৳২৯৯ Today</GoldButton>
+              <GoldButton href="/challenge/join"><Flame className="h-5 w-5" /> Start ৳২৯৯ Today</GoldButton>
               <GhostButton href="#value-stack">See Full Value</GhostButton>
             </div>
           </div>
