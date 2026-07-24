@@ -6,6 +6,7 @@ import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { toast } from "sonner";
 
 const CHALLENGE_SLUG = "success-code-30day";
+const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/coachrony-success-code";
 
 export const Route = createFileRoute("/_student/student/challenge")({
   head: () => ({
