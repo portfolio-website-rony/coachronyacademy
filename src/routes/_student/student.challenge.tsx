@@ -60,15 +60,22 @@ function ChallengeDashboard() {
   }, [session]);
 
 
+  const totalDays = days.length || 30;
   const completed = useMemo(() => new Set(progress.map((p) => p.day_number)), [progress]);
   const completedCount = completed.size;
-  const percent = Math.round((completedCount / 30) * 100);
+  const percent = Math.round((completedCount / totalDays) * 100);
+
+  const daysSinceStart = useMemo(() => {
+    if (!enrollment) return 0;
+    return Math.floor((Date.now() - new Date(enrollment.started_at).getTime()) / (1000 * 60 * 60 * 24));
+  }, [enrollment]);
 
   const currentDay = useMemo(() => {
-    if (!enrollment) return 0;
-    const diff = Math.floor((Date.now() - new Date(enrollment.started_at).getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    return Math.max(1, Math.min(30, diff));
-  }, [enrollment]);
+    if (!enrollment || days.length === 0) return 0;
+    const unlocked = days.filter((d) => d.unlock_offset_days <= daysSinceStart);
+    if (unlocked.length === 0) return days[0].day_number;
+    return unlocked[unlocked.length - 1].day_number;
+  }, [enrollment, days, daysSinceStart]);
 
   const streak = useMemo(() => {
     let s = 0;
@@ -78,6 +85,7 @@ function ChallengeDashboard() {
     }
     return s;
   }, [completed, currentDay]);
+
 
   async function startChallenge() {
     if (!session) return;
