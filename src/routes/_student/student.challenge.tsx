@@ -215,6 +215,45 @@ function ChallengeDashboard() {
         </div>
       </div>
 
+      {/* Private WhatsApp Community + Accountability */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* WhatsApp Community */}
+        <div className="glass relative overflow-hidden rounded-2xl border border-emerald-400/20 p-5">
+          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl" />
+          <div className="relative">
+            <div className="flex items-center gap-2">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-500/20 text-emerald-300">
+                <MessageCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-bold">Private WhatsApp Community</h3>
+                <p className="text-xs text-muted-foreground">শুধু challenge members-দের জন্য</p>
+              </div>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">
+              প্রতিদিন live support, peer accountability, mentor Q&A এবং exclusive resources পেতে community-তে যোগ দিন।
+            </p>
+            <a
+              href={WHATSAPP_COMMUNITY_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:opacity-90"
+            >
+              <Users className="h-4 w-4" />
+              Join WhatsApp Community
+            </a>
+          </div>
+        </div>
+
+        {/* Accountability Partner */}
+        <AccountabilityCard
+          currentDay={currentDay}
+          streak={streak}
+          completedCount={completedCount}
+          totalDays={totalDays}
+        />
+      </div>
+
       {/* Weekly grid */}
       <div className="space-y-4">
         {weeks.map((wk) => {
