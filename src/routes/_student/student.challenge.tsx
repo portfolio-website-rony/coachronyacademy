@@ -108,6 +108,7 @@ function ChallengeDashboard() {
     setSelectedDay(day);
     const existing = progress.find((p) => p.day_number === day);
     setNote(existing?.note ?? "");
+    setTaskDone(!!existing);
   }
 
   async function checkIn() {
