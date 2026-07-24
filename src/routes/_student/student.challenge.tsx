@@ -274,8 +274,23 @@ function ChallengeDashboard() {
               <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-xs font-semibold text-red-300">Day {selectedDay}</span>
               {completed.has(selectedDay) && <span className="text-xs text-emerald-400">✓ Already done</span>}
             </div>
-            <h3 className="font-display text-xl font-bold">Daily check-in</h3>
-            <p className="mt-1 text-xs text-muted-foreground">আজকের task করেছেন? একটা ছোট note রাখুন (optional)।</p>
+            {(() => {
+              const d = days.find((x) => x.day_number === selectedDay);
+              if (!d) return <h3 className="font-display text-xl font-bold">Daily check-in</h3>;
+              return (
+                <>
+                  <h3 className="font-display text-xl font-bold">{d.title}</h3>
+                  {d.task && <p className="mt-2 text-sm font-semibold text-amber-300">🎯 {d.task}</p>}
+                  {d.content && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{d.content}</p>}
+                  {d.video_url && (
+                    <a href={d.video_url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs text-primary-glow underline">
+                      Watch video →
+                    </a>
+                  )}
+                  <p className="mt-3 text-xs text-muted-foreground">Note রাখুন (optional):</p>
+                </>
+              );
+            })()}
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
