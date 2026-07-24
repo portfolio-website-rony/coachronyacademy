@@ -112,6 +112,48 @@ export type Database = {
           },
         ]
       }
+      challenge_days: {
+        Row: {
+          challenge_slug: string
+          content: string | null
+          created_at: string
+          day_number: number
+          id: string
+          task: string | null
+          title: string
+          unlock_offset_days: number
+          updated_at: string
+          video_url: string | null
+          week_number: number
+        }
+        Insert: {
+          challenge_slug?: string
+          content?: string | null
+          created_at?: string
+          day_number: number
+          id?: string
+          task?: string | null
+          title: string
+          unlock_offset_days?: number
+          updated_at?: string
+          video_url?: string | null
+          week_number: number
+        }
+        Update: {
+          challenge_slug?: string
+          content?: string | null
+          created_at?: string
+          day_number?: number
+          id?: string
+          task?: string | null
+          title?: string
+          unlock_offset_days?: number
+          updated_at?: string
+          video_url?: string | null
+          week_number?: number
+        }
+        Relationships: []
+      }
       challenge_enrollments: {
         Row: {
           challenge_slug: string
@@ -166,6 +208,36 @@ export type Database = {
           note?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      challenge_weeks: {
+        Row: {
+          challenge_slug: string
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          updated_at: string
+          week_number: number
+        }
+        Insert: {
+          challenge_slug?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+          week_number: number
+        }
+        Update: {
+          challenge_slug?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          week_number?: number
         }
         Relationships: []
       }

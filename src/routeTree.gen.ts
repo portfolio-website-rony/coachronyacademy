@@ -74,6 +74,7 @@ import { Route as AdminAdminCouponsRouteImport } from './routes/_admin/admin.cou
 import { Route as AdminAdminCommunityRouteImport } from './routes/_admin/admin.community'
 import { Route as AdminAdminCmsRouteImport } from './routes/_admin/admin.cms'
 import { Route as AdminAdminClientsRouteImport } from './routes/_admin/admin.clients'
+import { Route as AdminAdminChallengeRouteImport } from './routes/_admin/admin.challenge'
 import { Route as AdminAdminBookingsRouteImport } from './routes/_admin/admin.bookings'
 import { Route as AdminAdminActivityRouteImport } from './routes/_admin/admin.activity'
 import { Route as StudentStudentCoursesIndexRouteImport } from './routes/_student/student.courses.index'
@@ -407,6 +408,11 @@ const AdminAdminClientsRoute = AdminAdminClientsRouteImport.update({
   path: '/clients',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const AdminAdminChallengeRoute = AdminAdminChallengeRouteImport.update({
+  id: '/challenge',
+  path: '/challenge',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminBookingsRoute = AdminAdminBookingsRouteImport.update({
   id: '/bookings',
   path: '/bookings',
@@ -486,6 +492,7 @@ export interface FileRoutesByFullPath {
   '/courses/': typeof CoursesIndexRoute
   '/admin/activity': typeof AdminAdminActivityRoute
   '/admin/bookings': typeof AdminAdminBookingsRoute
+  '/admin/challenge': typeof AdminAdminChallengeRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
   '/admin/community': typeof AdminAdminCommunityRoute
@@ -556,6 +563,7 @@ export interface FileRoutesByTo {
   '/courses': typeof CoursesIndexRoute
   '/admin/activity': typeof AdminAdminActivityRoute
   '/admin/bookings': typeof AdminAdminBookingsRoute
+  '/admin/challenge': typeof AdminAdminChallengeRoute
   '/admin/clients': typeof AdminAdminClientsRoute
   '/admin/cms': typeof AdminAdminCmsRoute
   '/admin/community': typeof AdminAdminCommunityRoute
@@ -631,6 +639,7 @@ export interface FileRoutesById {
   '/courses/': typeof CoursesIndexRoute
   '/_admin/admin/activity': typeof AdminAdminActivityRoute
   '/_admin/admin/bookings': typeof AdminAdminBookingsRoute
+  '/_admin/admin/challenge': typeof AdminAdminChallengeRoute
   '/_admin/admin/clients': typeof AdminAdminClientsRoute
   '/_admin/admin/cms': typeof AdminAdminCmsRoute
   '/_admin/admin/community': typeof AdminAdminCommunityRoute
@@ -705,6 +714,7 @@ export interface FileRouteTypes {
     | '/courses/'
     | '/admin/activity'
     | '/admin/bookings'
+    | '/admin/challenge'
     | '/admin/clients'
     | '/admin/cms'
     | '/admin/community'
@@ -775,6 +785,7 @@ export interface FileRouteTypes {
     | '/courses'
     | '/admin/activity'
     | '/admin/bookings'
+    | '/admin/challenge'
     | '/admin/clients'
     | '/admin/cms'
     | '/admin/community'
@@ -849,6 +860,7 @@ export interface FileRouteTypes {
     | '/courses/'
     | '/_admin/admin/activity'
     | '/_admin/admin/bookings'
+    | '/_admin/admin/challenge'
     | '/_admin/admin/clients'
     | '/_admin/admin/cms'
     | '/_admin/admin/community'
@@ -1379,6 +1391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminClientsRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_admin/admin/challenge': {
+      id: '/_admin/admin/challenge'
+      path: '/challenge'
+      fullPath: '/admin/challenge'
+      preLoaderRoute: typeof AdminAdminChallengeRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/bookings': {
       id: '/_admin/admin/bookings'
       path: '/bookings'
@@ -1456,6 +1475,7 @@ const AdminAdminCoursesCourseIdRouteWithChildren =
 interface AdminAdminRouteChildren {
   AdminAdminActivityRoute: typeof AdminAdminActivityRoute
   AdminAdminBookingsRoute: typeof AdminAdminBookingsRoute
+  AdminAdminChallengeRoute: typeof AdminAdminChallengeRoute
   AdminAdminClientsRoute: typeof AdminAdminClientsRoute
   AdminAdminCmsRoute: typeof AdminAdminCmsRoute
   AdminAdminCommunityRoute: typeof AdminAdminCommunityRoute
@@ -1476,6 +1496,7 @@ interface AdminAdminRouteChildren {
 const AdminAdminRouteChildren: AdminAdminRouteChildren = {
   AdminAdminActivityRoute: AdminAdminActivityRoute,
   AdminAdminBookingsRoute: AdminAdminBookingsRoute,
+  AdminAdminChallengeRoute: AdminAdminChallengeRoute,
   AdminAdminClientsRoute: AdminAdminClientsRoute,
   AdminAdminCmsRoute: AdminAdminCmsRoute,
   AdminAdminCommunityRoute: AdminAdminCommunityRoute,

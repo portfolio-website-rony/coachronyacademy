@@ -19,19 +19,23 @@ export const Route = createFileRoute("/_student/student/challenge")({
 
 type Enrollment = { id: string; started_at: string };
 type Progress = { day_number: number; completed_at: string; note: string | null };
-
-const WEEKLY_THEMES = [
-  { week: 1, title: "Week 1 — Foundation", desc: "Mindset, goal-setting, discipline।", days: [1, 2, 3, 4, 5, 6, 7] },
-  { week: 2, title: "Week 2 — Skill Discovery", desc: "নিজের skill খুঁজে বের করা।", days: [8, 9, 10, 11, 12, 13, 14] },
-  { week: 3, title: "Week 3 — Action & Income", desc: "প্রথম টাকা income শুরু।", days: [15, 16, 17, 18, 19, 20, 21] },
-  { week: 4, title: "Week 4 — Growth", desc: "Scale, brand, community।", days: [22, 23, 24, 25, 26, 27, 28] },
-  { week: 5, title: "Final Push", desc: "Presentation & reward।", days: [29, 30] },
-];
+type Week = { week_number: number; title: string; description: string | null };
+type Day = {
+  day_number: number;
+  week_number: number;
+  title: string;
+  task: string | null;
+  content: string | null;
+  video_url: string | null;
+  unlock_offset_days: number;
+};
 
 function ChallengeDashboard() {
   const { session, loading: authLoading } = useAuthUser();
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [weeks, setWeeks] = useState<Week[]>([]);
+  const [days, setDays] = useState<Day[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [note, setNote] = useState("");
@@ -41,25 +45,37 @@ function ChallengeDashboard() {
     if (!session) return;
     void (async () => {
       setLoading(true);
-      const [{ data: enr }, { data: prog }] = await Promise.all([
+      const [{ data: enr }, { data: prog }, { data: wk }, { data: dy }] = await Promise.all([
         supabase.from("challenge_enrollments").select("id,started_at").eq("user_id", session.user.id).eq("challenge_slug", CHALLENGE_SLUG).maybeSingle(),
         supabase.from("challenge_progress").select("day_number,completed_at,note").eq("user_id", session.user.id).eq("challenge_slug", CHALLENGE_SLUG).order("day_number"),
+        supabase.from("challenge_weeks").select("week_number,title,description").eq("challenge_slug", CHALLENGE_SLUG).order("week_number"),
+        supabase.from("challenge_days").select("day_number,week_number,title,task,content,video_url,unlock_offset_days").eq("challenge_slug", CHALLENGE_SLUG).order("day_number"),
       ]);
       setEnrollment(enr as Enrollment | null);
       setProgress((prog as Progress[]) ?? []);
+      setWeeks((wk as Week[]) ?? []);
+      setDays((dy as Day[]) ?? []);
       setLoading(false);
     })();
   }, [session]);
 
+
+  const totalDays = days.length || 30;
   const completed = useMemo(() => new Set(progress.map((p) => p.day_number)), [progress]);
   const completedCount = completed.size;
-  const percent = Math.round((completedCount / 30) * 100);
+  const percent = Math.round((completedCount / totalDays) * 100);
+
+  const daysSinceStart = useMemo(() => {
+    if (!enrollment) return 0;
+    return Math.floor((Date.now() - new Date(enrollment.started_at).getTime()) / (1000 * 60 * 60 * 24));
+  }, [enrollment]);
 
   const currentDay = useMemo(() => {
-    if (!enrollment) return 0;
-    const diff = Math.floor((Date.now() - new Date(enrollment.started_at).getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    return Math.max(1, Math.min(30, diff));
-  }, [enrollment]);
+    if (!enrollment || days.length === 0) return 0;
+    const unlocked = days.filter((d) => d.unlock_offset_days <= daysSinceStart);
+    if (unlocked.length === 0) return days[0].day_number;
+    return unlocked[unlocked.length - 1].day_number;
+  }, [enrollment, days, daysSinceStart]);
 
   const streak = useMemo(() => {
     let s = 0;
@@ -69,6 +85,7 @@ function ChallengeDashboard() {
     }
     return s;
   }, [completed, currentDay]);
+
 
   async function startChallenge() {
     if (!session) return;
@@ -192,55 +209,61 @@ function ChallengeDashboard() {
             <span className="text-xs uppercase tracking-wide text-muted-foreground">Days Left</span>
             <Trophy className="h-4 w-4 text-amber-300" />
           </div>
-          <div className="mt-2 font-display text-3xl font-bold">{Math.max(0, 30 - completedCount)}</div>
+          <div className="mt-2 font-display text-3xl font-bold">{Math.max(0, totalDays - completedCount)}</div>
           <div className="mt-1 text-xs text-muted-foreground">to finish line</div>
         </div>
       </div>
 
       {/* Weekly grid */}
       <div className="space-y-4">
-        {WEEKLY_THEMES.map((wk) => (
-          <div key={wk.week} className="glass rounded-2xl border border-white/10 p-5">
-            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="font-display text-lg font-bold">{wk.title}</h3>
-              <span className="text-xs text-muted-foreground">{wk.desc}</span>
+        {weeks.map((wk) => {
+          const wkDays = days.filter((d) => d.week_number === wk.week_number);
+          return (
+            <div key={wk.week_number} className="glass rounded-2xl border border-white/10 p-5">
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                <h3 className="font-display text-lg font-bold">{wk.title}</h3>
+                <span className="text-xs text-muted-foreground">{wk.description}</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+                {wkDays.map((d) => {
+                  const day = d.day_number;
+                  const done = completed.has(day);
+                  const isToday = day === currentDay;
+                  const locked = d.unlock_offset_days > daysSinceStart;
+                  return (
+                    <button
+                      key={day}
+                      onClick={() => !locked && openDay(day)}
+                      disabled={locked}
+                      title={d.title}
+                      className={`group relative aspect-square rounded-xl border p-2 text-left transition ${
+                        done
+                          ? "border-emerald-400/40 bg-emerald-500/10"
+                          : isToday
+                          ? "border-red-400/50 bg-red-500/10"
+                          : locked
+                          ? "border-white/5 bg-white/5 opacity-40"
+                          : "border-white/10 bg-white/5 hover:bg-white/10"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <span className="text-[10px] uppercase text-muted-foreground">Day</span>
+                        {done ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                        ) : (
+                          <Circle className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="mt-1 font-display text-lg font-bold">{day}</div>
+                      {isToday && !done && <div className="text-[10px] font-semibold text-red-300">Today</div>}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
-              {wk.days.map((day) => {
-                const done = completed.has(day);
-                const isToday = day === currentDay;
-                const locked = day > currentDay;
-                return (
-                  <button
-                    key={day}
-                    onClick={() => !locked && openDay(day)}
-                    disabled={locked}
-                    className={`group relative aspect-square rounded-xl border p-2 text-left transition ${
-                      done
-                        ? "border-emerald-400/40 bg-emerald-500/10"
-                        : isToday
-                        ? "border-red-400/50 bg-red-500/10"
-                        : locked
-                        ? "border-white/5 bg-white/5 opacity-40"
-                        : "border-white/10 bg-white/5 hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <span className="text-[10px] uppercase text-muted-foreground">Day</span>
-                      {done ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                      ) : (
-                        <Circle className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div className="mt-1 font-display text-lg font-bold">{day}</div>
-                    {isToday && !done && <div className="text-[10px] font-semibold text-red-300">Today</div>}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+          );
+        })}
+
       </div>
 
       {/* Check-in modal */}
@@ -251,8 +274,23 @@ function ChallengeDashboard() {
               <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-xs font-semibold text-red-300">Day {selectedDay}</span>
               {completed.has(selectedDay) && <span className="text-xs text-emerald-400">✓ Already done</span>}
             </div>
-            <h3 className="font-display text-xl font-bold">Daily check-in</h3>
-            <p className="mt-1 text-xs text-muted-foreground">আজকের task করেছেন? একটা ছোট note রাখুন (optional)।</p>
+            {(() => {
+              const d = days.find((x) => x.day_number === selectedDay);
+              if (!d) return <h3 className="font-display text-xl font-bold">Daily check-in</h3>;
+              return (
+                <>
+                  <h3 className="font-display text-xl font-bold">{d.title}</h3>
+                  {d.task && <p className="mt-2 text-sm font-semibold text-amber-300">🎯 {d.task}</p>}
+                  {d.content && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{d.content}</p>}
+                  {d.video_url && (
+                    <a href={d.video_url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs text-primary-glow underline">
+                      Watch video →
+                    </a>
+                  )}
+                  <p className="mt-3 text-xs text-muted-foreground">Note রাখুন (optional):</p>
+                </>
+              );
+            })()}
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
