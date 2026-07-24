@@ -216,48 +216,54 @@ function ChallengeDashboard() {
 
       {/* Weekly grid */}
       <div className="space-y-4">
-        {WEEKLY_THEMES.map((wk) => (
-          <div key={wk.week} className="glass rounded-2xl border border-white/10 p-5">
-            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="font-display text-lg font-bold">{wk.title}</h3>
-              <span className="text-xs text-muted-foreground">{wk.desc}</span>
+        {weeks.map((wk) => {
+          const wkDays = days.filter((d) => d.week_number === wk.week_number);
+          return (
+            <div key={wk.week_number} className="glass rounded-2xl border border-white/10 p-5">
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                <h3 className="font-display text-lg font-bold">{wk.title}</h3>
+                <span className="text-xs text-muted-foreground">{wk.description}</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+                {wkDays.map((d) => {
+                  const day = d.day_number;
+                  const done = completed.has(day);
+                  const isToday = day === currentDay;
+                  const locked = d.unlock_offset_days > daysSinceStart;
+                  return (
+                    <button
+                      key={day}
+                      onClick={() => !locked && openDay(day)}
+                      disabled={locked}
+                      title={d.title}
+                      className={`group relative aspect-square rounded-xl border p-2 text-left transition ${
+                        done
+                          ? "border-emerald-400/40 bg-emerald-500/10"
+                          : isToday
+                          ? "border-red-400/50 bg-red-500/10"
+                          : locked
+                          ? "border-white/5 bg-white/5 opacity-40"
+                          : "border-white/10 bg-white/5 hover:bg-white/10"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <span className="text-[10px] uppercase text-muted-foreground">Day</span>
+                        {done ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                        ) : (
+                          <Circle className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="mt-1 font-display text-lg font-bold">{day}</div>
+                      {isToday && !done && <div className="text-[10px] font-semibold text-red-300">Today</div>}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
-              {wk.days.map((day) => {
-                const done = completed.has(day);
-                const isToday = day === currentDay;
-                const locked = day > currentDay;
-                return (
-                  <button
-                    key={day}
-                    onClick={() => !locked && openDay(day)}
-                    disabled={locked}
-                    className={`group relative aspect-square rounded-xl border p-2 text-left transition ${
-                      done
-                        ? "border-emerald-400/40 bg-emerald-500/10"
-                        : isToday
-                        ? "border-red-400/50 bg-red-500/10"
-                        : locked
-                        ? "border-white/5 bg-white/5 opacity-40"
-                        : "border-white/10 bg-white/5 hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <span className="text-[10px] uppercase text-muted-foreground">Day</span>
-                      {done ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                      ) : (
-                        <Circle className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div className="mt-1 font-display text-lg font-bold">{day}</div>
-                    {isToday && !done && <div className="text-[10px] font-semibold text-red-300">Today</div>}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+          );
+        })}
+
       </div>
 
       {/* Check-in modal */}
