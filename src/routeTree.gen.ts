@@ -71,6 +71,7 @@ import { Route as AdminAdminMeetingsRouteImport } from './routes/_admin/admin.me
 import { Route as AdminAdminLeadsRouteImport } from './routes/_admin/admin.leads'
 import { Route as AdminAdminHomepageMediaRouteImport } from './routes/_admin/admin.homepage-media'
 import { Route as AdminAdminFilesRouteImport } from './routes/_admin/admin.files'
+import { Route as AdminAdminEbooksRouteImport } from './routes/_admin/admin.ebooks'
 import { Route as AdminAdminCoursesRouteImport } from './routes/_admin/admin.courses'
 import { Route as AdminAdminCouponsRouteImport } from './routes/_admin/admin.coupons'
 import { Route as AdminAdminCommunityRouteImport } from './routes/_admin/admin.community'
@@ -395,6 +396,11 @@ const AdminAdminFilesRoute = AdminAdminFilesRouteImport.update({
   path: '/files',
   getParentRoute: () => AdminAdminRoute,
 } as any)
+const AdminAdminEbooksRoute = AdminAdminEbooksRouteImport.update({
+  id: '/ebooks',
+  path: '/ebooks',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
 const AdminAdminCoursesRoute = AdminAdminCoursesRouteImport.update({
   id: '/courses',
   path: '/courses',
@@ -512,6 +518,7 @@ export interface FileRoutesByFullPath {
   '/admin/community': typeof AdminAdminCommunityRoute
   '/admin/coupons': typeof AdminAdminCouponsRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
+  '/admin/ebooks': typeof AdminAdminEbooksRoute
   '/admin/files': typeof AdminAdminFilesRoute
   '/admin/homepage-media': typeof AdminAdminHomepageMediaRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
@@ -585,6 +592,7 @@ export interface FileRoutesByTo {
   '/admin/community': typeof AdminAdminCommunityRoute
   '/admin/coupons': typeof AdminAdminCouponsRoute
   '/admin/courses': typeof AdminAdminCoursesRoute
+  '/admin/ebooks': typeof AdminAdminEbooksRoute
   '/admin/files': typeof AdminAdminFilesRoute
   '/admin/homepage-media': typeof AdminAdminHomepageMediaRoute
   '/admin/leads': typeof AdminAdminLeadsRoute
@@ -663,6 +671,7 @@ export interface FileRoutesById {
   '/_admin/admin/community': typeof AdminAdminCommunityRoute
   '/_admin/admin/coupons': typeof AdminAdminCouponsRoute
   '/_admin/admin/courses': typeof AdminAdminCoursesRoute
+  '/_admin/admin/ebooks': typeof AdminAdminEbooksRoute
   '/_admin/admin/files': typeof AdminAdminFilesRoute
   '/_admin/admin/homepage-media': typeof AdminAdminHomepageMediaRoute
   '/_admin/admin/leads': typeof AdminAdminLeadsRoute
@@ -740,6 +749,7 @@ export interface FileRouteTypes {
     | '/admin/community'
     | '/admin/coupons'
     | '/admin/courses'
+    | '/admin/ebooks'
     | '/admin/files'
     | '/admin/homepage-media'
     | '/admin/leads'
@@ -813,6 +823,7 @@ export interface FileRouteTypes {
     | '/admin/community'
     | '/admin/coupons'
     | '/admin/courses'
+    | '/admin/ebooks'
     | '/admin/files'
     | '/admin/homepage-media'
     | '/admin/leads'
@@ -890,6 +901,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/community'
     | '/_admin/admin/coupons'
     | '/_admin/admin/courses'
+    | '/_admin/admin/ebooks'
     | '/_admin/admin/files'
     | '/_admin/admin/homepage-media'
     | '/_admin/admin/leads'
@@ -1396,6 +1408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminFilesRouteImport
       parentRoute: typeof AdminAdminRoute
     }
+    '/_admin/admin/ebooks': {
+      id: '/_admin/admin/ebooks'
+      path: '/ebooks'
+      fullPath: '/admin/ebooks'
+      preLoaderRoute: typeof AdminAdminEbooksRouteImport
+      parentRoute: typeof AdminAdminRoute
+    }
     '/_admin/admin/courses': {
       id: '/_admin/admin/courses'
       path: '/courses'
@@ -1521,6 +1540,7 @@ interface AdminAdminRouteChildren {
   AdminAdminCommunityRoute: typeof AdminAdminCommunityRoute
   AdminAdminCouponsRoute: typeof AdminAdminCouponsRoute
   AdminAdminCoursesRoute: typeof AdminAdminCoursesRoute
+  AdminAdminEbooksRoute: typeof AdminAdminEbooksRoute
   AdminAdminFilesRoute: typeof AdminAdminFilesRoute
   AdminAdminHomepageMediaRoute: typeof AdminAdminHomepageMediaRoute
   AdminAdminLeadsRoute: typeof AdminAdminLeadsRoute
@@ -1542,6 +1562,7 @@ const AdminAdminRouteChildren: AdminAdminRouteChildren = {
   AdminAdminCommunityRoute: AdminAdminCommunityRoute,
   AdminAdminCouponsRoute: AdminAdminCouponsRoute,
   AdminAdminCoursesRoute: AdminAdminCoursesRoute,
+  AdminAdminEbooksRoute: AdminAdminEbooksRoute,
   AdminAdminFilesRoute: AdminAdminFilesRoute,
   AdminAdminHomepageMediaRoute: AdminAdminHomepageMediaRoute,
   AdminAdminLeadsRoute: AdminAdminLeadsRoute,
