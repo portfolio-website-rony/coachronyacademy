@@ -10,6 +10,6 @@ export const Route = createFileRoute("/challenge/join")({
     ],
   }),
   component: () => (
-    <Navigate to="/courses_/$slug/checkout" params={{ slug: "success-code-30day" }} replace />
+    <Navigate to="/courses/$slug/checkout" params={{ slug: "success-code-30day" }} replace />
   ),
 });
