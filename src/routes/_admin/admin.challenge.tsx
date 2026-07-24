@@ -381,3 +381,184 @@ function ChallengeAdmin() {
     </div>
   );
 }
+
+function NewDayForm({
+  weeks,
+  defaultWeek,
+  nextDayNumber,
+  onCreated,
+}: {
+  weeks: Week[];
+  defaultWeek: number;
+  nextDayNumber: number;
+  onCreated: (d: Day) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [dayNumber, setDayNumber] = useState(nextDayNumber);
+  const [weekNumber, setWeekNumber] = useState(defaultWeek);
+  const [releaseDate, setReleaseDate] = useState<Date | undefined>(new Date());
+  const [title, setTitle] = useState("");
+  const [task, setTask] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [content, setContent] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setDayNumber(nextDayNumber);
+  }, [nextDayNumber]);
+  useEffect(() => {
+    setWeekNumber(defaultWeek);
+  }, [defaultWeek]);
+
+  const unlockOffset = releaseDate
+    ? Math.max(0, Math.round((releaseDate.getTime() - new Date().setHours(0, 0, 0, 0)) / 86400000))
+    : dayNumber - 1;
+
+  async function submit() {
+    if (!title.trim()) return toast.error("Title দিন");
+    setSaving(true);
+    const { data, error } = await supabase
+      .from("challenge_days")
+      .insert({
+        challenge_slug: CHALLENGE_SLUG,
+        day_number: dayNumber,
+        week_number: weekNumber,
+        title: title.trim(),
+        task: task.trim() || null,
+        video_url: videoUrl.trim() || null,
+        content: content.trim() || null,
+        unlock_offset_days: unlockOffset,
+      })
+      .select("id,day_number,week_number,title,task,content,video_url,unlock_offset_days")
+      .single();
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    onCreated(data as Day);
+    toast.success(`Day ${dayNumber} created`);
+    setTitle("");
+    setTask("");
+    setVideoUrl("");
+    setContent("");
+    setDayNumber((n) => n + 1);
+  }
+
+  return (
+    <div className="glass rounded-2xl border border-white/10 p-5">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between"
+      >
+        <span className="flex items-center gap-2">
+          <Plus className="h-4 w-4 text-primary-glow" />
+          <span className="font-display text-lg font-bold">Create a daily challenge</span>
+        </span>
+        <span className="text-xs text-muted-foreground">{open ? "Hide" : "Open"}</span>
+      </button>
+      {open && (
+        <div className="mt-4 grid gap-4">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div>
+              <label className="text-[10px] uppercase text-muted-foreground">Release date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "mt-1 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-left text-sm outline-none",
+                      !releaseDate && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="h-4 w-4" />
+                    {releaseDate ? format(releaseDate, "PPP") : "Pick a date"}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={releaseDate}
+                    onSelect={setReleaseDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                Unlocks {unlockOffset} day{unlockOffset === 1 ? "" : "s"} after enrollment
+              </p>
+            </div>
+            <div>
+              <label className="text-[10px] uppercase text-muted-foreground">Day #</label>
+              <input
+                type="number"
+                min={1}
+                value={dayNumber}
+                onChange={(e) => setDayNumber(Math.max(1, Number(e.target.value) || 1))}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase text-muted-foreground">Week</label>
+              <select
+                value={weekNumber}
+                onChange={(e) => setWeekNumber(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none"
+              >
+                {weeks.map((w) => (
+                  <option key={w.week_number} value={w.week_number}>
+                    Week {w.week_number} — {w.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="text-[10px] uppercase text-muted-foreground">Title</label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Day title..."
+              className="mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] uppercase text-muted-foreground">Task (one-line)</label>
+            <input
+              value={task}
+              onChange={(e) => setTask(e.target.value)}
+              placeholder="আজকের একটাই কাজ..."
+              className="mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] uppercase text-muted-foreground">Video URL (YouTube)</label>
+            <input
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://youtube.com/watch?v=..."
+              className="mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] uppercase text-muted-foreground">Content / instructions</label>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={3}
+              placeholder="বিস্তারিত instructions, tips, resources..."
+              className="mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none"
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              onClick={submit}
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-5 py-2 text-sm font-semibold text-background shadow-glow disabled:opacity-60"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              Create day
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
