@@ -1360,6 +1360,7 @@ export type Database = {
         Row: {
           amount: number
           booking_id: string | null
+          challenge_slug: string | null
           client_id: string | null
           coupon_id: string | null
           course_id: string | null
@@ -1381,6 +1382,7 @@ export type Database = {
         Insert: {
           amount?: number
           booking_id?: string | null
+          challenge_slug?: string | null
           client_id?: string | null
           coupon_id?: string | null
           course_id?: string | null
@@ -1402,6 +1404,7 @@ export type Database = {
         Update: {
           amount?: number
           booking_id?: string | null
+          challenge_slug?: string | null
           client_id?: string | null
           coupon_id?: string | null
           course_id?: string | null
