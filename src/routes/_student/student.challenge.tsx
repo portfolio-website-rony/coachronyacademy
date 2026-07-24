@@ -324,8 +324,6 @@ function ChallengeDashboard() {
               return (
                 <>
                   <h3 className="font-display text-xl font-bold">{d.title}</h3>
-                  {d.task && <p className="mt-2 text-sm font-semibold text-amber-300">🎯 {d.task}</p>}
-                  {d.content && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{d.content}</p>}
                   {d.video_url && (() => {
                     const embed = youtubeEmbedUrl(d.video_url);
                     return embed ? (
@@ -344,6 +342,25 @@ function ChallengeDashboard() {
                       </a>
                     );
                   })()}
+                  {(d.task || d.content) && (
+                    <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-amber-300">Today's Task</p>
+                      {d.task && <p className="mt-1 text-sm font-semibold text-white">🎯 {d.task}</p>}
+                      {d.content && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{d.content}</p>}
+                    </div>
+                  )}
+                  <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-3 hover:bg-white/10">
+                    <input
+                      type="checkbox"
+                      checked={taskDone}
+                      onChange={(e) => setTaskDone(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 accent-red-500"
+                    />
+                    <span className="text-sm">
+                      <span className="font-semibold text-white">আমি আজকের task টি সম্পূর্ণ করেছি</span>
+                      <span className="block text-xs text-muted-foreground">Mark Complete করতে হলে এই box টি চেক করুন।</span>
+                    </span>
+                  </label>
                   <p className="mt-3 text-xs text-muted-foreground">Note রাখুন (optional):</p>
                 </>
               );
