@@ -106,7 +106,7 @@ function GoldPill({ children, pulse = false }: { children: React.ReactNode; puls
   );
 }
 
-function GoldButton({ children, href = "#register" }: { children: React.ReactNode; href?: string }) {
+function GoldButton({ children, href = "/challenge/join" }: { children: React.ReactNode; href?: string }) {
   return (
     <a
       href={href}
