@@ -1276,6 +1276,80 @@ function FinalCTA() {
         </p>
       </div>
 
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Payment card */}
+        <GlassCard>
+          <div className="text-xs font-bold tracking-[0.2em]" style={{ color: t.gold }}>PAYMENT</div>
+          <h3 className="mt-2 text-2xl font-black sm:text-3xl" style={{ color: t.white }}>Send Payment to</h3>
+          <div className="mt-6 grid gap-3">
+            {[
+              { label: "bKash", num: "01960254383" },
+              { label: "Nagad", num: "01960254383" },
+              { label: "Rocket", num: "01960254383" },
+            ].map((m) => (
+              <div
+                key={m.label}
+                className="flex items-center justify-between rounded-2xl px-5 py-4"
+                style={{
+                  background: `linear-gradient(135deg, ${t.emerald}66, ${t.emeraldSoft}22)`,
+                  border: `1px solid ${t.gold}44`,
+                }}
+              >
+                <span className="text-base font-bold" style={{ color: t.gold }}>{m.label}</span>
+                <span className="font-mono text-sm font-bold tracking-wider" style={{ color: t.white }}>{m.num}</span>
+              </div>
+            ))}
+            <a
+              href="https://chat.whatsapp.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-4 text-base font-bold text-white transition hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, #10b981, #059669)", boxShadow: "0 10px 30px -10px #10b98188" }}
+            >
+              <MessageCircle className="h-5 w-5" /> Join WhatsApp Group
+            </a>
+          </div>
+        </GlassCard>
+
+        {/* Enroll form */}
+        <GlassCard>
+          <div className="text-xs font-bold tracking-[0.2em]" style={{ color: t.gold }}>RESERVE YOUR SEAT</div>
+          <h3 className="mt-2 text-2xl font-black sm:text-3xl" style={{ color: t.white }}>Enroll Now</h3>
+          <form onSubmit={onSubmit} className="mt-6 grid gap-3">
+            {[
+              { name: "name", placeholder: "আপনার নাম", type: "text" },
+              { name: "email", placeholder: "Email", type: "email" },
+              { name: "phone", placeholder: "WhatsApp Number", type: "tel" },
+            ].map((f) => (
+              <input
+                key={f.name}
+                name={f.name}
+                type={f.type}
+                required
+                placeholder={f.placeholder}
+                className="rounded-2xl px-5 py-4 text-sm outline-none transition focus:ring-2"
+                style={{
+                  background: `linear-gradient(135deg, ${t.emerald}55, ${t.emeraldSoft}11)`,
+                  border: `1px solid ${t.gold}44`,
+                  color: t.white,
+                }}
+              />
+            ))}
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-4 text-base font-black text-white transition hover:opacity-90 disabled:opacity-60"
+              style={{
+                background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
+                boxShadow: `0 10px 30px -10px ${t.gold}88`,
+              }}
+            >
+              {loading ? "Sending..." : <><Flame className="h-5 w-5" /> Join 30-Day Challenge</>}
+            </button>
+          </form>
+        </GlassCard>
+      </div>
+
 
       <p className="mx-auto mt-14 max-w-2xl text-center text-xl italic sm:text-2xl" style={{ color: t.goldSoft }}>
         "পূর্ণ চেষ্টা আমার, ফলাফল আল্লাহর হাতে।"
