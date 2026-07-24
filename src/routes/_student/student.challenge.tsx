@@ -41,6 +41,7 @@ function ChallengeDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [note, setNote] = useState("");
+  const [taskDone, setTaskDone] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
