@@ -131,7 +131,7 @@ function JoinPage() {
       let screenshot_path: string | null = null;
       if (file) {
         const check = validateUpload(file);
-        if (!check.ok) throw new Error(check.reason);
+        if (!check.ok) throw new Error(check.error);
         const path = `${session.user.id}/challenge/${Date.now()}-${file.name}`;
         const { error: ue } = await supabase.storage.from("payment-screenshots").upload(path, file);
         if (ue) throw ue;
