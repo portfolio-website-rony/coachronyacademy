@@ -227,6 +227,8 @@ function ProfilePage() {
           </form>
         </TabsContent>
       </Tabs>
+
+      <AchievementBadges userId={session.user.id} />
     </div>
   );
 }
