@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Loader2, BadgeCheck, ShieldAlert, Mail } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AvatarUploader } from "@/components/student/AvatarUploader";
+import { AchievementBadges } from "@/components/student/AchievementBadges";
 
 export const Route = createFileRoute("/_student/student/profile")({
   head: () => ({ meta: [{ title: "Profile — CoachRony" }] }),
