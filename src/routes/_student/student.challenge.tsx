@@ -262,29 +262,41 @@ function ChallengeDashboard() {
       <div className="space-y-4">
         {weeks.map((wk) => {
           const wkDays = days.filter((d) => d.week_number === wk.week_number);
+          const wkDone = wkDays.filter((d) => completed.has(d.day_number)).length;
+          const wkPct = wkDays.length ? Math.round((wkDone / wkDays.length) * 100) : 0;
           return (
             <div key={wk.week_number} className="glass rounded-2xl border border-white/10 p-5">
               <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                <h3 className="font-display text-lg font-bold">{wk.title}</h3>
-                <span className="text-xs text-muted-foreground">{wk.description}</span>
+                <div>
+                  <h3 className="font-display text-lg font-bold">{wk.title}</h3>
+                  {wk.description && <p className="text-xs text-muted-foreground">{wk.description}</p>}
+                </div>
+                <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-emerald-300">
+                  {wkDone}/{wkDays.length} done · {wkPct}%
+                </span>
+              </div>
+              <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all" style={{ width: `${wkPct}%` }} />
               </div>
               <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
                 {wkDays.map((d) => {
                   const day = d.day_number;
                   const done = completed.has(day);
+                  const doneAt = progress.find((p) => p.day_number === day)?.completed_at;
                   const isToday = day === currentDay;
                   const locked = d.unlock_offset_days > daysSinceStart;
+                  const status = done ? "Done" : locked ? "Locked" : isToday ? "Today" : "Open";
                   return (
                     <button
                       key={day}
                       onClick={() => !locked && openDay(day)}
                       disabled={locked}
-                      title={d.title}
+                      title={`${d.title}${doneAt ? ` · Completed ${new Date(doneAt).toLocaleDateString()}` : ""}`}
                       className={`group relative aspect-square rounded-xl border p-2 text-left transition ${
                         done
-                          ? "border-emerald-400/40 bg-emerald-500/10"
+                          ? "border-emerald-400/50 bg-emerald-500/15 shadow-[0_0_20px_-8px_rgba(16,185,129,0.6)]"
                           : isToday
-                          ? "border-red-400/50 bg-red-500/10"
+                          ? "border-red-400/50 bg-red-500/10 ring-2 ring-red-400/40"
                           : locked
                           ? "border-white/5 bg-white/5 opacity-40"
                           : "border-white/10 bg-white/5 hover:bg-white/10"
@@ -299,7 +311,24 @@ function ChallengeDashboard() {
                         )}
                       </div>
                       <div className="mt-1 font-display text-lg font-bold">{day}</div>
-                      {isToday && !done && <div className="text-[10px] font-semibold text-red-300">Today</div>}
+                      <div
+                        className={`text-[9px] font-semibold uppercase tracking-wide ${
+                          done
+                            ? "text-emerald-300"
+                            : isToday
+                            ? "text-red-300"
+                            : locked
+                            ? "text-muted-foreground"
+                            : "text-white/60"
+                        }`}
+                      >
+                        {status}
+                      </div>
+                      {done && doneAt && (
+                        <div className="mt-0.5 text-[9px] text-emerald-300/70">
+                          {new Date(doneAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                        </div>
+                      )}
                     </button>
                   );
                 })}
@@ -307,8 +336,46 @@ function ChallengeDashboard() {
             </div>
           );
         })}
-
       </div>
+
+      {/* Recently Completed timeline */}
+      {progress.length > 0 && (
+        <div className="glass rounded-2xl border border-emerald-400/20 p-5">
+          <div className="mb-3 flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <h3 className="font-display text-lg font-bold">Recently Completed</h3>
+            <span className="ml-auto text-xs text-muted-foreground">{progress.length} total</span>
+          </div>
+          <ul className="divide-y divide-white/5">
+            {[...progress]
+              .sort((a, b) => new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime())
+              .slice(0, 8)
+              .map((p) => {
+                const d = days.find((x) => x.day_number === p.day_number);
+                return (
+                  <li key={p.day_number} className="flex items-center gap-3 py-2.5">
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-emerald-500/20 font-display text-sm font-bold text-emerald-300">
+                      {p.day_number}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-semibold">{d?.title ?? `Day ${p.day_number}`}</div>
+                      {p.note && <div className="truncate text-xs text-muted-foreground">📝 {p.note}</div>}
+                    </div>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {new Date(p.completed_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    </span>
+                    <button
+                      onClick={() => openDay(p.day_number)}
+                      className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs hover:bg-white/10"
+                    >
+                      View
+                    </button>
+                  </li>
+                );
+              })}
+          </ul>
+        </div>
+      )}
 
       {/* Check-in modal */}
       {selectedDay != null && (
