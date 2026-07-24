@@ -41,8 +41,6 @@ function EbooksPage() {
 
   async function handleDownload(e: Ebook) {
     if (!e.file_url) return;
-    // Bump counter (best-effort; ignore RLS failure)
-    await supabase.rpc as any; // no-op to keep tree-shake happy
     void supabase.from("ebooks").update({ download_count: e.download_count + 1 }).eq("id", e.id);
     window.open(e.file_url, "_blank", "noopener");
   }
