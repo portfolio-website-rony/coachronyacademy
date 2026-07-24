@@ -15,6 +15,7 @@ const NAV: NavItem[] = [
   { to: "/student/courses", label: "My Courses", icon: BookOpen },
   { to: "/student/workshops", label: "Workshops", icon: CalendarClock },
   { to: "/student/challenge", label: "30-Day Challenge", icon: Flame },
+  { to: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { to: "/student/ebooks", label: "Ebooks", icon: FileText },
   { to: "/student/bundles", label: "Bundles", icon: Package },
   { to: "/student/certificates", label: "Certificates", icon: Award },
