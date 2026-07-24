@@ -366,7 +366,7 @@ function Hero() {
                   Guided System
                 </div>
                 <div className="text-sm font-black" style={{ color: t.white }}>
-                  ৪ Weeks · ২–৩ ঘণ্টা/দিন
+                  4 Weeks · ২–৩ ঘণ্টা/দিন
                 </div>
               </div>
             </div>
