@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Circle, Flame, Trophy, Target, Sparkles, Loader2, PlayCircle } from "lucide-react";
+import { CheckCircle2, Circle, Flame, Trophy, Target, Sparkles, Loader2, PlayCircle, MessageCircle, Users, Share2, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { toast } from "sonner";
 
 const CHALLENGE_SLUG = "success-code-30day";
+const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/coachrony-success-code";
 
 export const Route = createFileRoute("/_student/student/challenge")({
   head: () => ({
@@ -214,6 +215,45 @@ function ChallengeDashboard() {
         </div>
       </div>
 
+      {/* Private WhatsApp Community + Accountability */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* WhatsApp Community */}
+        <div className="glass relative overflow-hidden rounded-2xl border border-emerald-400/20 p-5">
+          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl" />
+          <div className="relative">
+            <div className="flex items-center gap-2">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-500/20 text-emerald-300">
+                <MessageCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-bold">Private WhatsApp Community</h3>
+                <p className="text-xs text-muted-foreground">শুধু challenge members-দের জন্য</p>
+              </div>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">
+              প্রতিদিন live support, peer accountability, mentor Q&A এবং exclusive resources পেতে community-তে যোগ দিন।
+            </p>
+            <a
+              href={WHATSAPP_COMMUNITY_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:opacity-90"
+            >
+              <Users className="h-4 w-4" />
+              Join WhatsApp Community
+            </a>
+          </div>
+        </div>
+
+        {/* Accountability Partner */}
+        <AccountabilityCard
+          currentDay={currentDay}
+          streak={streak}
+          completedCount={completedCount}
+          totalDays={totalDays}
+        />
+      </div>
+
       {/* Weekly grid */}
       <div className="space-y-4">
         {weeks.map((wk) => {
@@ -315,6 +355,101 @@ function ChallengeDashboard() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function AccountabilityCard({
+  currentDay,
+  streak,
+  completedCount,
+  totalDays,
+}: {
+  currentDay: number;
+  streak: number;
+  completedCount: number;
+  totalDays: number;
+}) {
+  const [partnerName, setPartnerName] = useState("");
+  const [partnerPhone, setPartnerPhone] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("accountability_partner");
+      if (raw) {
+        const p = JSON.parse(raw);
+        setPartnerName(p.name ?? "");
+        setPartnerPhone(p.phone ?? "");
+      }
+    } catch {}
+  }, []);
+
+  function save() {
+    localStorage.setItem("accountability_partner", JSON.stringify({ name: partnerName, phone: partnerPhone }));
+    setSaved(true);
+    toast.success("Accountability partner saved!");
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  function shareProgress() {
+    const msg = `🔥 Success Code Challenge Update!\n\nDay ${currentDay}/${totalDays}\n✅ Completed: ${completedCount} days\n🔥 Streak: ${streak} days\n\n#TheSuccessCode #CoachRony`;
+    const phone = partnerPhone.replace(/[^0-9]/g, "");
+    const url = phone
+      ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+      : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank", "noopener");
+  }
+
+  return (
+    <div className="glass relative overflow-hidden rounded-2xl border border-amber-400/20 p-5">
+      <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amber-500/20 blur-3xl" />
+      <div className="relative">
+        <div className="flex items-center gap-2">
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-500/20 text-amber-300">
+            <Users className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="font-display text-lg font-bold">Accountability Partner</h3>
+            <p className="text-xs text-muted-foreground">প্রতিদিন progress share করুন</p>
+          </div>
+        </div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <input
+            value={partnerName}
+            onChange={(e) => setPartnerName(e.target.value)}
+            placeholder="Partner name"
+            maxLength={60}
+            className="glass rounded-xl px-3 py-2 text-sm outline-none"
+          />
+          <input
+            value={partnerPhone}
+            onChange={(e) => setPartnerPhone(e.target.value)}
+            placeholder="WhatsApp number (8801...)"
+            maxLength={20}
+            className="glass rounded-xl px-3 py-2 text-sm outline-none"
+          />
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            onClick={save}
+            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold hover:bg-white/10"
+          >
+            <Save className="h-4 w-4" />
+            {saved ? "Saved ✓" : "Save Partner"}
+          </button>
+          <button
+            onClick={shareProgress}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-glow hover:opacity-90"
+          >
+            <Share2 className="h-4 w-4" />
+            Share Today's Progress
+          </button>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          💡 Tip: প্রতিদিন check-in এর পর partner-কে progress পাঠান — accountability = consistency।
+        </p>
+      </div>
     </div>
   );
 }
