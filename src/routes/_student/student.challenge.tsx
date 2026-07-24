@@ -209,7 +209,7 @@ function ChallengeDashboard() {
             <span className="text-xs uppercase tracking-wide text-muted-foreground">Days Left</span>
             <Trophy className="h-4 w-4 text-amber-300" />
           </div>
-          <div className="mt-2 font-display text-3xl font-bold">{Math.max(0, 30 - completedCount)}</div>
+          <div className="mt-2 font-display text-3xl font-bold">{Math.max(0, totalDays - completedCount)}</div>
           <div className="mt-1 text-xs text-muted-foreground">to finish line</div>
         </div>
       </div>
