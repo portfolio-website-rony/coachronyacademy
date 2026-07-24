@@ -186,9 +186,12 @@ function ChallengeDashboard() {
           <p className="text-sm text-muted-foreground">
             Started {new Date(enrollment.started_at).toLocaleDateString()} • Today is Day {currentDay}
           </p>
+        </div>
       </div>
 
       <AchievementBadges userId={session!.user.id} />
+
+
 
 
 
