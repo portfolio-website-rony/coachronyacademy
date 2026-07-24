@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Loader2, BookOpen, GraduationCap, Users, Library, LayoutDashboard, Award, FileText, Package, CalendarClock, Bookmark, Receipt, Flame } from "lucide-react";
+import { Loader2, BookOpen, GraduationCap, Users, Library, LayoutDashboard, Award, FileText, Package, CalendarClock, Bookmark, Receipt, Flame, Trophy } from "lucide-react";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { DashboardShell, type NavItem } from "@/components/dashboard/DashboardShell";
 import { Header } from "@/components/site/Header";
