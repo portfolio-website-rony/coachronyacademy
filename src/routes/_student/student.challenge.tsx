@@ -313,7 +313,7 @@ function ChallengeDashboard() {
       {/* Check-in modal */}
       {selectedDay != null && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={() => setSelectedDay(null)}>
-          <div className="glass w-full max-w-md rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="glass max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
             <div className="mb-2 flex items-center gap-2">
               <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-xs font-semibold text-red-300">Day {selectedDay}</span>
               {completed.has(selectedDay) && <span className="text-xs text-emerald-400">✓ Already done</span>}
