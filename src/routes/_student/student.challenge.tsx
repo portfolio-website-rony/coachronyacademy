@@ -136,6 +136,7 @@ function ChallengeDashboard() {
     toast.success(`Day ${selectedDay} complete! 🎉`);
     setSelectedDay(null);
     setNote("");
+    setTaskDone(false);
   }
 
   if (authLoading || loading) {
