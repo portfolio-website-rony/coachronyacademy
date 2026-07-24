@@ -1540,6 +1540,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      challenge_leaderboard: {
+        Args: { _limit?: number; _slug?: string }
+        Returns: {
+          avatar_url: string
+          best_streak: number
+          completed_days: number
+          display_name: string
+          user_id: string
+        }[]
+      }
       get_user_id_by_email: { Args: { _email: string }; Returns: string }
       has_role: {
         Args: {
