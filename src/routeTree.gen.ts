@@ -35,6 +35,7 @@ import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesSlugRouteImport } from './routes/courses.$slug'
+import { Route as ChallengeJoinRouteImport } from './routes/challenge.join'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminSignupRouteImport } from './routes/admin.signup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -210,6 +211,11 @@ const CoursesIndexRoute = CoursesIndexRouteImport.update({
 const CoursesSlugRoute = CoursesSlugRouteImport.update({
   id: '/courses/$slug',
   path: '/courses/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChallengeJoinRoute = ChallengeJoinRouteImport.update({
+  id: '/challenge/join',
+  path: '/challenge/join',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
@@ -495,6 +501,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/challenge/join': typeof ChallengeJoinRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/courses/': typeof CoursesIndexRoute
   '/admin/activity': typeof AdminAdminActivityRoute
@@ -567,6 +574,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/challenge/join': typeof ChallengeJoinRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/courses': typeof CoursesIndexRoute
   '/admin/activity': typeof AdminAdminActivityRoute
@@ -644,6 +652,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/signup': typeof AdminSignupRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/challenge/join': typeof ChallengeJoinRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/courses/': typeof CoursesIndexRoute
   '/_admin/admin/activity': typeof AdminAdminActivityRoute
@@ -720,6 +729,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/signup'
     | '/blog/$slug'
+    | '/challenge/join'
     | '/courses/$slug'
     | '/courses/'
     | '/admin/activity'
@@ -792,6 +802,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/signup'
     | '/blog/$slug'
+    | '/challenge/join'
     | '/courses/$slug'
     | '/courses'
     | '/admin/activity'
@@ -868,6 +879,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/signup'
     | '/blog/$slug'
+    | '/challenge/join'
     | '/courses/$slug'
     | '/courses/'
     | '/_admin/admin/activity'
@@ -942,6 +954,7 @@ export interface RootRouteChildren {
   AdminForgotPasswordRoute: typeof AdminForgotPasswordRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminSignupRoute: typeof AdminSignupRoute
+  ChallengeJoinRoute: typeof ChallengeJoinRoute
   CoursesSlugRoute: typeof CoursesSlugRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
   CoursesSlugCheckoutRoute: typeof CoursesSlugCheckoutRoute
@@ -1129,6 +1142,13 @@ declare module '@tanstack/react-router' {
       path: '/courses/$slug'
       fullPath: '/courses/$slug'
       preLoaderRoute: typeof CoursesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/challenge/join': {
+      id: '/challenge/join'
+      path: '/challenge/join'
+      fullPath: '/challenge/join'
+      preLoaderRoute: typeof ChallengeJoinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/$slug': {
@@ -1685,6 +1705,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminForgotPasswordRoute: AdminForgotPasswordRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminSignupRoute: AdminSignupRoute,
+  ChallengeJoinRoute: ChallengeJoinRoute,
   CoursesSlugRoute: CoursesSlugRoute,
   CoursesIndexRoute: CoursesIndexRoute,
   CoursesSlugCheckoutRoute: CoursesSlugCheckoutRoute,
