@@ -53,6 +53,7 @@ import { Route as StudentStudentOrdersRouteImport } from './routes/_student/stud
 import { Route as StudentStudentNotificationsRouteImport } from './routes/_student/student.notifications'
 import { Route as StudentStudentEbooksRouteImport } from './routes/_student/student.ebooks'
 import { Route as StudentStudentCommunityRouteImport } from './routes/_student/student.community'
+import { Route as StudentStudentChallengeRouteImport } from './routes/_student/student.challenge'
 import { Route as StudentStudentCertificatesRouteImport } from './routes/_student/student.certificates'
 import { Route as StudentStudentBundlesRouteImport } from './routes/_student/student.bundles'
 import { Route as ClientClientProjectsRouteImport } from './routes/_client/client.projects'
@@ -300,6 +301,11 @@ const StudentStudentCommunityRoute = StudentStudentCommunityRouteImport.update({
   path: '/community',
   getParentRoute: () => StudentStudentRoute,
 } as any)
+const StudentStudentChallengeRoute = StudentStudentChallengeRouteImport.update({
+  id: '/challenge',
+  path: '/challenge',
+  getParentRoute: () => StudentStudentRoute,
+} as any)
 const StudentStudentCertificatesRoute =
   StudentStudentCertificatesRouteImport.update({
     id: '/certificates',
@@ -500,6 +506,7 @@ export interface FileRoutesByFullPath {
   '/client/projects': typeof ClientClientProjectsRoute
   '/student/bundles': typeof StudentStudentBundlesRoute
   '/student/certificates': typeof StudentStudentCertificatesRoute
+  '/student/challenge': typeof StudentStudentChallengeRoute
   '/student/community': typeof StudentStudentCommunityRoute
   '/student/ebooks': typeof StudentStudentEbooksRoute
   '/student/notifications': typeof StudentStudentNotificationsRoute
@@ -569,6 +576,7 @@ export interface FileRoutesByTo {
   '/client/projects': typeof ClientClientProjectsRoute
   '/student/bundles': typeof StudentStudentBundlesRoute
   '/student/certificates': typeof StudentStudentCertificatesRoute
+  '/student/challenge': typeof StudentStudentChallengeRoute
   '/student/community': typeof StudentStudentCommunityRoute
   '/student/ebooks': typeof StudentStudentEbooksRoute
   '/student/notifications': typeof StudentStudentNotificationsRoute
@@ -643,6 +651,7 @@ export interface FileRoutesById {
   '/_client/client/projects': typeof ClientClientProjectsRoute
   '/_student/student/bundles': typeof StudentStudentBundlesRoute
   '/_student/student/certificates': typeof StudentStudentCertificatesRoute
+  '/_student/student/challenge': typeof StudentStudentChallengeRoute
   '/_student/student/community': typeof StudentStudentCommunityRoute
   '/_student/student/ebooks': typeof StudentStudentEbooksRoute
   '/_student/student/notifications': typeof StudentStudentNotificationsRoute
@@ -716,6 +725,7 @@ export interface FileRouteTypes {
     | '/client/projects'
     | '/student/bundles'
     | '/student/certificates'
+    | '/student/challenge'
     | '/student/community'
     | '/student/ebooks'
     | '/student/notifications'
@@ -785,6 +795,7 @@ export interface FileRouteTypes {
     | '/client/projects'
     | '/student/bundles'
     | '/student/certificates'
+    | '/student/challenge'
     | '/student/community'
     | '/student/ebooks'
     | '/student/notifications'
@@ -858,6 +869,7 @@ export interface FileRouteTypes {
     | '/_client/client/projects'
     | '/_student/student/bundles'
     | '/_student/student/certificates'
+    | '/_student/student/challenge'
     | '/_student/student/community'
     | '/_student/student/ebooks'
     | '/_student/student/notifications'
@@ -1220,6 +1232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentStudentCommunityRouteImport
       parentRoute: typeof StudentStudentRoute
     }
+    '/_student/student/challenge': {
+      id: '/_student/student/challenge'
+      path: '/challenge'
+      fullPath: '/student/challenge'
+      preLoaderRoute: typeof StudentStudentChallengeRouteImport
+      parentRoute: typeof StudentStudentRoute
+    }
     '/_student/student/certificates': {
       id: '/_student/student/certificates'
       path: '/certificates'
@@ -1539,6 +1558,7 @@ const StudentStudentCoursesSlugRouteWithChildren =
 interface StudentStudentRouteChildren {
   StudentStudentBundlesRoute: typeof StudentStudentBundlesRoute
   StudentStudentCertificatesRoute: typeof StudentStudentCertificatesRoute
+  StudentStudentChallengeRoute: typeof StudentStudentChallengeRoute
   StudentStudentCommunityRoute: typeof StudentStudentCommunityRoute
   StudentStudentEbooksRoute: typeof StudentStudentEbooksRoute
   StudentStudentNotificationsRoute: typeof StudentStudentNotificationsRoute
@@ -1556,6 +1576,7 @@ interface StudentStudentRouteChildren {
 const StudentStudentRouteChildren: StudentStudentRouteChildren = {
   StudentStudentBundlesRoute: StudentStudentBundlesRoute,
   StudentStudentCertificatesRoute: StudentStudentCertificatesRoute,
+  StudentStudentChallengeRoute: StudentStudentChallengeRoute,
   StudentStudentCommunityRoute: StudentStudentCommunityRoute,
   StudentStudentEbooksRoute: StudentStudentEbooksRoute,
   StudentStudentNotificationsRoute: StudentStudentNotificationsRoute,
