@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { toast } from "sonner";
 import { youtubeEmbedUrl } from "@/lib/format";
+import { AchievementBadges } from "@/components/student/AchievementBadges";
 
 const CHALLENGE_SLUG = "success-code-30day";
 const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/coachrony-success-code";
@@ -187,6 +188,12 @@ function ChallengeDashboard() {
           </p>
         </div>
       </div>
+
+      <AchievementBadges userId={session!.user.id} />
+
+
+
+
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
