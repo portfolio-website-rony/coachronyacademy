@@ -42,6 +42,7 @@ const NAV: Array<{
   { to: "/admin/students", label: "Students", icon: GraduationCap },
   { to: "/admin/community", label: "Community", icon: MessageSquare },
   { to: "/admin/challenge", label: "30-Day Challenge", icon: Sparkles },
+  { to: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { to: "/admin/payments", label: "Payments", icon: CreditCard },
   { to: "/admin/coupons", label: "Coupons", icon: Ticket },
   { to: "/admin/users", label: "Users & Auth", icon: ShieldCheck },
