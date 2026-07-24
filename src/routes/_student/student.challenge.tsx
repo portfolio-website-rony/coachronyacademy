@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Circle, Flame, Trophy, Target, Sparkles, Loader2, PlayCircle } from "lucide-react";
+import { CheckCircle2, Circle, Flame, Trophy, Target, Sparkles, Loader2, PlayCircle, MessageCircle, Users, Share2, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { toast } from "sonner";
