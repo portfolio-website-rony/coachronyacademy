@@ -41,6 +41,7 @@ function ChallengeDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [note, setNote] = useState("");
+  const [taskDone, setTaskDone] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -107,6 +108,7 @@ function ChallengeDashboard() {
     setSelectedDay(day);
     const existing = progress.find((p) => p.day_number === day);
     setNote(existing?.note ?? "");
+    setTaskDone(!!existing);
   }
 
   async function checkIn() {
@@ -134,6 +136,7 @@ function ChallengeDashboard() {
     toast.success(`Day ${selectedDay} complete! 🎉`);
     setSelectedDay(null);
     setNote("");
+    setTaskDone(false);
   }
 
   if (authLoading || loading) {
@@ -310,7 +313,7 @@ function ChallengeDashboard() {
       {/* Check-in modal */}
       {selectedDay != null && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={() => setSelectedDay(null)}>
-          <div className="glass w-full max-w-md rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="glass max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
             <div className="mb-2 flex items-center gap-2">
               <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-xs font-semibold text-red-300">Day {selectedDay}</span>
               {completed.has(selectedDay) && <span className="text-xs text-emerald-400">✓ Already done</span>}
@@ -321,8 +324,6 @@ function ChallengeDashboard() {
               return (
                 <>
                   <h3 className="font-display text-xl font-bold">{d.title}</h3>
-                  {d.task && <p className="mt-2 text-sm font-semibold text-amber-300">🎯 {d.task}</p>}
-                  {d.content && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{d.content}</p>}
                   {d.video_url && (() => {
                     const embed = youtubeEmbedUrl(d.video_url);
                     return embed ? (
@@ -341,6 +342,25 @@ function ChallengeDashboard() {
                       </a>
                     );
                   })()}
+                  {(d.task || d.content) && (
+                    <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-amber-300">Today's Task</p>
+                      {d.task && <p className="mt-1 text-sm font-semibold text-white">🎯 {d.task}</p>}
+                      {d.content && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{d.content}</p>}
+                    </div>
+                  )}
+                  <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-3 hover:bg-white/10">
+                    <input
+                      type="checkbox"
+                      checked={taskDone}
+                      onChange={(e) => setTaskDone(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 accent-red-500"
+                    />
+                    <span className="text-sm">
+                      <span className="font-semibold text-white">আমি আজকের task টি সম্পূর্ণ করেছি</span>
+                      <span className="block text-xs text-muted-foreground">Mark Complete করতে হলে এই box টি চেক করুন।</span>
+                    </span>
+                  </label>
                   <p className="mt-3 text-xs text-muted-foreground">Note রাখুন (optional):</p>
                 </>
               );
@@ -359,7 +379,8 @@ function ChallengeDashboard() {
               </button>
               <button
                 onClick={checkIn}
-                disabled={saving}
+                disabled={saving || !taskDone}
+                title={!taskDone ? "প্রথমে task complete checkbox টি চেক করুন" : undefined}
                 className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
