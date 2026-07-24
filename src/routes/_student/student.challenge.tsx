@@ -4,6 +4,7 @@ import { CheckCircle2, Circle, Flame, Trophy, Target, Sparkles, Loader2, PlayCir
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { toast } from "sonner";
+import { youtubeEmbedUrl } from "@/lib/format";
 
 const CHALLENGE_SLUG = "success-code-30day";
 const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/coachrony-success-code";
@@ -322,11 +323,24 @@ function ChallengeDashboard() {
                   <h3 className="font-display text-xl font-bold">{d.title}</h3>
                   {d.task && <p className="mt-2 text-sm font-semibold text-amber-300">🎯 {d.task}</p>}
                   {d.content && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{d.content}</p>}
-                  {d.video_url && (
-                    <a href={d.video_url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs text-primary-glow underline">
-                      Watch video →
-                    </a>
-                  )}
+                  {d.video_url && (() => {
+                    const embed = youtubeEmbedUrl(d.video_url);
+                    return embed ? (
+                      <div className="mt-3 aspect-video overflow-hidden rounded-xl border border-white/10 bg-black">
+                        <iframe
+                          src={embed}
+                          title={`Day ${d.day_number} video`}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="h-full w-full"
+                        />
+                      </div>
+                    ) : (
+                      <a href={d.video_url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs text-primary-glow underline">
+                        Watch video →
+                      </a>
+                    );
+                  })()}
                   <p className="mt-3 text-xs text-muted-foreground">Note রাখুন (optional):</p>
                 </>
               );
