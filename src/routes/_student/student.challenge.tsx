@@ -19,19 +19,23 @@ export const Route = createFileRoute("/_student/student/challenge")({
 
 type Enrollment = { id: string; started_at: string };
 type Progress = { day_number: number; completed_at: string; note: string | null };
-
-const WEEKLY_THEMES = [
-  { week: 1, title: "Week 1 — Foundation", desc: "Mindset, goal-setting, discipline।", days: [1, 2, 3, 4, 5, 6, 7] },
-  { week: 2, title: "Week 2 — Skill Discovery", desc: "নিজের skill খুঁজে বের করা।", days: [8, 9, 10, 11, 12, 13, 14] },
-  { week: 3, title: "Week 3 — Action & Income", desc: "প্রথম টাকা income শুরু।", days: [15, 16, 17, 18, 19, 20, 21] },
-  { week: 4, title: "Week 4 — Growth", desc: "Scale, brand, community।", days: [22, 23, 24, 25, 26, 27, 28] },
-  { week: 5, title: "Final Push", desc: "Presentation & reward।", days: [29, 30] },
-];
+type Week = { week_number: number; title: string; description: string | null };
+type Day = {
+  day_number: number;
+  week_number: number;
+  title: string;
+  task: string | null;
+  content: string | null;
+  video_url: string | null;
+  unlock_offset_days: number;
+};
 
 function ChallengeDashboard() {
   const { session, loading: authLoading } = useAuthUser();
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [weeks, setWeeks] = useState<Week[]>([]);
+  const [days, setDays] = useState<Day[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [note, setNote] = useState("");
@@ -41,15 +45,20 @@ function ChallengeDashboard() {
     if (!session) return;
     void (async () => {
       setLoading(true);
-      const [{ data: enr }, { data: prog }] = await Promise.all([
+      const [{ data: enr }, { data: prog }, { data: wk }, { data: dy }] = await Promise.all([
         supabase.from("challenge_enrollments").select("id,started_at").eq("user_id", session.user.id).eq("challenge_slug", CHALLENGE_SLUG).maybeSingle(),
         supabase.from("challenge_progress").select("day_number,completed_at,note").eq("user_id", session.user.id).eq("challenge_slug", CHALLENGE_SLUG).order("day_number"),
+        supabase.from("challenge_weeks").select("week_number,title,description").eq("challenge_slug", CHALLENGE_SLUG).order("week_number"),
+        supabase.from("challenge_days").select("day_number,week_number,title,task,content,video_url,unlock_offset_days").eq("challenge_slug", CHALLENGE_SLUG).order("day_number"),
       ]);
       setEnrollment(enr as Enrollment | null);
       setProgress((prog as Progress[]) ?? []);
+      setWeeks((wk as Week[]) ?? []);
+      setDays((dy as Day[]) ?? []);
       setLoading(false);
     })();
   }, [session]);
+
 
   const completed = useMemo(() => new Set(progress.map((p) => p.day_number)), [progress]);
   const completedCount = completed.size;
