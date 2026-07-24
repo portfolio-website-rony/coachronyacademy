@@ -379,7 +379,8 @@ function ChallengeDashboard() {
               </button>
               <button
                 onClick={checkIn}
-                disabled={saving}
+                disabled={saving || !taskDone}
+                title={!taskDone ? "প্রথমে task complete checkbox টি চেক করুন" : undefined}
                 className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
