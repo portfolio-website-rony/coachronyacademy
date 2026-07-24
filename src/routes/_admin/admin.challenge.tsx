@@ -269,6 +269,14 @@ function ChallengeAdmin() {
         ))}
       </div>
 
+      {/* Create daily challenge form */}
+      <NewDayForm
+        weeks={weeks}
+        defaultWeek={activeWeek ?? weeks[0]?.week_number ?? 1}
+        nextDayNumber={(days.at(-1)?.day_number ?? 0) + 1}
+        onCreated={(d) => setDays((prev) => [...prev, d])}
+      />
+
       {/* Days */}
       <div className="space-y-3">
         {visibleDays.map((d) => (
