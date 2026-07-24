@@ -40,6 +40,7 @@ const NAV: Array<{
   { to: "/admin/meetings", label: "Meetings", icon: Video },
   { to: "/admin/clients", label: "Clients", icon: UserCircle2 },
   { to: "/admin/courses", label: "Courses", icon: BookOpen },
+  { to: "/admin/ebooks", label: "Ebooks", icon: BookMarked },
   { to: "/admin/students", label: "Students", icon: GraduationCap },
   { to: "/admin/community", label: "Community", icon: MessageSquare },
   { to: "/admin/challenge", label: "30-Day Challenge", icon: Sparkles },
