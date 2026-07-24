@@ -4,6 +4,7 @@ import { CheckCircle2, Circle, Flame, Trophy, Target, Sparkles, Loader2, PlayCir
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { toast } from "sonner";
+import { youtubeEmbedUrl } from "@/lib/format";
 
 const CHALLENGE_SLUG = "success-code-30day";
 const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/coachrony-success-code";
