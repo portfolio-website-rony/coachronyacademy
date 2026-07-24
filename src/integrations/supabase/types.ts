@@ -112,6 +112,63 @@ export type Database = {
           },
         ]
       }
+      challenge_enrollments: {
+        Row: {
+          challenge_slug: string
+          created_at: string
+          id: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_slug?: string
+          created_at?: string
+          id?: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_slug?: string
+          created_at?: string
+          id?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      challenge_progress: {
+        Row: {
+          challenge_slug: string
+          completed_at: string
+          created_at: string
+          day_number: number
+          id: string
+          note: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_slug?: string
+          completed_at?: string
+          created_at?: string
+          day_number: number
+          id?: string
+          note?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_slug?: string
+          completed_at?: string
+          created_at?: string
+          day_number?: number
+          id?: string
+          note?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           country: string | null

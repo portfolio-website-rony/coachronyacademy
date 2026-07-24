@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Loader2, BookOpen, GraduationCap, Users, Library, LayoutDashboard, Award, FileText, Package, CalendarClock, Bookmark, Receipt } from "lucide-react";
+import { Loader2, BookOpen, GraduationCap, Users, Library, LayoutDashboard, Award, FileText, Package, CalendarClock, Bookmark, Receipt, Flame } from "lucide-react";
 import { useAuthUser } from "@/lib/auth/use-auth-user";
 import { DashboardShell, type NavItem } from "@/components/dashboard/DashboardShell";
 import { Header } from "@/components/site/Header";
@@ -14,6 +14,7 @@ const NAV: NavItem[] = [
   { to: "/student", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/student/courses", label: "My Courses", icon: BookOpen },
   { to: "/student/workshops", label: "Workshops", icon: CalendarClock },
+  { to: "/student/challenge", label: "30-Day Challenge", icon: Flame },
   { to: "/student/ebooks", label: "Ebooks", icon: FileText },
   { to: "/student/bundles", label: "Bundles", icon: Package },
   { to: "/student/certificates", label: "Certificates", icon: Award },
