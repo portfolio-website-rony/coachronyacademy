@@ -1276,56 +1276,6 @@ function FinalCTA() {
         </p>
       </div>
 
-      <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-2">
-        <GlassCard>
-          <div className="text-xs font-bold uppercase tracking-widest" style={{ color: t.gold }}>Payment</div>
-          <h3 className="mt-2 text-2xl font-bold" style={{ color: t.white }}>Send Payment to</h3>
-          <div className="mt-5 space-y-3">
-            {[
-              { name: "bKash", number: "01960254383" },
-              { name: "Nagad", number: "01960254383" },
-              { name: "Rocket", number: "01960254383" },
-            ].map((p) => (
-              <div key={p.name} className="flex items-center justify-between rounded-2xl px-4 py-3"
-                style={{ background: `${t.emeraldSoft}66`, border: `1px solid ${t.gold}33` }}>
-                <div className="font-bold" style={{ color: t.goldSoft }}>{p.name}</div>
-                <div className="font-mono font-bold" style={{ color: t.white }}>{p.number}</div>
-              </div>
-            ))}
-          </div>
-          <a
-            href="https://wa.me/8801960254383?text=Assalamu%20Alaikum%2C%20I%20want%20to%20join%20The%20Success%20Code%2030-Day%20Challenge"
-            target="_blank" rel="noreferrer"
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold"
-            style={{ color: t.white, background: "#25D366" }}
-          >
-            <MessageCircle className="h-4 w-4" /> Join WhatsApp Group
-          </a>
-        </GlassCard>
-
-        <GlassCard>
-          <div className="text-xs font-bold uppercase tracking-widest" style={{ color: t.gold }}>Reserve Your Seat</div>
-          <h3 className="mt-2 text-2xl font-bold" style={{ color: t.white }}>Enroll Now</h3>
-          <form onSubmit={onSubmit} className="mt-5 grid gap-3">
-            {[
-              { name: "name", placeholder: "আপনার নাম", type: "text" },
-              { name: "email", placeholder: "Email", type: "email" },
-              { name: "phone", placeholder: "WhatsApp Number", type: "tel" },
-            ].map((f) => (
-              <input key={f.name} name={f.name} type={f.type} required placeholder={f.placeholder}
-                className="rounded-xl px-4 py-3 text-sm outline-none"
-                style={{ background: `${t.emeraldSoft}66`, border: `1px solid ${t.gold}44`, color: t.white }} />
-            ))}
-            <button type="submit" disabled={loading}
-              className="mt-2 inline-flex items-center justify-center gap-2 rounded-full px-6 py-4 text-base font-black transition hover:scale-[1.02] disabled:opacity-60"
-              style={{ color: t.emerald,
-                background: `linear-gradient(135deg, ${t.goldSoft}, ${t.gold})`,
-                boxShadow: `0 12px 40px -12px ${t.gold}99` }}>
-              {loading ? "Sending..." : "🔥 Join 30-Day Challenge"}
-            </button>
-          </form>
-        </GlassCard>
-      </div>
 
       <p className="mx-auto mt-14 max-w-2xl text-center text-xl italic sm:text-2xl" style={{ color: t.goldSoft }}>
         "পূর্ণ চেষ্টা আমার, ফলাফল আল্লাহর হাতে।"
