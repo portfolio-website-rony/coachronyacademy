@@ -1,0 +1,2 @@
+
+REVOKE EXECUTE ON FUNCTION public.auto_enroll_on_payment() FROM PUBLIC, anon, authenticated;
