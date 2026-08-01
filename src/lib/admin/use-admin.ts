@@ -39,10 +39,13 @@ export function useAdmin(): AdminState {
     }
 
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      void check(session);
+      // NEVER call supabase queries synchronously inside this callback —
+      // the auth lock is held and the query deadlocks (page stuck loading).
+      setTimeout(() => { void check(session); }, 0);
     });
 
     void supabase.auth.getSession().then(({ data }) => check(data.session));
+
 
     return () => {
       mounted = false;
