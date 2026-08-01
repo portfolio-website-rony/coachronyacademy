@@ -3,17 +3,6 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { safeEmail, safeUuid } from "@/lib/security/schemas";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: admin only");
-}
-
 export type StudentCourse = {
   enrollment_id: string;
   course_id: string;
@@ -38,6 +27,7 @@ export const listAllStudents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<StudentRow[]> => {
     const { supabase, userId } = context as any;
+    const { assertAdmin } = await import("@/lib/admin/assert-admin.server");
     await assertAdmin(supabase, userId);
 
     const { data: enrollments, error: enrErr } = await supabase
@@ -118,6 +108,7 @@ export const revokeEnrollment = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ enrollmentId: safeUuid }).parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
+    const { assertAdmin } = await import("@/lib/admin/assert-admin.server");
     await assertAdmin(supabase, userId);
     const { error } = await supabase.from("enrollments").delete().eq("id", data.enrollmentId);
     if (error) throw new Error(error.message);
@@ -128,6 +119,7 @@ export const listCoursesForEnroll = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context as any;
+    const { assertAdmin } = await import("@/lib/admin/assert-admin.server");
     await assertAdmin(supabase, userId);
     const { data, error } = await supabase
       .from("courses")
@@ -148,6 +140,7 @@ export const manualEnroll = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
+    const { assertAdmin } = await import("@/lib/admin/assert-admin.server");
     await assertAdmin(supabase, userId);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
