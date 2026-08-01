@@ -1,32 +1,25 @@
-Screenshot-এ দেখা যাচ্ছে hero image container ফাঁকা — শুধু alt text "The Success Code 30-Day Challenge" corner-এ দেখাচ্ছে, image load fail করেছে। আগের check-এ CDN থেকে HTTP 200 এসেছিল এবং Playwright-এও image render হয়েছিল, তাই এটা user-এর browser-specific issue হতে পারে (cache/service worker/ad blocker), অথবা preview vs published host-এ path resolution-এর সমস্যা।
+## Problem
+Admin panel এ **Users** এবং **Payments** পেজে গেলে page blank/crash হয়ে যাচ্ছে, তাই user role toggle বা payment verify কিছুই করা যাচ্ছে না।
 
-## Diagnosis Plan
+## Suspected cause (needs confirmation)
+`src/lib/admin/users.functions.ts` এবং `src/lib/admin/youtube-duration.functions.ts` module-scope এ `@/integrations/supabase/client.server` import করছে। এটা server-only module, client bundle এ leak হলে route chunk load-time এ throw করে — result: blank page। `students.functions.ts` এতে সঠিক pattern (`await import(...)` handler-এর ভিতরে) ব্যবহার করা আছে, ওটাই কাজ করছে।
 
-**Step 1 — Confirm exactly কোন URL fail করছে**
-User-কে জিজ্ঞেস করব:
-- কোন URL থেকে দেখছেন (preview `lovable.app` / published `coachronyacademy.lovable.app` / অন্য)
-- Browser DevTools → Network tab-এ `success-code-hero.jpg` request-এর status code কী
+Payments পেজ direct supabase client দিয়ে RLS-এর মাধ্যমে চালানোর কথা, তাই crash এর কারণ আলাদা হতে পারে — Playwright দিয়ে exact error verify করা লাগবে।
 
-**Step 2 — Reproduce করার চেষ্টা**
-- Preview এবং published দুই host-এই আবার Playwright দিয়ে image load verify করব
-- Response headers-এ `Content-Disposition: attachment` আছে কিনা check করব (থাকলে browser image render করবে না, download করবে)
-- Cache header এবং CORS check
+## Plan
 
-**Step 3 — Root cause অনুযায়ী fix**
-সম্ভাব্য fix গুলো:
-- যদি `Content-Disposition: attachment` return করে → asset re-upload with correct content-type, বা `<img>` না ব্যবহার করে CSS `background-image` ব্যবহার
-- যদি user-এর browser cache → hard refresh instruction যথেষ্ট (কোন code change লাগবে না)
-- যদি path resolution issue → absolute URL ব্যবহার করব pointer JSON থেকে
-- যদি এড blocker `/__l5e/` block করছে → asset URL prefix change করা possible না, তাই alternate path-এ (যেমন `/public/`) copy করব
+1. **Reproduce & capture exact error**
+   - Playwright দিয়ে signed-in admin session restore করে `/admin/users` এবং `/admin/payments` visit করে console error + screenshot নেব — root cause confirm করতে।
 
-**Step 4 — Verify**
-তিনটা page (`/success-code`, `/success-code-v2`, `/success-code-challenge`) fresh browser session-এ open করে confirm করব image visible।
+2. **Fix server-only import leak** (`src/lib/admin/users.functions.ts`, `src/lib/admin/youtube-duration.functions.ts`)
+   - Module-scope `import { supabaseAdmin } from "@/integrations/supabase/client.server"` সরিয়ে প্রত্যেক `.handler()` ভিতরে `const { supabaseAdmin } = await import("@/integrations/supabase/client.server")` করব (students.functions.ts যেভাবে করে)।
 
-## Question for you
+3. **Fix payments page (only if Step 1 shows a bug there)**
+   - Console error অনুযায়ী targeted fix — e.g. RLS-related error message, missing column, বা component-level throw।
 
-প্লিজ একটু বলুন:
-1. কোন URL-এ দেখছেন — preview link নাকি `coachronyacademy.lovable.app`?
-2. একই browser-এ **Ctrl+Shift+R** (hard refresh) দিয়ে reload করলে image আসে কি?
-3. Browser DevTools (F12) → **Network** tab খুলে page reload দিয়ে `hero.jpg` filter করুন — status code কী দেখায় (200 / 403 / blocked)?
+4. **Verify**
+   - Preview restart → Playwright দিয়ে দুই পেজ open, `Verify` button + `Make admin` button ক্লিক করে ok toast আসে confirm।
 
-এই তথ্য পেলে exact কারণ ধরে সরাসরি fix করে দেব।
+## Out of scope
+- DB schema / RLS পরিবর্তন (existing policies ঠিক আছে)।
+- UI redesign।

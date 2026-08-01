@@ -62,9 +62,11 @@ export function useAuthUser(): AuthUserState {
     }
 
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      void load(session);
+      // Defer: calling supabase queries inside this callback deadlocks the auth lock.
+      setTimeout(() => { void load(session); }, 0);
     });
     void supabase.auth.getSession().then(({ data }) => load(data.session));
+
 
     return () => {
       mounted = false;

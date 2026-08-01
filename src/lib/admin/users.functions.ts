@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-async function assertAdmin(userId: string) {
+async function getAdminClient(userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("user_roles")
     .select("role")
@@ -12,12 +12,15 @@ async function assertAdmin(userId: string) {
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Forbidden: admin only");
+  return supabaseAdmin;
 }
+
 
 export const listAllUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
+    const supabaseAdmin = await getAdminClient(context.userId);
+
 
     const { data: authData, error: authErr } =
       await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
@@ -59,7 +62,8 @@ export const setUserRole = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    const supabaseAdmin = await getAdminClient(context.userId);
+
     if (data.action === "add") {
       const { error } = await supabaseAdmin
         .from("user_roles")
@@ -85,7 +89,8 @@ export const resetUserPassword = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    const supabaseAdmin = await getAdminClient(context.userId);
+
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
       password: data.newPassword,
     });
@@ -99,7 +104,8 @@ export const deleteUser = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    const supabaseAdmin = await getAdminClient(context.userId);
+
     if (data.userId === context.userId) throw new Error("Cannot delete self");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
     if (error) throw new Error(error.message);
