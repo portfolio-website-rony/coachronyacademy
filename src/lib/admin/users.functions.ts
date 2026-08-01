@@ -104,7 +104,8 @@ export const deleteUser = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    const supabaseAdmin = await getAdminClient(context.userId);
+
     if (data.userId === context.userId) throw new Error("Cannot delete self");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
     if (error) throw new Error(error.message);
