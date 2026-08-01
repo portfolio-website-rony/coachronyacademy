@@ -62,7 +62,8 @@ export const setUserRole = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    const supabaseAdmin = await getAdminClient(context.userId);
+
     if (data.action === "add") {
       const { error } = await supabaseAdmin
         .from("user_roles")
