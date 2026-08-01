@@ -89,7 +89,8 @@ export const resetUserPassword = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    const supabaseAdmin = await getAdminClient(context.userId);
+
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
       password: data.newPassword,
     });
