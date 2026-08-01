@@ -19,7 +19,8 @@ async function getAdminClient(userId: string) {
 export const listAllUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
+    const supabaseAdmin = await getAdminClient(context.userId);
+
 
     const { data: authData, error: authErr } =
       await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
