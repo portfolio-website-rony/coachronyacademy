@@ -142,7 +142,7 @@ function Home() {
               <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
               <div className="mt-5 flex items-end justify-between">
                 <div className="text-xl font-bold text-gradient">{p.price}</div>
-                <Link to={p.href} className="rounded-lg bg-gradient-primary px-3 py-1.5 text-xs font-semibold text-background">
+                <Link to={p.href as "/book"} className="rounded-lg bg-gradient-primary px-3 py-1.5 text-xs font-semibold text-background">
                   {p.cta}
                 </Link>
               </div>

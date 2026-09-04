@@ -59,7 +59,8 @@ function Programs() {
                 </Link>
               ) : (
                 <Link
-                  to={p.href}
+                  to={p.href as "/book"}
+
                   className="rounded-xl bg-gradient-primary px-5 py-2.5 text-sm font-semibold text-background shadow-glow"
                 >
                   {p.cta}
