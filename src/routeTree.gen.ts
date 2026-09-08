@@ -21,6 +21,7 @@ import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LiveBatchRouteImport } from './routes/live-batch'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as FreeClassRouteImport } from './routes/free-class'
 import { Route as EventsRouteImport } from './routes/events'
@@ -145,6 +146,11 @@ const PortfolioRoute = PortfolioRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LiveBatchRoute = LiveBatchRouteImport.update({
+  id: '/live-batch',
+  path: '/live-batch',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -488,6 +494,7 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/live-batch': typeof LiveBatchRoute
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
@@ -564,6 +571,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/live-batch': typeof LiveBatchRoute
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
@@ -641,6 +649,7 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/free-class': typeof FreeClassRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/live-batch': typeof LiveBatchRoute
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
@@ -719,6 +728,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/free-class'
     | '/leaderboard'
+    | '/live-batch'
     | '/login'
     | '/portfolio'
     | '/privacy'
@@ -795,6 +805,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/free-class'
     | '/leaderboard'
+    | '/live-batch'
     | '/login'
     | '/portfolio'
     | '/privacy'
@@ -871,6 +882,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/free-class'
     | '/leaderboard'
+    | '/live-batch'
     | '/login'
     | '/portfolio'
     | '/privacy'
@@ -951,6 +963,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   FreeClassRoute: typeof FreeClassRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  LiveBatchRoute: typeof LiveBatchRoute
   LoginRoute: typeof LoginRoute
   PortfolioRoute: typeof PortfolioRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -1056,6 +1069,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/live-batch': {
+      id: '/live-batch'
+      path: '/live-batch'
+      fullPath: '/live-batch'
+      preLoaderRoute: typeof LiveBatchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -1711,6 +1731,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   FreeClassRoute: FreeClassRoute,
   LeaderboardRoute: LeaderboardRoute,
+  LiveBatchRoute: LiveBatchRoute,
   LoginRoute: LoginRoute,
   PortfolioRoute: PortfolioRoute,
   PrivacyRoute: PrivacyRoute,
