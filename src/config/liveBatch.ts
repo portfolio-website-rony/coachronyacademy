@@ -338,7 +338,7 @@ export const liveBatch = {
       "Community",
     ],
     programPrice: "৳ 14,999",
-    referencePrice: "",
+    referencePrice: "৳ 24,999",
     discountText: "",
     batchLabel: "Batch 01 — AI Solution Builder",
     startDate: "TBA",
