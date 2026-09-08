@@ -24,7 +24,7 @@ export const liveBatch = {
     duration: "12 Weeks · Live",
     seatsText: "Limited enrollment — প্রতি batch-এ মাত্র 30 জন",
     note: "Enrollment এখন open. Seat confirm হয় payment order অনুযায়ী।",
-    cta: { label: "Seat Confirm করুন", href: "/contact" },
+    cta: { label: "Seat Confirm করুন", href: "/courses/ai-solution-builder-live-batch/checkout" },
     includes: [
       "Weekly live build sessions",
       "Real project based curriculum",
@@ -338,12 +338,12 @@ export const liveBatch = {
       "Community",
     ],
     programPrice: "৳ 14,999",
-    referencePrice: "",
+    referencePrice: "৳ 24,999",
     discountText: "",
     batchLabel: "Batch 01 — AI Solution Builder",
     startDate: "TBA",
     ctaText: "Live Batch-এ Join করুন →",
-    ctaHref: "/contact",
+    ctaHref: "/courses/ai-solution-builder-live-batch/checkout",
   },
 
   faq: [
@@ -363,10 +363,10 @@ export const liveBatch = {
   finalCta: {
     title: "AI শেখার সময় শেষ। এবার Build করার সময়।",
     sub: "Problem → Solution → Build → Automate → Launch → Sell → Grow",
-    cta: { label: "AI Solution Builder Live Batch-এ Join করুন →", href: "#offer" },
+    cta: { label: "AI Solution Builder Live Batch-এ Join করুন →", href: "/courses/ai-solution-builder-live-batch/checkout" },
   },
 
-  stickyCta: { label: "Live Batch-এ Join করুন →", href: "#offer" },
+  stickyCta: { label: "Live Batch-এ Join করুন →", href: "/courses/ai-solution-builder-live-batch/checkout" },
 };
 
 export type LiveBatchConfig = typeof liveBatch;
