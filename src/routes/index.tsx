@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowRight, Quote, MessageCircle, Phone } from "lucide-react";
 import { Section, GlassCard } from "@/components/site/Section";
 import { LeadForm } from "@/components/site/LeadForm";
@@ -7,14 +8,47 @@ import { SpaceHero } from "@/components/site/hero/SpaceHero";
 import { CountUp } from "@/components/site/CountUp";
 import { WorkExperience } from "@/components/site/WorkExperience";
 import { useContactSettings, useHomepageMedia } from "@/lib/site-settings";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const FALLBACK_COLORS = [
+  "from-purple-500/40 to-fuchsia-500/30",
+  "from-blue-500/40 to-cyan-500/30",
+  "from-pink-500/40 to-orange-400/30",
+  "from-emerald-500/40 to-teal-400/30",
+  "from-violet-500/40 to-indigo-500/30",
+  "from-amber-500/40 to-rose-400/30",
+];
+
+type HomePortfolioItem = {
+  id: string;
+  title: string;
+  category: string | null;
+  cover_url: string | null;
+  link: string | null;
+};
+
 function Home() {
   const contact = useContactSettings();
   const media = useHomepageMedia();
+  const [cmsPortfolio, setCmsPortfolio] = useState<HomePortfolioItem[]>([]);
+
+  useEffect(() => {
+    void (async () => {
+      const { data } = await supabase
+        .from("cms_portfolio")
+        .select("id,title,category,cover_url,link")
+        .eq("published", true)
+        .order("display_order", { ascending: true })
+        .limit(6);
+      setCmsPortfolio((data as HomePortfolioItem[]) ?? []);
+    })();
+  }, []);
+
+
   const waHref = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent("Hi CoachRony, I'm interested in your programs.")}`;
   const telHref = `tel:+${contact.whatsapp}`;
   return (
