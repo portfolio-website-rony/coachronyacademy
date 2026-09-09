@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowRight, Quote, MessageCircle, Phone } from "lucide-react";
 import { Section, GlassCard } from "@/components/site/Section";
 import { LeadForm } from "@/components/site/LeadForm";
@@ -7,14 +8,47 @@ import { SpaceHero } from "@/components/site/hero/SpaceHero";
 import { CountUp } from "@/components/site/CountUp";
 import { WorkExperience } from "@/components/site/WorkExperience";
 import { useContactSettings, useHomepageMedia } from "@/lib/site-settings";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const FALLBACK_COLORS = [
+  "from-purple-500/40 to-fuchsia-500/30",
+  "from-blue-500/40 to-cyan-500/30",
+  "from-pink-500/40 to-orange-400/30",
+  "from-emerald-500/40 to-teal-400/30",
+  "from-violet-500/40 to-indigo-500/30",
+  "from-amber-500/40 to-rose-400/30",
+];
+
+type HomePortfolioItem = {
+  id: string;
+  title: string;
+  category: string | null;
+  cover_url: string | null;
+  link: string | null;
+};
+
 function Home() {
   const contact = useContactSettings();
   const media = useHomepageMedia();
+  const [cmsPortfolio, setCmsPortfolio] = useState<HomePortfolioItem[]>([]);
+
+  useEffect(() => {
+    void (async () => {
+      const { data } = await supabase
+        .from("cms_portfolio")
+        .select("id,title,category,cover_url,link")
+        .eq("published", true)
+        .order("display_order", { ascending: true })
+        .limit(6);
+      setCmsPortfolio((data as HomePortfolioItem[]) ?? []);
+    })();
+  }, []);
+
+
   const waHref = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent("Hi CoachRony, I'm interested in your programs.")}`;
   const telHref = `tel:+${contact.whatsapp}`;
   return (
@@ -158,19 +192,55 @@ function Home() {
         subtitle="Landing pages, videos, ads, funnels — real projects, real results।"
       >
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {PORTFOLIO.map((p) => (
-            <div key={p.title} className="group relative overflow-hidden rounded-2xl border border-white/10">
-              <div className={`aspect-[4/3] w-full bg-gradient-to-br ${p.color}`} />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-90" />
-              <div className="absolute inset-x-0 bottom-0 p-5">
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-glow">
-                  {p.tag}
-                </span>
-                <h3 className="mt-2 font-display text-lg font-semibold">{p.title}</h3>
+          {(cmsPortfolio.length > 0
+            ? cmsPortfolio.map((p, i) => ({
+                key: p.id,
+                tag: p.category ?? "Project",
+                title: p.title,
+                cover: p.cover_url,
+                link: p.link,
+                color: FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+              }))
+            : PORTFOLIO.map((p, i) => ({
+                key: p.title,
+                tag: p.tag,
+                title: p.title,
+                cover: null as string | null,
+                link: null as string | null,
+                color: p.color ?? FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+              }))
+          ).map((p) => {
+            const card = (
+              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/10">
+                {p.cover ? (
+                  <img
+                    src={p.cover}
+                    alt={p.title}
+                    loading="lazy"
+                    className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className={`aspect-[4/3] w-full bg-gradient-to-br ${p.color}`} />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-90" />
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-glow">
+                    {p.tag}
+                  </span>
+                  <h3 className="mt-2 font-display text-lg font-semibold">{p.title}</h3>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+            return p.link ? (
+              <a key={p.key} href={p.link} target={p.link.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer">
+                {card}
+              </a>
+            ) : (
+              <div key={p.key}>{card}</div>
+            );
+          })}
         </div>
+
         <div className="mt-8 text-center">
           <Link to="/portfolio" className="inline-flex items-center gap-2 text-sm font-semibold text-primary-glow hover:underline">
             View all projects <ArrowRight className="h-4 w-4" />
