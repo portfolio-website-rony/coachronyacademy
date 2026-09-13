@@ -20,7 +20,7 @@ export const liveBatch = {
     batchName: "Batch 01 — AI Solution Builder",
     price: "৳2990",
     referencePrice: "৳ 10000",
-    startDate: "01 October 2026",
+    startDate: "01 /10/2026 ",
     duration: "04 Weeks · Live",
     seatsText: "Limited enrollment — প্রতি batch-এ মাত্র 30 জন",
     note: "Enrollment এখন open. Seat confirm হয় payment order অনুযায়ী।",
