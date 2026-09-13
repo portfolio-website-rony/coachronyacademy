@@ -210,8 +210,13 @@ function LiveBatchPage() {
 
       {/* BATCH PROJECTS */}
       <Wrap className="border-y border-white/10 bg-white/[0.015]">
-        <SectionHeader label="Batch Projects" lines={["Batch-এ যেসব Solution", "নিজ হাতে Build করবেন"]} />
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <SectionHeader
+          label="What You Will Build"
+          lines={["এই কোর্স শেষে আপনি বাস্তবে যেসব", "Automation তৈরি করতে পারবেন"]}
+          sub="৬টি production-ready system—প্রতিটি real business workflow ধরে তৈরি করবেন।"
+          align="center"
+        />
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {c.projects.map((p) => (
             <ProjectCard key={p.title} project={p} ctaHref="#offer" />
           ))}
