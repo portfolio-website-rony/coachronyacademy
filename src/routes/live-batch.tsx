@@ -13,7 +13,7 @@ import { FAQ } from "@/components/live-batch/FAQ";
 import { Curriculum } from "@/components/live-batch/Curriculum";
 import { GalleryCard } from "@/components/live-batch/GalleryCard";
 import { StickyCTA } from "@/components/live-batch/StickyCTA";
-import { TestimonialGrid, ShowcaseGrid } from "@/components/live-batch/Testimonials";
+
 
 export const Route = createFileRoute("/live-batch")({
   head: () => ({
@@ -320,29 +320,6 @@ function LiveBatchPage() {
           {c.tools.map((t) => (
             <ToolCard key={t.category} category={t.category} items={t.items} />
           ))}
-        </div>
-      </Wrap>
-
-      {/* SOCIAL PROOF */}
-      <Wrap>
-        <SectionHeader label="Social Proof" lines={c.socialProof.headline} sub={c.socialProof.sub} />
-        <div className="mt-10">
-          <TestimonialGrid
-            testimonials={c.socialProof.testimonials}
-            placeholderText={c.socialProof.placeholderText}
-          />
-        </div>
-        <div className="mt-14">
-          <h3 className="font-mont text-2xl font-semibold tracking-tight">
-            {c.socialProof.showcase.title}
-          </h3>
-          <p className="mt-2 text-sm text-muted-foreground">{c.socialProof.showcase.sub}</p>
-          <div className="mt-6">
-            <ShowcaseGrid
-              projects={c.socialProof.showcase.projects}
-              placeholderText={c.socialProof.showcase.placeholderText}
-            />
-          </div>
         </div>
       </Wrap>
 

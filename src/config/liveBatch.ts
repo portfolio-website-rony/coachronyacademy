@@ -308,20 +308,6 @@ export const liveBatch = {
     ],
   },
 
-  socialProof: {
-    headline: ["Student Voices"],
-    sub: "Real testimonial যোগ হওয়ার আগ পর্যন্ত এখানে placeholder দেখানো হচ্ছে।",
-    placeholderText: "Student testimonial will appear here.",
-    /** Add real entries here only — never placeholder-as-real. */
-    testimonials: [] as { name: string; role?: string; quote: string }[],
-    showcase: {
-      title: "Student Project Showcase",
-      sub: "Batch শেষে student project গুলো এখানে যুক্ত হবে।",
-      placeholderText: "Student project will appear here.",
-      projects: [] as { title: string; category: string; url?: string }[],
-    },
-  },
-
   offer: {
     headline: ["একটি Complete AI Solution Building System"],
     stack: [
