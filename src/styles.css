@@ -38,6 +38,16 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  --color-ai-background: var(--ai-background);
+  --color-ai-panel: var(--ai-panel);
+  --color-ai-surface: var(--ai-surface);
+  --color-ai-foreground: var(--ai-foreground);
+  --color-ai-soft: var(--ai-soft);
+  --color-ai-line: var(--ai-line);
+  --color-ai-blue: var(--ai-blue);
+  --color-ai-cyan: var(--ai-cyan);
+  --color-ai-success: var(--ai-success);
+
   --animate-float: float 6s ease-in-out infinite;
   --animate-blob: blob 18s ease-in-out infinite;
   --animate-fade-up: fade-up 0.7s ease-out forwards;
@@ -121,6 +131,18 @@
   --bronze: oklch(0.58 0.12 55);
   --gradient-gold: linear-gradient(135deg, var(--gold-glow) 0%, var(--gold) 45%, var(--bronze) 100%);
   --shadow-gold: 0 0 40px -10px oklch(0.78 0.13 75 / 35%);
+
+  /* AI Employee page */
+  --ai-background: oklch(0.075 0.025 252);
+  --ai-panel: oklch(0.12 0.032 252);
+  --ai-surface: oklch(0.16 0.036 252);
+  --ai-foreground: oklch(0.98 0.008 230);
+  --ai-soft: oklch(0.72 0.025 235);
+  --ai-line: oklch(0.85 0.035 235 / 14%);
+  --ai-blue: oklch(0.62 0.2 250);
+  --ai-cyan: oklch(0.82 0.14 205);
+  --ai-success: oklch(0.75 0.16 155);
+  --shadow-ai: 0 26px 80px -35px oklch(0.62 0.2 250 / 55%);
 }
 
 .dark {
@@ -193,6 +215,9 @@
   }
   .shadow-gold {
     box-shadow: var(--shadow-gold);
+  }
+  .shadow-ai {
+    box-shadow: var(--shadow-ai);
   }
   .bg-gold-divider {
     background: linear-gradient(to bottom, transparent, oklch(0.78 0.13 75 / 60%), transparent);

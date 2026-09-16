@@ -113,7 +113,8 @@ function RootComponent() {
     pathname.startsWith("/admin") ||
     pathname.startsWith("/student") ||
     pathname.startsWith("/client") ||
-    pathname === "/dashboard";
+    pathname === "/dashboard" ||
+    pathname === "/ai-employee";
   return (
     <QueryClientProvider client={queryClient}>
       <div className="relative flex min-h-screen flex-col">
