@@ -29,6 +29,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AiEmployeeRouteImport } from './routes/ai-employee'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as StudentRouteImport } from './routes/_student'
 import { Route as ClientRouteImport } from './routes/_client'
@@ -186,6 +187,11 @@ const BookRoute = BookRouteImport.update({
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiEmployeeRoute = AiEmployeeRouteImport.update({
+  id: '/ai-employee',
+  path: '/ai-employee',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -487,6 +493,7 @@ const AdminAdminCoursesCourseIdStudentsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai-employee': typeof AiEmployeeRoute
   '/blog': typeof BlogRouteWithChildren
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
@@ -564,6 +571,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai-employee': typeof AiEmployeeRoute
   '/blog': typeof BlogRouteWithChildren
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
@@ -642,6 +650,7 @@ export interface FileRoutesById {
   '/_client': typeof ClientRouteWithChildren
   '/_student': typeof StudentRouteWithChildren
   '/about': typeof AboutRoute
+  '/ai-employee': typeof AiEmployeeRoute
   '/blog': typeof BlogRouteWithChildren
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
@@ -721,6 +730,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/ai-employee'
     | '/blog'
     | '/book'
     | '/contact'
@@ -798,6 +808,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/ai-employee'
     | '/blog'
     | '/book'
     | '/contact'
@@ -875,6 +886,7 @@ export interface FileRouteTypes {
     | '/_client'
     | '/_student'
     | '/about'
+    | '/ai-employee'
     | '/blog'
     | '/book'
     | '/contact'
@@ -956,6 +968,7 @@ export interface RootRouteChildren {
   ClientRoute: typeof ClientRouteWithChildren
   StudentRoute: typeof StudentRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AiEmployeeRoute: typeof AiEmployeeRoute
   BlogRoute: typeof BlogRouteWithChildren
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
@@ -1125,6 +1138,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-employee': {
+      id: '/ai-employee'
+      path: '/ai-employee'
+      fullPath: '/ai-employee'
+      preLoaderRoute: typeof AiEmployeeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -1724,6 +1744,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClientRoute: ClientRouteWithChildren,
   StudentRoute: StudentRouteWithChildren,
   AboutRoute: AboutRoute,
+  AiEmployeeRoute: AiEmployeeRoute,
   BlogRoute: BlogRouteWithChildren,
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
