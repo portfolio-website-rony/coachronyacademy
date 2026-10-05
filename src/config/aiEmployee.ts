@@ -1,4 +1,4 @@
-export const PAYMENT_LINK = "PAYMENT_LINK";
+export const PAYMENT_LINK = "/courses/ai-employee-4day-live/checkout";
 
 export const aiEmployee = {
   brand: {
