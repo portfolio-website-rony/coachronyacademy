@@ -15,6 +15,7 @@ import appCss from "../styles.css?url";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { FloatingActions } from "@/components/site/FloatingActions";
+import { FacebookPixel } from "@/components/site/FacebookPixel";
 
 function NotFoundComponent() {
   return (
@@ -126,6 +127,7 @@ function RootComponent() {
         {!hideChrome && <Footer />}
         {!hideChrome && <FloatingActions />}
         <Toaster position="top-center" theme="dark" richColors />
+        <FacebookPixel />
       </div>
     </QueryClientProvider>
   );
