@@ -67,6 +67,7 @@ function SettingsPage() {
       </div>
 
       <PixelCard />
+      <CapiCard />
     </div>
   );
 }
@@ -125,4 +126,58 @@ function PixelCard() {
     </div>
   );
 }
+
+function CapiCard() {
+  const [token, setToken] = useState("");
+  const [testCode, setTestCode] = useState("");
+  const [enabled, setEnabled] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    void supabase.from("cms_site_settings").select("value").eq("key", "tracking_capi").maybeSingle().then(({ data }) => {
+      const v = (data?.value ?? {}) as { access_token?: string; test_event_code?: string; enabled?: boolean };
+      setToken(v.access_token ?? "");
+      setTestCode(v.test_event_code ?? "");
+      setEnabled(!!v.enabled);
+    });
+  }, []);
+
+  async function save() {
+    const t = token.trim();
+    if (t && !/^[A-Za-z0-9_-]{20,500}$/.test(t)) return toast.error("Access Token সঠিক নয়");
+    setSaving(true);
+    const { error } = await supabase.from("cms_site_settings").upsert(
+      { key: "tracking_capi", value: { access_token: t, test_event_code: testCode.trim().slice(0, 40), enabled: enabled && !!t } },
+      { onConflict: "key" },
+    );
+    setSaving(false);
+    if (error) toast.error(error.message); else toast.success("Server-side tracking সেভ হয়েছে");
+  }
+
+  return (
+    <div className="glass max-w-2xl space-y-3 rounded-2xl p-6">
+      <h3 className="font-semibold">Server-side Tracking (Conversions API)</h3>
+      <p className="text-xs text-muted-foreground">
+        Events Manager → আপনার Pixel → Settings → Conversions API → "Generate access token" থেকে টোকেন কপি করে বসান। Ad-blocker থাকলেও ইভেন্ট ট্র্যাক হবে। টোকেনটি গোপন থাকে, ওয়েবসাইটে দেখা যায় না।
+      </p>
+      <div>
+        <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">Access Token</label>
+        <input type="password" value={token} onChange={(e) => setToken(e.target.value)} className="glass w-full rounded-xl px-3 py-2 text-sm" />
+      </div>
+      <div>
+        <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">Test Event Code (ঐচ্ছিক)</label>
+        <input value={testCode} placeholder="TEST12345" onChange={(e) => setTestCode(e.target.value)} className="glass w-full rounded-xl px-3 py-2 text-sm" />
+        <p className="mt-1 text-[11px] text-muted-foreground">শুধু টেস্টের সময় দিন, পরীক্ষা শেষে খালি করে দিন।</p>
+      </div>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />
+        Server-side tracking চালু রাখুন
+      </label>
+      <button onClick={save} disabled={saving} className="mt-2 inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-4 py-2 text-sm font-semibold text-background shadow-glow disabled:opacity-60">
+        {saving && <Loader2 className="h-4 w-4 animate-spin" />} Save
+      </button>
+    </div>
+  );
+}
+
 

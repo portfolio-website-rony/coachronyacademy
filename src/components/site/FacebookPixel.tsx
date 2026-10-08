@@ -1,12 +1,40 @@
 import { useEffect, useRef } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { sendFbServerEvent } from "@/lib/fb-capi.functions";
 
 type FbqWindow = Window & { fbq?: ((...args: unknown[]) => void) & { callMethod?: unknown; queue?: unknown[] }; _fbq?: unknown };
+type FbEvent = "PageView" | "ViewContent" | "Lead" | "InitiateCheckout" | "Purchase" | "CompleteRegistration";
+
+let pixelReady = false;
+
+function cookie(name: string) {
+  const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+  return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+/** Fires an event in the browser Pixel AND server-side (Conversions API) with a shared event_id for dedup. */
+export function trackFbEvent(name: FbEvent, extra?: { value?: number; currency?: string }) {
+  if (typeof window === "undefined" || !pixelReady) return;
+  const eventId = `${name}-${crypto.randomUUID()}`;
+  const w = window as FbqWindow;
+  const params = extra?.value != null ? { value: extra.value, currency: extra.currency ?? "BDT" } : {};
+  w.fbq?.("track", name, params, { eventID: eventId });
+  void sendFbServerEvent({
+    data: {
+      event_name: name,
+      event_id: eventId,
+      url: window.location.href,
+      fbp: cookie("_fbp"),
+      fbc: cookie("_fbc"),
+      value: extra?.value,
+      currency: extra?.currency,
+    },
+  }).catch(() => {});
+}
 
 /** Loads Facebook Pixel using the ID saved in Admin → Settings (key: tracking). */
 export function FacebookPixel() {
-  const ready = useRef(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
@@ -36,8 +64,8 @@ export function FacebookPixel() {
           document.head.appendChild(s);
         }
         w.fbq!("init", id);
-        w.fbq!("track", "PageView");
-        ready.current = true;
+        pixelReady = true;
+        trackFbEvent("PageView");
       });
     return () => {
       cancelled = true;
@@ -50,8 +78,8 @@ export function FacebookPixel() {
       first.current = false;
       return;
     }
-    const w = window as FbqWindow;
-    if (ready.current && w.fbq) w.fbq("track", "PageView");
+    trackFbEvent("PageView");
+    if (/\/checkout$/.test(pathname)) trackFbEvent("InitiateCheckout");
   }, [pathname]);
 
   return null;
